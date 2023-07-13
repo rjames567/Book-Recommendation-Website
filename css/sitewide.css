@@ -1,0 +1,168 @@
+/* -------------------------------------------------------------------------- */
+/* Colours                                                                    */
+/* -------------------------------------------------------------------------- */
+:root {
+  --blue: #24247b;
+  --grey: #666666;
+  --light-grey: #b7b7b7;
+  --red: #990000;
+  --yellow: #e69138ff;
+  --light-blue: #24247bbe;
+  --light-red: #990000bf;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Global Formatting                                                          */
+/* -------------------------------------------------------------------------- */
+body, html {
+  background-color: white;
+  font-family: Helvetica, Arial;
+  margin: 0;
+  padding: 0;
+  height: 99vh; /* 100vh is slightly larger than the screen. */
+}
+
+/* -------------------------------------------------------------------------- */
+/* Sitewide classes                                                           */
+/* -------------------------------------------------------------------------- */
+.hidden, .template {
+  display: none;
+}
+
+.row {
+  width: fit-content;
+  text-align: center;
+  margin: 0;
+}
+
+.row:last-child {
+  margin: 20px 0;
+}
+
+/* -------------------------------------------------------------------------- */
+/* HTML tags                                                                  */
+/* -------------------------------------------------------------------------- */
+h1 {
+  padding: 0;
+  font-size: 25px;
+  text-align: left;
+}
+
+hr {
+  background-color: var(--light-grey);
+  height: 1px;
+  width: 100%;
+}
+
+a {
+  text-decoration: none;
+  color: black;
+  cursor: pointer;
+}
+
+main {
+  padding: 0 20px;
+}
+
+li {
+  list-style-type: none;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Header                                                                     */
+/* -------------------------------------------------------------------------- */
+header .title {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  border-bottom: 2px solid var(--light-grey);
+}
+
+header nav {
+  border-bottom: 2px solid var(--light-grey);
+  padding: 0;
+  margin: 0;
+}
+
+header nav ul {
+  padding: 0;
+}
+
+header nav.top ul {
+  display: flex;
+  justify-content: flex-end;
+}
+
+header nav ul li {
+  display: inline-block;
+  border-right: 2px solid var(--blue);
+  padding: 0 5px;
+}
+
+header nav ul li:last-child {
+  border: none;
+}
+
+header nav ul li a {
+  color: var(--blue);
+  padding: 10px;
+}
+
+header nav ul li a:hover, header nav ul li a.active {
+  color: white;
+  background-color: var(--blue);
+}
+
+header nav ul li:first-child {
+  padding-left: 20px;
+}
+
+header nav ul li:last-child {
+  padding-right: 20px;
+}
+
+header nav ul li.pseudo-last { /* Easy way of removing border on both links. */
+  padding-right: 20px;
+  border: none;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Header                                                                     */
+/* -------------------------------------------------------------------------- */
+footer {
+  background-color: var(--grey);
+  color: var(--light-grey);
+  font-size: 10px;
+  padding: 10px 20px;
+}
+
+footer h1 {
+  font-size: 12px;
+  margin: 0;
+}
+
+footer ul {
+  padding: 0;
+}
+
+footer ul li {
+  padding-bottom: 5px;
+}
+
+footer ul li:last-child {
+  padding-bottom: 0; /* Remove large space between list and cp notice. */
+}
+
+footer ul li a {
+  padding: 0 50px 0 10px;
+  color: white;
+}
+
+footer ul li a:hover {
+  color: white;
+}
+
+body > footer {
+  position: sticky;
+  top: 100vh;
+}
