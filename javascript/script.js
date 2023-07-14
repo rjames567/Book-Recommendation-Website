@@ -91,7 +91,7 @@ $(".account-popups button.cancel-button").click(function () {
 });
 
 $(window).click(function (event) {
-    if (event.target == $("#sign-up")[0]) {
+    if (event.target == $("#sign-up")[0] || event.target == $("#sign-in")[0]) {
         hideAllSignPopups();
     }
 });
@@ -118,11 +118,11 @@ $("header a#sign-up-button").click(function () {
 // Sign In - Popup Visibility
 // -----------------------------------------------------------------------------
 function showSignInPopup () {
-    $(".account-popups .window#sign-id").show();
+    $(".account-popups .window#sign-in").show();
 }
 
 function hideSignInPopup () {
-    $(".account-popups .window#sign-id").hide();
+    $(".account-popups .window#sign-in").hide();
 }
 
 // -----------------------------------------------------------------------------
