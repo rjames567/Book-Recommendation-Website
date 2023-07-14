@@ -108,6 +108,13 @@ function hideSignUpPopup () {
 }
 
 // -----------------------------------------------------------------------------
+// Sign Up - Form submission
+// -----------------------------------------------------------------------------
+$(".account-popups .window#sign-up form").on("submit", function (event) {
+    event.preventDefault();
+});
+
+// -----------------------------------------------------------------------------
 // Sign Up - Link Onclick handlers
 // -----------------------------------------------------------------------------
 $("header a#sign-up-button").click(function () {
@@ -124,6 +131,13 @@ function showSignInPopup () {
 function hideSignInPopup () {
     $(".account-popups .window#sign-in").hide();
 }
+
+// -----------------------------------------------------------------------------
+// Sign In - Form submission
+// -----------------------------------------------------------------------------
+$(".account-popups .window#sign-in form").on("submit", function (event) {
+    event.preventDefault();
+});
 
 // -----------------------------------------------------------------------------
 // Sign In - Link Onclick handlers
