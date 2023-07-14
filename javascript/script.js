@@ -79,6 +79,42 @@ $("nav.bottom ul li a, footer ul li a").click(function () {
 });
 
 // -----------------------------------------------------------------------------
+// Sign Up - Popup Visibility
+// -----------------------------------------------------------------------------
+function showSignUpPopup () {
+    $(".account-popups .window#sign-up").show();
+}
+
+function hideSignUpPopup () {
+    $(".account-popups .window#sign-up").hide();
+}
+
+// -----------------------------------------------------------------------------
+// Sign Up - Link Onclick handlers
+// -----------------------------------------------------------------------------
+$("header a#sign-up-button").click(function () {
+    showSignUpPopup();
+});
+
+// -----------------------------------------------------------------------------
+// Sign In - Popup Visibility
+// -----------------------------------------------------------------------------
+function showSignInPopup () {
+    $(".account-popups .window#sign-up").show();
+}
+
+function hideSignInPopup () {
+    $(".account-popups .window#sign-up").hide();
+}
+
+// -----------------------------------------------------------------------------
+// Sign In - Link Onclick handlers
+// -----------------------------------------------------------------------------
+$("header a#sign-in-button").click(function () {
+    showSignInPopup();
+});
+
+// -----------------------------------------------------------------------------
 // window onload handlers
 // -----------------------------------------------------------------------------
 $(document).ready(function () {
