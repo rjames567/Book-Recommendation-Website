@@ -90,6 +90,12 @@ $(".account-popups button.cancel-button").click(function () {
     hideAllSignPopups();
 });
 
+$(window).click(function (event) {
+    if (event.target == $("#sign-up")[0]) {
+        hideAllSignPopups();
+    }
+});
+
 // -----------------------------------------------------------------------------
 // Sign Up - Popup Visibility
 // -----------------------------------------------------------------------------
