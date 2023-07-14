@@ -1,7 +1,40 @@
 // -----------------------------------------------------------------------------
+// String Manipulation
+// -----------------------------------------------------------------------------
+// https://stackoverflow.com/a/6475125/21124864
+String.prototype.toTitleCase = function () {
+    var str = this.replace(/([^\W_]+[^\s-]*) */g, function(txt) {
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
+    return str;
+}
+
+// -----------------------------------------------------------------------------
+// URL Manipulation
+// -----------------------------------------------------------------------------
+function changePageURI (linkName) {
+    var newURI;
+    if (linkName == "Home") {
+        newURI = "/";
+    } else {
+        newURI = linkName.toLowerCase().replace(" ", "-");
+    }
+    history.pushState({urlPath: newURI},"", newURI);
+}
+
+function getLinkNameByURI () { // Convert URI to navigation link text.
+    var uri = window.location.pathname.replace("-", " ");
+        // Replace underscores with spaces
+    return uri.slice(1).toTitleCase();
+        // Remove leading slash, and convert to title case.
+}
+
+// -----------------------------------------------------------------------------
 // Page Switching
 // -----------------------------------------------------------------------------
 function switchPageContent (elem, linkName) {
+    // Does not switch elem to link as using links is very slow, as it needs to
+        // iterate through all available link names, to find the correct one.
     if (elem) {
         linkName = $(elem).html();
     }
@@ -18,10 +51,12 @@ function switchPageContent (elem, linkName) {
         complete: function () { // Runs after error/success
             if (elem) { // Allow for both element or link name to be used.
                 changeActiveLink(elem, null);
+                linkName = $(elem).html();
             } else {
                 changeActiveLink(null, linkName);
             }// Navigation links are always updated
                 // regardless of success. Improves appeared responsiveness
+            changePageURI(linkName);
         }
     });
 }
@@ -47,6 +82,6 @@ $("nav.bottom ul li a").click(function () {
 // window onload handlers
 // -----------------------------------------------------------------------------
 $(document).ready(function () {
-    var target="Recommendations";
-    switchPageContent(null, target);
+    var target = window.location.pathname;
+    switchPageContent(null, getLinkNameByURI());
 })
