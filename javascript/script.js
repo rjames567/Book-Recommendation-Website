@@ -118,11 +118,11 @@ $("header a#sign-up-button").click(function () {
 // Sign In - Popup Visibility
 // -----------------------------------------------------------------------------
 function showSignInPopup () {
-    $(".account-popups .window#sign-ip").show();
+    $(".account-popups .window#sign-id").show();
 }
 
 function hideSignInPopup () {
-    $(".account-popups .window#sign-ip").hide();
+    $(".account-popups .window#sign-id").hide();
 }
 
 // -----------------------------------------------------------------------------
