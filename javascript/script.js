@@ -79,6 +79,18 @@ $("nav.bottom ul li a, footer ul li a").click(function () {
 });
 
 // -----------------------------------------------------------------------------
+// Sign In/Sign Up
+// -----------------------------------------------------------------------------
+function hideAllSignPopups () { // Needed so cancel buttons and click-off can be
+    // generalised for both.
+    $(".account-popups .window").hide()
+}
+
+$(".account-popups button.cancel-button").click(function () {
+    hideAllSignPopups();
+});
+
+// -----------------------------------------------------------------------------
 // Sign Up - Popup Visibility
 // -----------------------------------------------------------------------------
 function showSignUpPopup () {
