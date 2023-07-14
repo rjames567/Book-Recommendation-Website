@@ -166,3 +166,107 @@ body > footer {
   position: sticky;
   top: 100vh;
 }
+
+/* -------------------------------------------------------------------------- */
+/* Sign In/Sign Up                                                            */
+/* -------------------------------------------------------------------------- */
+.account-popups .window hr {
+  border: 1px solid var(--light-grey);
+  margin-bottom: 20px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Sign In/Sign Up - Popups                                                   */
+/* -------------------------------------------------------------------------- */
+.account-popups {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.account-popups .window {
+  display: none; /* Hide by default */
+  height: 100%;
+  width: 100%;
+  overflow: none;
+  background-color: var(--light-grey);
+  padding: 10px;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top 0;
+  box-sizing: border-box;
+}
+
+.account-popups .pop-up-content {
+  background-color: white;
+  margin: 5% auto 15% auto;
+  width: 80%;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Sign In/Sign Up - Inputs                                                   */
+/* -------------------------------------------------------------------------- */
+.account-popups input[type=text], .account-popups input[type=password] {
+  /* Minimum specification - affects all text inputs in the div */
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  display: inline-block;
+  border: none;
+  background: white;
+  box-sizing: border-box;
+}
+
+.account-popups .pop-up-content input:focus {
+  background-color: var(--light-grey);
+  outline: none;
+}
+
+.account-popups .pop-up-content .container {
+  padding: 16px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Sign In/Sign Up - Alerts                                                   */
+/* -------------------------------------------------------------------------- */
+.account-popups p.alert {
+  display: none;
+  color: var(--red);
+  margin: 0 0 10px 0;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Sign In/Sign Up - Buttons                                                  */
+/* -------------------------------------------------------------------------- */
+.account-popups .window button {
+  color: white;
+  padding: 15px 20px;
+  margin: 8px 0;
+  float: left;
+  width: 50%;
+  border: none;
+}
+
+.account-popups .window .cancel-button {
+  background-color: var(--red);
+}
+
+.account-popups .window .sign-up-button, .account-popups .window .sign-in-button {
+  background-color: var(--blue);
+}
+
+.account-popups .window .cancel-button:hover {
+  background-color: var(--light-red);
+}
+
+.account-popups .window .sign-up-button:hover {
+  background-color: var(--light-blue);
+}
+
+/* Needed to prevent buttons from being outside pop-up. */
+.account-popups .window .clearfix::after {
+  content: "";
+  clear: both;
+  display: table;
+}
