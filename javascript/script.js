@@ -74,7 +74,7 @@ function changeActiveLink (elem, linkContent) {
     }
 }
 
-$("nav.bottom ul li a").click(function () {
+$("nav.bottom ul li a, footer ul li a").click(function () {
     switchPageContent(this, null);
 });
 
