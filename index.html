@@ -31,6 +31,62 @@
                 </ul>
             </nav>
         </header>
+        <div class="account-popups">
+            <!-- https://www.w3schools.com/howto/howto_css_signup_form.asp -->
+            <div class="window hidden" id="sign-up">
+                <form class="pop-up-content" action="">
+                    <div class="container">
+                        <h1>Sign Up</h1>
+                        <p>Please fill in this form to create an account.</p>
+                        <hr>
+
+                        <label for="first-name"><b>First Name</b></label>
+                        <input type="text" placeholder="Enter First Name" name="first-name" required>
+
+                        <label for="surname"><b>Surname</b></label>
+                        <input type="text" placeholder="Enter Surname" name="surname" required>
+
+                        <label for="username"><b>Username</b></label>
+                        <input type="text" placeholder="Enter Username" name="username" required>
+
+                        <label for="password"><b>Password</b></label>
+                        <input type="password" placeholder="Enter Password" name="password" required>
+
+                        <label for="password-repeat"><b>Repeat Password</b></label>
+                        <input type="password" placeholder="Repeat Password" name="password-repeat" required>
+
+                        <p class="alert"></p> <!-- Filled in by the javascript as needed -->
+
+                        <div class="clearfix">
+                            <button type="button" class="cancel-button">Cancel</button> <!-- Cancel button does same for both, so uses same class. -->
+                            <button type="submit" class="sign-up-button">Sign Up</button> <!-- Submit button does different things for each, so uses different class. -->
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="window hidden" id="sign-in">
+                <form class="pop-up-content" action="">
+                    <div class="container">
+                        <h1>Sign In</h1>
+                        <p>Please fill in this form to sign in to your account.</p>
+                        <hr>
+
+                        <label for="username"><b>Username</b></label>
+                        <input type="text" placeholder="Enter Username" name="username" required>
+
+                        <label for="password"><b>Password</b></label>
+                        <input type="password" placeholder="Enter Password" name="password" required>
+
+                        <p class="alert"></p> <!-- Filled in by the javascript as needed -->
+
+                        <div class="clearfix">
+                            <button type="button" class="cancel-button">Cancel</button>
+                            <button type="submit" class="sign-in-button">Sign In</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
         <main>
 
         </main>
