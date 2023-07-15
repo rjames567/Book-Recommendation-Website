@@ -59,13 +59,21 @@ class Connection:
         
         self._cursor = self._connection.cursor()
     
-    def query(self, query):
+    def query(self, query, testing=False):
         """
         Method to query the connected database.
         
         query -> string
             The MySQL query that is to be performed on the database that the
             object is connecting to.
+        
+        
+        testing -> boolean
+            Specifies whether the query is for testing. If it is, any errors
+            from the query still occur, but any changes to the database are not
+            applied if is True.
+            
+            Defaults to False.
         
         Returns a list of tuples - each tuple is one row in the response from
         the database. An empty list means that the query result was an empty 
@@ -78,6 +86,9 @@ class Connection:
                 # certain amount of time inactive. This repoens the connection
                 # if a timeout occurs
         
+        if not testing: # If it is testing, it has does not affect the db
+            self._connection.commit() # Applies changes from the query to the db
+
         return self._cursor.fetchall()
     
     def __del__(self):
