@@ -52,5 +52,15 @@ class Connection:
         
         self._cursor = self._connection.cursor()
     
+    def query(self, query):
+        try:
+            self._cursor.execute(query)
+        except mysql.connectorError:
+            self._connect() # Some databases specifies connections close after
+                # certain amount of time inactive. This repoens the connection
+                # if a timeout occurs
+        
+        return self._cursor.fetchall()
+    
     def __del__(self):
         self._connection.close()
