@@ -1,4 +1,9 @@
 // -----------------------------------------------------------------------------
+// Global Variables/Constants
+// -----------------------------------------------------------------------------
+var disablePopupCancel = false;
+
+// -----------------------------------------------------------------------------
 // String Manipulation
 // -----------------------------------------------------------------------------
 // https://stackoverflow.com/a/6475125/21124864
@@ -83,7 +88,9 @@ $("nav.bottom ul li a, footer ul li a").click(function () {
 // -----------------------------------------------------------------------------
 function hideAllSignPopups () { // Needed so cancel buttons and click-off can be
     // generalised for both.
-    $(".account-popups .window").hide()
+    if (!disablePopupCancel) {
+        $(".account-popups .window").hide()
+    }
 }
 
 $(".account-popups button.cancel-button").click(function () {
@@ -91,7 +98,8 @@ $(".account-popups button.cancel-button").click(function () {
 });
 
 $(window).click(function (event) {
-    if (event.target == $("#sign-up")[0] || event.target == $("#sign-in")[0]) {
+    if ([$("#sign-up")[0],  $("#sign-in")[0]].includes(event.target)
+            && !disablePopupCancel) {
         hideAllSignPopups();
     }
 });
@@ -103,15 +111,12 @@ function showSignUpPopup () {
     $(".account-popups .window#sign-up").show();
 }
 
-function hideSignUpPopup () {
-    $(".account-popups .window#sign-up").hide();
-}
-
 // -----------------------------------------------------------------------------
 // Sign Up - Form submission
 // -----------------------------------------------------------------------------
 $(".account-popups .window#sign-up form").on("submit", function (event) {
     event.preventDefault();
+    disablePopupCancel = true;
 });
 
 // -----------------------------------------------------------------------------
@@ -128,15 +133,12 @@ function showSignInPopup () {
     $(".account-popups .window#sign-in").show();
 }
 
-function hideSignInPopup () {
-    $(".account-popups .window#sign-in").hide();
-}
-
 // -----------------------------------------------------------------------------
 // Sign In - Form submission
 // -----------------------------------------------------------------------------
 $(".account-popups .window#sign-in form").on("submit", function (event) {
     event.preventDefault();
+    disablePopupCancel = true;
 });
 
 // -----------------------------------------------------------------------------
