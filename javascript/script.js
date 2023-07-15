@@ -90,6 +90,8 @@ function hideAllSignPopups () { // Needed so cancel buttons and click-off can be
     // generalised for both.
     if (!disablePopupCancel) {
         $(".account-popups .window").hide()
+        hideSignUpAlert(); // Hide popup first then alert to improve percieved
+            // responsivness
     }
 }
 
@@ -105,6 +107,22 @@ $(window).click(function (event) {
 });
 
 // -----------------------------------------------------------------------------
+// Sign In/Sign Up - Alerts
+// -----------------------------------------------------------------------------
+function signUpAlert (message) {
+    var elem = $(".account-popups p.alert");
+    elem.html(message);
+    elem.show(); // This order so their is not a delay - minimal so not vital
+    timeout = setTimeout(function () {
+        elem.fadeOut(500); // Fade out in 1/2 seconds
+    }, 8000); // Hide alert after 8 seconds
+}
+
+function hideSignUpAlert () {
+    $(".account-popups p.alert").hide();
+}
+
+// -----------------------------------------------------------------------------
 // Sign Up - Popup Visibility
 // -----------------------------------------------------------------------------
 function showSignUpPopup () {
@@ -117,6 +135,12 @@ function showSignUpPopup () {
 $(".account-popups .window#sign-up form").on("submit", function (event) {
     event.preventDefault();
     disablePopupCancel = true;
+    var password1 = $(".account-popups #sign-up input[name=password]").val();
+    var password2 = $(".account-popups #sign-up input[name=password-repeat]").val();
+    if (password1 != password2) {
+        signUpAlert("Passwords do not match");
+        disablePopupCancel = false;
+    }
 });
 
 // -----------------------------------------------------------------------------
