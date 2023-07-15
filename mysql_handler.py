@@ -43,6 +43,13 @@ class Connection:
         self._connect() # Establish database connection
     
     def _connect(self):
+        """
+        Method to establish a database connection. Called when an object is
+        instantiated and whenever a query is made, and the database has 
+        terminated the connection.
+        
+        Does not have a return value.
+        """
         self._connection = mysql.connector.connect(
             user=self._user,
             password=self._password,
@@ -53,6 +60,17 @@ class Connection:
         self._cursor = self._connection.cursor()
     
     def query(self, query):
+        """
+        Method to query the connected database.
+        
+        query -> string
+            The MySQL query that is to be performed on the database that the
+            object is connecting to.
+        
+        Returns a list of tuples - each tuple is one row in the response from
+        the database. An empty list means that the query result was an empty 
+        set.
+        """
         try:
             self._cursor.execute(query)
         except mysql.connectorError:
@@ -63,4 +81,11 @@ class Connection:
         return self._cursor.fetchall()
     
     def __del__(self):
+        """
+        Custom destructor for the connection class. Closes the connection with
+        the databse whenever the program is terminated or the instance is 
+        deleted manually.
+        
+        Does not have a return value
+        """
         self._connection.close()
