@@ -1,4 +1,9 @@
 # ------------------------------------------------------------------------------
+# Standard Python library imports
+# ------------------------------------------------------------------------------
+import time
+
+# ------------------------------------------------------------------------------
 # Third party Python library imports
 # ------------------------------------------------------------------------------
 import mysql.connector
@@ -41,6 +46,7 @@ class Connection:
         self._schema = database_schema
         self._host = host
         self._connect() # Establish database connection
+        self._query_time = None
     
     def _connect(self):
         """
@@ -59,7 +65,7 @@ class Connection:
         
         self._cursor = self._connection.cursor()
     
-    def query(self, query, testing=False):
+    def query(self, query):
         """
         Method to query the connected database.
         
@@ -67,29 +73,48 @@ class Connection:
             The MySQL query that is to be performed on the database that the
             object is connecting to.
         
-        
-        testing -> boolean
-            Specifies whether the query is for testing. If it is, any errors
-            from the query still occur, but any changes to the database are not
-            applied if is True.
-            
-            Defaults to False.
-        
         Returns a list of tuples - each tuple is one row in the response from
         the database. An empty list means that the query result was an empty 
         set.
         """
+        
+        start_time = time.time() # Changes this first incase multi-threading is
+            # used in the future - a query may be made in a different thread.
+        self._query_time = None
+        
         try:
             self._cursor.execute(query)
-        except mysql.connectorError:
+        except mysql.connector.Error:
             self._connect() # Some databases specifies connections close after
                 # certain amount of time inactive. This repoens the connection
                 # if a timeout occurs
         
-        if not testing: # If it is testing, it has does not affect the db
-            self._connection.commit() # Applies changes from the query to the db
+        try:
+            result = self._cursor.fetchall() # Needs to come before the if 
+                # statement as otherwise can result in 'unread result found' error
+        except mysql.connector.errors.InterfaceError:
+            result = [] # Incase the method does not provide any result, like
+                # INSERT
+            
+        self._connection.commit() # Applies changes from the query to the db
+        
+        self._query_time = time.time() - start_time
 
-        return self._cursor.fetchall()
+        return result # Use tuples as they are faster
+    
+    
+    @property
+    def query_time(self):
+        """
+        Getter method for the query time of the previous query.
+
+        Time includes processing within the class, such as committing changes.
+        
+        Returns a floating point number for the time in seconds of the previous
+        query, or None if a query has not yet been made, or there is one in
+        progress.
+        """
+        return self._query_time
     
     def __del__(self):
         """
@@ -99,4 +124,5 @@ class Connection:
         
         Does not have a return value
         """
+        self._cursor.close()
         self._connection.close()
