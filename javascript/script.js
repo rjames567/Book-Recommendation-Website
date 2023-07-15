@@ -140,6 +140,26 @@ $(".account-popups .window#sign-up form").on("submit", function (event) {
     if (password1 != password2) {
         signUpAlert("Passwords do not match");
         disablePopupCancel = false;
+    } else {
+        $.ajax({
+            type: "POST",
+            url: "cgi-bin/sign_up",
+            success: function (result) {
+                if (result["session_id"]) {
+                    sessionID = result["session_id"];
+                    hideAllSignPopups();
+                } else {
+                    signUpAlert(result["message"]);
+                }
+            },
+            error: function () {
+                // Error should only run for server-side errors
+                signUpAlert("Something went wrong");
+            },
+            complete: function () {
+                disablePopupCancel = false;
+            }
+        });
     }
 });
 
