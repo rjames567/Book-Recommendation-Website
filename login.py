@@ -165,6 +165,7 @@ class session:
             # Set expiry date to one day after it has been last used
 
         if datetime.datetime.now() > expiry_datetime:
+            session.close(session_id)
             raise SessionExpiredError(session_id)
         else:
             return res[0]
