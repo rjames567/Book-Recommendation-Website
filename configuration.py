@@ -150,7 +150,7 @@ class Configuration:
                             external_re.group(3),
                             line_num+1
                         )
-                    else:
+                    elif not(re.match("\s*", line)):
                         raise ConfigIndentationError(line_num+1)
         self._config = hierarchy
 
