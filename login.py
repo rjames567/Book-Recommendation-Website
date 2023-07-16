@@ -54,6 +54,14 @@ class UserExistsError (Exception):
         message = f"User already exists with the username {username}."
         super().__init__(message)
 
+class InvalidUserCredentialsError (Exception):
+    """
+    Exception for where a user's provided username and password are not valid.
+    """
+    def __init__(self, username):
+        message = f"Incorrect username or password entered for {username}"
+        super().__init__(message)
+
 # ------------------------------------------------------------------------------
 # Password hashing
 # ------------------------------------------------------------------------------
@@ -90,8 +98,9 @@ class account:
         password -> string
             The password that is to checked
 
-        Returns a boolean value, True, if it is a valid username in the
-        database, False if it is not.
+        Raises InvalidUserCredentialsError if the credentials are incorrect.
+
+        Returns an integer value for the
         """
         entered_password = hash(password)
         query_result = connection.query(
@@ -101,8 +110,11 @@ class account:
             """.format(username)
         )
 
-        return not((len(query_result) == 0)
-            or (query_result[0][0] != entered_password))
+        if not((len(query_result) == 0)
+                or (query_result[0][0] != entered_password)):
+            raise InvalidUserCredentialsError(username)
+        else:
+            return account.get_user_id(username)
 
     def create_user(first_name, surname, username, password):
         """
