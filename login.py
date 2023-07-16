@@ -1,6 +1,7 @@
 # ------------------------------------------------------------------------------
 # Standard Python library imports
 # ------------------------------------------------------------------------------
+import datetime
 import hashlib
 import secrets
 import time
@@ -29,6 +30,18 @@ _number_hash_passes = config.get("passwords number_hash_passes")
 _hashing_salt = config.get("passwords salt") # Stored in the config as binary
 _hashing_algorithm = config.get("passwords hashing_algorithm")
 _token_size = config.get("session_id_length")
+
+# ------------------------------------------------------------------------------
+# Custom exceptions
+# ------------------------------------------------------------------------------
+class SessionExpiredError (Exception):
+    """
+    Exception for when a client is using a session that has expired, and is no
+    longer valid
+    """
+    def __init__(self, session_id):
+        message = f"Session id '{session_id}' has expired"
+        super().__init__(message)
 
 # ------------------------------------------------------------------------------
 # Password hashing
@@ -111,10 +124,10 @@ class session:
         # the randomly generated string for speed.
         # https://docs.python.org/3/library/secrets.html#:~:text=it%20is%20believed%20that%2032%20bytes%20(256%20bits)%20of%20randomness%20is%20sufficient%20for%20the%20typical%20use%2Dcase%20expected%20for%20the%20secrets%20module
 
-        # Probability of getting duplicates is very low, and gets lower as the size
-        # of the string increases. It would also need to be within 1 second, as
-        # time.time() is added to the end which is the number of seconds since the
-        # epoch.
+        # Probability of getting duplicates is very low, and gets lower as the
+        # size of the string increases. It would also need to be within 1
+        # second, as time.time() is added to the end which is the number of
+        # seconds since the epoch.
 
         connection.query(
             """
@@ -133,3 +146,29 @@ class session:
             WHERE client_id="{}";
             """.format(session_id)
         )
+
+    def get_user_id(session_id):
+        res = connection.query(
+            """
+            SELECT user_id, date_added FROM sessions
+            WHERE client_id="{}";
+            """.format(session_id)
+        )
+        if len(res) == 0:
+            raise SessionExpiredError(session_id) # If there is no entries
+                # it must have been deleted by a maintenance script, as it had
+                # expired.
+        else:
+            res = res[0] # Gets first element result from list - should only be
+                # one result
+        expiry_datetime = res[1] + datetime.timedelta(days=1)
+            # Set expiry date to one day after it has been last used
+
+        if datetime.datetime.now() > expiry_datetime:
+            raise SessionExpiredError(session_id)
+        else:
+            return res[0]
+
+        # Does not update the session time - Excluded from this as any request
+        # from the client indicates that is still active, regardless of whether
+        # the user id is needed to carry out the required process.
