@@ -61,7 +61,5 @@ class account:
             """.format(username)
         )
 
-        if (len(query_result) == 0) or (query_result[0][0] != entered_password):
-            return False
-        else:
-            return True
+        return not((len(query_result) == 0)
+            or (query_result[0][0] != entered_password))
