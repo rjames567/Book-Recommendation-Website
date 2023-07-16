@@ -124,5 +124,4 @@ class Connection:
 
         Does not have a return value
         """
-        self._cursor.close()
         self._connection.close()
