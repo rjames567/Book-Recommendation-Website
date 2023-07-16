@@ -39,7 +39,6 @@ def hash(password):
 
     Returns a string.
     """
-    print(_hashing_salt)
     result = hashlib.pbkdf2_hmac(
         _hashing_algorithm,
         password.encode("utf-8"), # Needs to be in binary
@@ -55,10 +54,6 @@ def hash(password):
 class account:
     def check_credentials(username, password):
         entered_password = hash(password)
-        print("""
-            SELECT password_hash FROM users
-            WHERE username="{}";
-            """.format(username))
         query_result = connection.query(
             """
             SELECT password_hash FROM users
@@ -66,7 +61,6 @@ class account:
             """.format(username)
         )
 
-        print(query_result)
         if (len(query_result) == 0) or (query_result[0][0] != entered_password):
             return False
         else:
