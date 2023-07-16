@@ -172,3 +172,11 @@ class session:
         # Does not update the session time - Excluded from this as any request
         # from the client indicates that is still active, regardless of whether
         # the user id is needed to carry out the required process.
+
+    def close(session_id):
+        connection.query(
+            """
+            DELETE FROM sessions
+            WHERE client_id="{}";
+            """.format(session_id)
+        )
