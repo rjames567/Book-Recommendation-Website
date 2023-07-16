@@ -69,6 +69,19 @@ def hash(password):
 # ------------------------------------------------------------------------------
 class account:
     def check_credentials(username, password):
+        """
+        Method to check whether given user credentials are stored in the
+        database.
+
+        username -> string
+            The username that is to be checked
+
+        password -> string
+            The password that is to checked
+
+        Returns a boolean value, True, if it is a valid username in the
+        database, False if it is not.
+        """
         entered_password = hash(password)
         query_result = connection.query(
             """
@@ -81,6 +94,27 @@ class account:
             or (query_result[0][0] != entered_password))
 
     def create_user(first_name, surname, username, password):
+        """
+        Method to create a new user in the database.
+
+        first_name -> string
+            The first name of the new user
+
+        surname -> string
+            The surname of the new user
+
+        username -> string
+            The unique identifier for the new user
+
+        password -> string
+            The password for the new user
+
+        Raises UserExistsError, if the username provided already is in the
+        database, as usernames must be unique.
+
+        Returns a boolean - True if it is created successfully, False if it is
+        not
+        """
         query_result = connection.query(
             """
             SELECT username FROM users
@@ -105,6 +139,14 @@ class account:
             return True
 
     def get_user_id(username):
+        """
+        Method to get the corresponding id of the given username.
+
+        username -> string
+            The target username to get the id of
+
+        Returns an integer.
+        """
         query_result = connection.query(
             """
             SELECT user_id FROM users
@@ -118,7 +160,18 @@ class account:
 # Session Class
 # ------------------------------------------------------------------------------
 class session:
-    def create(user_id):
+    def create_session(user_id):
+        """
+        Method to create new session. Adds the new session token to the
+        database, which can the be queries using it, to get the corresponding
+        user id.
+
+        user_id -> integer
+            The user id for the new session
+
+        Return a string, which is the session token, to be sent to the client
+        after login.
+        """
         token = secrets.token_bytes(_token_size).hex() + str(time.time())
         # Generates a random string, and adds time to reduce required size of
         # the randomly generated string for speed.
@@ -138,6 +191,15 @@ class session:
         return token
 
     def update_time(session_id):
+        """
+        Method to update the stored session time to the current time, so that
+        the timeout for the session is reset.
+
+        session_id -> string
+            The session id for which the creation time needs to be ipdated for
+
+        Does not have a return value
+        """
         connection.query(
             """
             UPDATE sessions
@@ -148,6 +210,18 @@ class session:
         )
 
     def get_user_id(session_id):
+        """
+        Method to get the corresponding user_id to the session id passed in. It
+        checks whether the session has expired, and if it has expired, it raises
+        a SessionExpiredError. If it has not, it returns the user id.
+
+        When the session has expired, it removes the entry from the database.
+
+        session_id -> string
+            The session id to get corresponding user id of
+
+        Returns an integer of the user id.
+        """
         res = connection.query(
             """
             SELECT user_id, date_added FROM sessions
@@ -175,6 +249,15 @@ class session:
         # the user id is needed to carry out the required process.
 
     def close(session_id):
+        """
+        Method to close an open session using the session id, which is has been sent
+        to the client. It should be called when the browser/tab is closed.
+
+        session_id -> string
+            The session id which should be closed
+
+        Does not have a return value.
+        """
         connection.query(
             """
             DELETE FROM sessions
