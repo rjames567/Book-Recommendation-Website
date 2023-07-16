@@ -87,3 +87,13 @@ class account:
                 )
             )
             return True
+
+    def get_user_id(username):
+        query_result = connection.query(
+            """
+            SELECT user_id FROM users
+            WHERE username="{}";
+            """.format(username)
+        )
+
+        return query_result[0][0]
