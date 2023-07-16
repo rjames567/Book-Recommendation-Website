@@ -123,3 +123,13 @@ class session:
         )
 
         return token
+
+    def update_time(session_id):
+        connection.query(
+            """
+            UPDATE sessions
+            SET
+                date_added=NOW()
+            WHERE client_id="{}";
+            """.format(session_id)
+        )
