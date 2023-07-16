@@ -2,6 +2,8 @@
 # Standard Python library imports
 # ------------------------------------------------------------------------------
 import hashlib
+import secrets
+import time
 
 # ------------------------------------------------------------------------------
 # Project imports
@@ -26,6 +28,7 @@ connection = mysql_handler.Connection(
 _number_hash_passes = config.get("passwords number_hash_passes")
 _hashing_salt = config.get("passwords salt") # Stored in the config as binary
 _hashing_algorithm = config.get("passwords hashing_algorithm")
+_token_size = config.get("session_id_length")
 
 # ------------------------------------------------------------------------------
 # Password hashing
@@ -97,3 +100,26 @@ class account:
         )
 
         return query_result[0][0]
+
+# ------------------------------------------------------------------------------
+# Session Class
+# ------------------------------------------------------------------------------
+class session:
+    def create(user_id):
+        token = secrets.token_bytes(_token_size).hex() + str(time.time())
+        # Generates a random string, and adds time to reduce required size of
+        # the randomly generated string for speed.
+        # https://docs.python.org/3/library/secrets.html#:~:text=it%20is%20believed%20that%2032%20bytes%20(256%20bits)%20of%20randomness%20is%20sufficient%20for%20the%20typical%20use%2Dcase%20expected%20for%20the%20secrets%20module
+
+        # Probability of getting duplicates is very low, and gets lower as the size
+        # of the string increases. It would also need to be within 1 second, as
+        # time.time() is added to the end which is the number of seconds since the
+        # epoch.
+
+        connection.query(
+            """
+            INSERT INTO sessions (client_id, user_id) VALUES ({token}, {user_id});
+            """.format(token=token, user_id=user_id)
+        )
+
+        return token
