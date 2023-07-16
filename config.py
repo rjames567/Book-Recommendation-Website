@@ -21,6 +21,11 @@ class ConfigIndentationError (Exception):
         message = f"Error at line {line}: Unexpected Indentation"
         super().__init__(message)
 
+class ConfigVariableNotFound (Exception):
+    def __init__(self, variable, file):
+        message = f"Configuration file '{file}' does not contain the variable '{variable}'"
+        super().__init__(message)
+
 # ------------------------------------------------------------------------------
 # Classes
 # ------------------------------------------------------------------------------
@@ -94,3 +99,16 @@ class Config:
                     else:
                         raise ConfigIndentationError(line_num+1)
         self._config = heirachy
+
+    def get(self, query_string):
+        query_arr = query_string.split()
+        if query_arr[0] in self._config.keys():
+            res = self._config[query_arr[0]]
+            if len(query_arr) == 2:
+                if query_arr[1] in res.keys():
+                    res = res[query_arr[1]]
+                else:
+                    raise ConfigVariableNotFound(query_string, self._filename)
+        else:
+            raise ConfigVariableNotFound(query_string, self._filename)
+        return res
