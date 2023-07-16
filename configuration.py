@@ -127,17 +127,16 @@ class Configuration:
         hierarchy = {}
 
         for line_num, line in enumerate(contents):
-            line = line.lower()
             heading_re = re.match("(\w+):\s*", line)
             if heading_re:
-                heading = heading_re.group(1)
+                heading = heading_re.group(1).lower()
                 hierarchy[heading] = {}
             else:
                 entry_re = re.match("\t|\s{4}(\w+)\s+([\w-]+)\s*:\s*(.+)", line)
                 if heading is not None:
                     if entry_re:
-                        hierarchy[heading][entry_re.group(1)] = self._cast_to_type(
-                            entry_re.group(2),
+                        hierarchy[heading][entry_re.group(1).lower()] = self._cast_to_type(
+                            entry_re.group(2).lower(),
                             entry_re.group(3),
                             line_num+1
                         )
@@ -146,8 +145,8 @@ class Configuration:
                 else:
                     external_re = re.match("(\w+)\s+([\w-]+)\s*:\s*(.+)", line)
                     if external_re:
-                        hierarchy[external_re.group(1)] = self._cast_to_type(
-                            external_re.group(2),
+                        hierarchy[external_re.group(1).lower()] = self._cast_to_type(
+                            external_re.group(2).lower(),
                             external_re.group(3),
                             line_num+1
                         )
