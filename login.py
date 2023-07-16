@@ -48,3 +48,26 @@ def hash(password):
     )
 
     return result.hex() # Hash is returned as a hex string, so converts back
+
+# ------------------------------------------------------------------------------
+# Account Class
+# ------------------------------------------------------------------------------
+class account:
+    def check_credentials(username, password):
+        entered_password = hash(password)
+        print("""
+            SELECT password_hash FROM users
+            WHERE username="{}";
+            """.format(username))
+        query_result = connection.query(
+            """
+            SELECT password_hash FROM users
+            WHERE username="{}";
+            """.format(username)
+        )
+
+        print(query_result)
+        if (len(query_result) == 0) or (query_result[0][0] != entered_password):
+            return False
+        else:
+            return True
