@@ -63,3 +63,27 @@ class account:
 
         return not((len(query_result) == 0)
             or (query_result[0][0] != entered_password))
+
+    def create_user(first_name, surname, username, password):
+        query_result = connection.query(
+            """
+            SELECT username FROM users
+            WHERE username="{}"
+            """.format(username)
+        )
+        if len(query_result):
+            return False
+        else:
+            connection.query(
+                """
+                INSERT INTO users (first_name, surname, username, password_hash)
+                VALUES ("{first_name}", "{surname}", "{username}", "{password}");
+                """.format(
+                    first_name=first_name,
+                    surname=surname,
+                    username=username,
+                    password=hash(password) # Password must be hashed before
+                        # storing in the database.
+                )
+            )
+            return True
