@@ -43,6 +43,17 @@ class SessionExpiredError (Exception):
         message = f"Session id '{session_id}' has expired"
         super().__init__(message)
 
+class UserExistsError (Exception):
+    """
+    Exception for when a user account already exists with a specific username,
+    and it has been attempted to add a second.
+
+    Usernames must be unique in the database.
+    """
+    def __init__(self, username):
+        message = f"User already exists with the username {username}."
+        super().__init__(message)
+
 # ------------------------------------------------------------------------------
 # Password hashing
 # ------------------------------------------------------------------------------
@@ -112,8 +123,7 @@ class account:
         Raises UserExistsError, if the username provided already is in the
         database, as usernames must be unique.
 
-        Returns a boolean - True if it is created successfully, False if it is
-        not
+        Returns an integer, which is the user id of the new user.
         """
         query_result = connection.query(
             """
@@ -122,7 +132,7 @@ class account:
             """.format(username)
         )
         if len(query_result):
-            return False
+            raise UserExistsError(username)
         else:
             connection.query(
                 """
@@ -136,7 +146,15 @@ class account:
                         # storing in the database.
                 )
             )
-            return True
+
+            user_id = connection.query(
+                """
+                SELECT user_id FROM users
+                WHERE username="{}"
+                """.format(username)
+            )[0][0]
+
+            return user_id
 
     def get_user_id(username):
         """
