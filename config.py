@@ -127,6 +127,7 @@ class Configuration:
         hierarchy = {}
 
         for line_num, line in enumerate(contents):
+            line = line.lower()
             heading_re = re.match("(\w+):\s*", line)
             if heading_re:
                 heading = heading_re.group(1)
@@ -163,8 +164,14 @@ class Configuration:
                 Header Variable
                 or
                 Variable
-            Note that it is case sensitive.
+
+        Note that it is not case sensitive
+
+        Returns the value stored in the specified variable, with the specified
+        datatype.
         """
+        query_string = query_string.lower()
+
         query_arr = query_string.split()
         if query_arr[0] in self._config.keys():
             res = self._config[query_arr[0]]
