@@ -118,7 +118,7 @@ class session:
 
         connection.query(
             """
-            INSERT INTO sessions (client_id, user_id) VALUES ({token}, {user_id});
+            INSERT INTO sessions (client_id, user_id) VALUES ("{token}", {user_id});
             """.format(token=token, user_id=user_id)
         )
 
