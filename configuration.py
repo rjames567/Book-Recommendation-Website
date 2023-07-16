@@ -182,3 +182,7 @@ class Configuration:
         else:
             raise ConfigVariableNotFound(query_string, self._filename)
         return res
+
+
+
+# Similar to YAML - but with more datatypes - binary strings
