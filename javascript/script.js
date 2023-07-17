@@ -144,6 +144,12 @@ $(".account-popups .window#sign-up form").on("submit", function (event) {
         $.ajax({
             type: "POST",
             url: "cgi-bin/account/sign_up",
+            data: JSON.stringify({
+                first_name: $(".account-popups #sign-up input[name=first-name]").val(),
+                surname: $(".account-popups #sign-up input[name=surname]").val(),
+                username: $(".account-popups #sign-up input[name=username]").val(),
+                password: password1
+            }),
             success: function (result) {
                 if (result["session_id"]) {
                     sessionID = result["session_id"];
