@@ -21,9 +21,12 @@ class application:
         Does not have a return value
         """
         path = environ["PATH_INFO"]
-        application = re.match("/[\w-]+/([\w-]+)", path).group(1) # Should not
-            # include dashes in result, but included so it does not break if it
-            # does.
+        temp = re.match("/[\w-]+/([\w-]+)", path) # Should not include dashes in
+            # in result, but included so it does not break if it does.
+        if temp:
+            application = temp.group(1)
+        else:
+            application = None
         environ["TARGET_APPLICATION"] = application # Will change the dictionary
             # passed.
 
@@ -42,7 +45,11 @@ class application:
         Does not have a return value
         """
         path = environ["PATH_INFO"]
-        sub = re.match("/[\w-]+/[\w-]+/([\w-]+)", path).group(1) # Should not
+        temp = re.match("/[\w-]+/[\w-]+/([\w-]+)", path) # Should not
             # include dashes in result, but included so it does not break if it
             # does.
+        if temp:
+            sub = temp.group(1)
+        else:
+            sub = None
         environ["APPLICATION_PROCESS"] = sub
