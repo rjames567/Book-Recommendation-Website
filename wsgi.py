@@ -23,6 +23,9 @@ class Middleware:
             case "account":
                 application = AccountApplication(self.environ, self.start)
                 yield application()
+            case "my_books":
+                application = MyBooksApplication(self.environ, self.start)
+                yield application()
             case _:
                 response_headers = [("Content-Type", "text/plain")]
                 self.start("200 OK", response_headers)
@@ -126,4 +129,29 @@ class AccountApplication (Application):
                     ("Content-Length", str(len(response)))
                 ]
                 self.start("200 OK", response_headers)
+            case _:
+                response_headers = [("Content-Type", "text/plain")]
+                self.start("200 OK", response_headers)
+                response = "Page Not Found"
+        return response.encode("utf-8")
+
+# ------------------------------------------------------------------------------
+# Account application
+# ------------------------------------------------------------------------------
+class MyBooksApplication (Application):
+    def __init__(self, environ, start_response):
+        super().__init__(environ, start_response)
+
+    def __call__(self):
+        environ_manipulation.application.add_sub_target(self.environ)
+        response_headers = [
+            ("Content-Type", "test/plain"),
+            ("Content-Length", str(len("This is the response")))
+        ]
+        match self.environ["APPLICATION_PROCESS"]:
+            case _:
+                response_headers = [("Content-Type", "text/plain")]
+                self.start("200 OK", response_headers)
+                response = "Page Not Found"
+        self.start("200 OK", response_headers)
         return response.encode("utf-8")
