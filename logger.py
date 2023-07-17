@@ -28,6 +28,7 @@ class Logging:
         self._output_file.write(start)
 
     def output_message(self, message):
+        message = str(message)
         now = datetime.datetime.now()
         string = "[" + now.strftime("%d-%m-%Y %H:%M:%S") + "] "
         length = len(string)
