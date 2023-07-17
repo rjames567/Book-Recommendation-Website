@@ -2,6 +2,7 @@
 // Global Variables/Constants
 // -----------------------------------------------------------------------------
 var disablePopupCancel = false;
+var sessionID = null; // Easier to use, allows for if (sessionID)
 
 // -----------------------------------------------------------------------------
 // String Manipulation
@@ -240,7 +241,14 @@ $("header a#sign-in-button").click(function () {
 // -----------------------------------------------------------------------------
 $("header a#sign-out-button").click(function () {
     sessionID = null;
-    changeAccountButtons();
+    changeAccountButtons(); // Success does not matter - just improves database
+        // maintainability, any non-cleared sessions will be deleted through a
+        // maintenance script
+    $.ajax({
+        type: "POST",
+        url: "cgi-bin/account/sign_out",
+        data: sessionID
+    });
 });
 
 // -----------------------------------------------------------------------------
