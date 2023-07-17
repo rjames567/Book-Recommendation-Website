@@ -270,11 +270,16 @@ $("header a#sign-out-button").click(function () {
 // Reading lists
 // -----------------------------------------------------------------------------
 function loadMyBooks () {
+    // Get list titles
     $.ajax({
         type: "POST",
-        url: "cgi-bin/reading_lists/get_lists",
+        url: "cgi-bin/my_books/get_lists",
         data: sessionID,
-        success: function () {
+        success: function (result) {
+            console.log(result);
+        },
+        error: function (jqXHR) {
+            console.log(jqXHR);
         }
     });
 }
