@@ -44,6 +44,10 @@ function switchPageContent (elem, linkName) {
     if (elem) {
         linkName = $(elem).html();
     }
+    if (linkName == "") {
+        linkName = "Home" // If it is blank, it must be referring to the Home
+            // page.
+    }
     var file = "html/" + linkName.toLowerCase().replace(" ", "_") + ".html";
     $.ajax({
         type: "GET",
