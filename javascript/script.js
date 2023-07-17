@@ -151,6 +151,8 @@ $(".account-popups .window#sign-up form").on("submit", function (event) {
                 password: password1
             }),
             success: function (result) {
+                disablePopupCancel = false; // Cannot go in complete, as it runs
+                    // after success, so hiding the popup does not work.
                 if (result["session_id"]) {
                     sessionID = result["session_id"];
                     hideAllSignPopups();
@@ -161,8 +163,6 @@ $(".account-popups .window#sign-up form").on("submit", function (event) {
             error: function () {
                 // Error should only run for server-side errors
                 signUpAlert("Something went wrong");
-            },
-            complete: function () {
                 disablePopupCancel = false;
             }
         });
