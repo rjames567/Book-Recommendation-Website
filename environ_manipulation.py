@@ -15,6 +15,9 @@ class application:
         Example path: /application_name/sub_process
             Adds TARGET_APPLICATION, with value application_name
 
+        Example path: /
+            Adds TARGET_APPLICATION, with value None.
+
         Modifies the environ dictionary, and adds "TARGET_APPLICATION" to it.
         This can be accessed directly, and does not need to be reassigned.
 
@@ -36,8 +39,11 @@ class application:
         target process within the sub application, as dictated by the second
         part of the URI.
 
-        Example path: /application_name/sub_process
+        Example path: /application_name/sub_process/
             Adds APPLICATION_PROCESS, with value sub_process
+
+        Example path: /application_name/
+            Adds APPLICATION_PROCESS, with value None.
 
         Modifies the environ dictionary, and adds "APPLICATION_PROCESS" to it.
         This can be accessed directly, and does not need to be reassigned.
