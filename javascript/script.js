@@ -143,7 +143,7 @@ $(".account-popups .window#sign-up form").on("submit", function (event) {
     } else {
         $.ajax({
             type: "POST",
-            url: "cgi-bin/sign_up",
+            url: "cgi-bin/account/sign_up",
             success: function (result) {
                 if (result["session_id"]) {
                     sessionID = result["session_id"];
