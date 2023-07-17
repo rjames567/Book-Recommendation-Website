@@ -221,6 +221,7 @@ $(".account-popups .window#sign-in form").on("submit", function (event) {
                 changeAccountButtons(); // Change before it can be seen to
                     // appear smoother
                 hideAllSignPopups();
+
             } else {
                 signUpAlert(result["message"]);
             }

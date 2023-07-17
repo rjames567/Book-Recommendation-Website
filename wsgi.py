@@ -10,17 +10,6 @@ import environ_manipulation
 import login
 
 # ------------------------------------------------------------------------------
-# Functions
-# ------------------------------------------------------------------------------
-def get_post_content(environ):
-    try:
-        body_size = int(environ["CONTENT_LENGTH"])
-    except ValueError:
-        body_size = 0
-
-    return environ["wsgi.input"].read(body_size).decode("utf-8")
-
-# ------------------------------------------------------------------------------
 # Middleware
 # ------------------------------------------------------------------------------
 class Middleware:
@@ -40,12 +29,27 @@ class Middleware:
                 yield "Page Not Found".encode("utf-8")
 
 # ------------------------------------------------------------------------------
-# Sub-Applications
+# Application base class
 # ------------------------------------------------------------------------------
-class AccountApplication:
+class Application:
     def __init__(self, environ, start_response):
         self.environ = environ
         self.start = start_response
+
+    def get_post_data(self):
+        try:
+            body_size = int(self.environ["CONTENT_LENGTH"])
+        except ValueError:
+            body_size = 0
+
+        return self.environ["wsgi.input"].read(body_size).decode("utf-8")
+
+# ------------------------------------------------------------------------------
+# Account application
+# ------------------------------------------------------------------------------
+class AccountApplication (Application):
+    def __init__(self, environ, start_response):
+        super().__init__(environ, start_response)
 
     def create_account(self, json_response):
         response_dict = json.loads(json_response)
@@ -97,7 +101,7 @@ class AccountApplication:
         environ_manipulation.application.add_sub_target(self.environ)
         match self.environ["APPLICATION_PROCESS"]:
             case "sign_up":
-                post_content = get_post_content(self.environ)
+                post_content = self.get_post_data()
                 response = self.create_account(post_content)
                 response_headers = [
                     ("Content-Type", "application/json"),
@@ -106,7 +110,7 @@ class AccountApplication:
                 self.start("200 OK", response_headers)
 
             case "sign_in":
-                post_content = get_post_content(self.environ)
+                post_content = self.get_post_data()
                 response = self.sign_in(post_content)
                 response_headers = [
                     ("Content-Type", "application/json"),
@@ -114,7 +118,7 @@ class AccountApplication:
                 ]
                 self.start("200 OK", response_headers)
             case "sign_out":
-                post_content = get_post_content(self.environ)
+                post_content = self.get_post_data()
                 response = self.sign_out(post_content) # Response is for
                     # completeness
                 response_headers = [
