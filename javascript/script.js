@@ -67,6 +67,7 @@ function switchPageContent (elem, linkName) {
             }// Navigation links are always updated
                 // regardless of success. Improves appeared responsiveness
             changePageURI(linkName);
+            currentPageFunction(linkName);
         }
     });
 }
@@ -81,6 +82,14 @@ function changeActiveLink (elem, linkContent) {
                 $(this).addClass("active");
             }
         });
+    }
+}
+
+function currentPageFunction (link) {
+    switch (link) {
+        case "My Books":
+            loadMyBooks();
+            break;
     }
 }
 
@@ -256,6 +265,19 @@ $("header a#sign-out-button").click(function () {
         // maintainability, any non-cleared sessions will be deleted through a
         // maintenance script
 });
+
+// -----------------------------------------------------------------------------
+// Reading lists
+// -----------------------------------------------------------------------------
+function loadMyBooks () {
+    $.ajax({
+        type: "POST",
+        url: "cgi-bin/reading_lists/get_lists",
+        data: sessionID,
+        success: function () {
+        }
+    });
+}
 
 // -----------------------------------------------------------------------------
 // window onload handlers
