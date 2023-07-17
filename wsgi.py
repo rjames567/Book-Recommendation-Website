@@ -89,6 +89,10 @@ class AccountApplication:
 
         return json.dumps(result_dict)
 
+    def sign_out(self, session_id):
+        login.session.close(session_id)
+        return "true" # Response does not matter - client does not wait for one.
+
     def __call__(self):
         environ_manipulation.application.add_sub_target(self.environ)
         match self.environ["APPLICATION_PROCESS"]:
@@ -106,6 +110,15 @@ class AccountApplication:
                 response = self.sign_in(post_content)
                 response_headers = [
                     ("Content-Type", "application/json"),
+                    ("Content-Length", str(len(response)))
+                ]
+                self.start("200 OK", response_headers)
+            case "sign_out":
+                post_content = get_post_content(self.environ)
+                response = self.sign_out(post_content) # Response is for
+                    # completeness
+                response_headers = [
+                    ("Content-Type", "test/plain"),
                     ("Content-Length", str(len(response)))
                 ]
                 self.start("200 OK", response_headers)
