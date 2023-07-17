@@ -99,6 +99,16 @@ $(".account-popups button.cancel-button").click(function () {
     hideAllSignPopups();
 });
 
+function changeAccountButtons () {
+    if (sessionID) {
+        $("header nav.top ul li.account-enter").hide();
+        $("header nav.top ul li.account-exit").show();
+    } else {
+        $("header nav.top ul li.account-enter").show();
+        $("header nav.top ul li.account-exit").hide();
+    }
+}
+
 $(window).click(function (event) {
     if ([$("#sign-up")[0],  $("#sign-in")[0]].includes(event.target)
             && !disablePopupCancel) {
@@ -155,6 +165,8 @@ $(".account-popups .window#sign-up form").on("submit", function (event) {
                     // after success, so hiding the popup does not work.
                 if (result["session_id"]) {
                     sessionID = result["session_id"];
+                    changeAccountButtons(); // Change before it can be seen to
+                        // appear smoother
                     hideAllSignPopups();
                 } else {
                     signUpAlert(result["message"]);
