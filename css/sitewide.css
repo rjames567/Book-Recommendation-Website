@@ -270,3 +270,184 @@ body > footer {
   clear: both;
   display: table;
 }
+
+/* -------------------------------------------------------------------------- */
+/* Reading list                                                               */
+/* -------------------------------------------------------------------------- */
+.container {
+  min-height: 100%;
+  display: flex;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Reading list - Navigation                                                  */
+/* -------------------------------------------------------------------------- */
+.container .content {
+  margin: 0 0 10px 10px;
+  padding: 0;
+}
+
+.container .navigation {
+  background-color: var(--blue);
+  border: solid 3px var(--blue);
+  margin: 10px 0;
+  min-width: 160px; /* Any longer will wrap. Fits for default lists*/
+  max-width: 160px; /* Ensure that width doesn't increase either */
+}
+
+.container ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.container ul li {
+  text-decoration: none;
+}
+
+.container ul li a {
+  display: block;
+  color: white;
+  padding: 15px 15px;
+  border-bottom: solid 1px white;
+}
+
+.container ul li a:hover, .container ul li a.active {
+  background-color: white;
+  color: var(--blue);
+  padding: 15px 15px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Reading list - books                                                       */
+/* -------------------------------------------------------------------------- */
+.book {
+  padding-top: 10px;
+}
+
+.book:last-child hr {
+  display: none;
+}
+
+.book .content {
+  display: flex;
+  padding-bottom: 10px;
+}
+
+.book .main-content {
+  padding: 0 20px;
+}
+
+.book .cover img{
+  padding: 20px 0;
+  width: 150px;
+}
+
+.book .title {
+  display: block;
+  font-size: 25px;
+  font-weight: bold;
+  padding-bottom: 5px;
+}
+
+.book .author {
+  display: block;
+  font-size: 20px;
+}
+
+.book p {
+  font-size: 13px;
+  padding: 0;
+}
+
+.book .rating {
+  font-size: 20px;
+  color: var(--yellow);
+}
+
+.book .rating-container {
+  margin-left: auto;
+}
+
+.book .top-row-container {
+  display: flex;
+  align-items: center;
+}
+
+.book .book-info {
+  display: block;
+  font-size: 13px;
+  padding-bottom: 5px;
+}
+
+.book .book-info:last-child {
+  padding-bottom: 0;
+}
+
+.book .right-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: fit-content; /* Sets width to the width of content - over use of width so it is changes if font size changes. Min-width as flex does not respect width */
+}/* Date will always be the same width, so each book will look the same.*/
+
+.book .synopsis {
+  height: 220px;
+  overflow: hidden; /* Remove overflow outside div - prevent extra white space*/
+  -webkit-mask-image: linear-gradient(180deg, #000 70%, transparent); /* Fade to transparent over distance */
+}
+
+.book .about-review {
+  padding: 0 10px;
+}
+
+.book .num-review {
+  float: right;
+}
+
+.book .right-content .actions {
+  height: fit-content;
+}
+
+.book .right-content .actions button {
+  font-size: 13px;
+  padding: 5px 10px;
+  border: none;
+}
+
+.book button.delete {
+  float: right;
+  color: white;
+  background-color: var(--red);
+  font-size: 20px;
+  height: 40px;
+  width: 40px;
+}
+
+.book button.read {
+  color: white;
+  background-color: var(--blue);
+  height: 40px;
+}
+
+.book button.read i {
+  padding-right: 5px; /* Add spacing between plus and text */
+}
+
+.book button.read:hover {
+  background-color: var(--light-blue);
+}
+
+.book button.delete:hover {
+  background-color: var(--light-red);
+}
+
+.book ol {
+  margin: 0;
+  list-style-type: "-    ";
+}
+
+.book li {
+  font-size: 13px;
+  padding-bottom: 2px;
+}
