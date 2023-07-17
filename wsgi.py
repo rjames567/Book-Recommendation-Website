@@ -69,12 +69,41 @@ class AccountApplication:
 
         return json.dumps(result_dict) # Convert dictionary to json.
 
+    def sign_in(self, json_response):
+        response_dict = json.loads(json_response)
+        try:
+            user_id = login.account.check_credentials(
+                username=response_dict["username"],
+                password=response_dict["password"]
+            )
+            session_id = login.session.create_session(user_id)
+            message = "Signed in successfully"
+        except login.InvalidUserCredentialsError:
+            message = "Invalid username or password"
+            session_id = None
+
+        result_dict = {
+            "message": message,
+            "session_id": session_id
+        }
+
+        return json.dumps(result_dict)
+
     def __call__(self):
         environ_manipulation.application.add_sub_target(self.environ)
         match self.environ["APPLICATION_PROCESS"]:
             case "sign_up":
                 post_content = get_post_content(self.environ)
                 response = self.create_account(post_content)
+                response_headers = [
+                    ("Content-Type", "application/json"),
+                    ("Content-Length", str(len(response)))
+                ]
+                self.start("200 OK", response_headers)
+
+            case "sign_in":
+                post_content = get_post_content(self.environ)
+                response = self.sign_in(post_content)
                 response_headers = [
                     ("Content-Type", "application/json"),
                     ("Content-Length", str(len(response)))

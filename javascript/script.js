@@ -201,6 +201,31 @@ function showSignInPopup () {
 $(".account-popups .window#sign-in form").on("submit", function (event) {
     event.preventDefault();
     disablePopupCancel = true;
+    $.ajax({
+        type: "POST",
+        url: "cgi-bin/account/sign_in",
+        data: JSON.stringify({
+            username: $(".account-popups #sign-in input[name=username]").val(),
+            password: $(".account-popups #sign-in input[name=password]").val()
+        }),
+        success: function (result) {
+            disablePopupCancel = false; // Cannot go in complete, as it runs
+                // after success, so hiding the popup does not work.
+            if (result["session_id"]) {
+                sessionID = result["session_id"];
+                changeAccountButtons(); // Change before it can be seen to
+                    // appear smoother
+                hideAllSignPopups();
+            } else {
+                signUpAlert(result["message"]);
+            }
+        },
+        error: function () {
+            // Error should only run for server-side errors
+            signUpAlert("Something went wrong");
+            disablePopupCancel = false;
+        }
+    });
 });
 
 // -----------------------------------------------------------------------------

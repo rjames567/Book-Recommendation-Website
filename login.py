@@ -110,8 +110,13 @@ class account:
             """.format(username)
         )
 
-        if not((len(query_result) == 0)
-                or (query_result[0][0] != entered_password)):
+        print(query_result)
+        print(len(query_result)==0)
+        print(query_result[0][0] != entered_password)
+        print(len(query_result)==0 or query_result[0][0] != entered_password)
+        print(entered_password)
+
+        if (len(query_result) == 0) or (query_result[0][0] != entered_password):
             raise InvalidUserCredentialsError(username)
         else:
             return account.get_user_id(username)
