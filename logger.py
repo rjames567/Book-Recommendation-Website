@@ -14,18 +14,21 @@ class Logging:
 
     def _open(self):
         if self._clear:
-            method = "w+"
+            self._method = "w+"
             start = ""
         else:
-            method = "a+"
+            self._method = "a+"
             start = "\n\n"
 
         now = datetime.datetime.now()
         start += ("-" * 80) + "\nNew session created: "
         start += now.strftime("%d-%m-%Y %H:%M:%S") + "\n" + ("-" * 80) + "\n"
 
-        self._output_file = open(self._filepath + "output.log", method)
-        self._output_file.write(start)
+        self._write(start)
+
+    def _write(self, message):
+        with open(self._filepath + "output.log", self._method) as f:
+            f.write(message)
 
     def output_message(self, message):
         message = str(message)
@@ -34,7 +37,4 @@ class Logging:
         length = len(string)
         new_message = [message[i:i+(80-length)] for i in range(0, len(message), 80 - length)]
         string += ("\n" + " " * length).join(new_message) + "\n"
-        self._output_file.write(string)
-
-    def __del__(self):
-        self._output_file.close()
+        self._write(string)
