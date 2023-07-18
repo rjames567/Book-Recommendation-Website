@@ -33,7 +33,6 @@ class Logging:
         string = "[" + now.strftime("%d-%m-%Y %H:%M:%S") + "] "
         length = len(string)
         new_message = [message[i:i+(80-length)] for i in range(0, len(message), 80 - length)]
-        print(new_message)
         string += ("\n" + " " * length).join(new_message) + "\n"
         self._output_file.write(string)
 
