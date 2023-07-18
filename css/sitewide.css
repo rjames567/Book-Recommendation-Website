@@ -176,6 +176,10 @@ body > footer {
   margin-bottom: 20px;
 }
 
+.account-popups p {
+    margin-bottom: 0;
+}
+
 /* -------------------------------------------------------------------------- */
 /* Sign In/Sign Up - Popups                                                   */
 /* -------------------------------------------------------------------------- */
@@ -226,6 +230,23 @@ body > footer {
 
 .account-popups .pop-up-content .container {
   padding: 16px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Sign In/Sign Up - Change between popups                                    */
+/* -------------------------------------------------------------------------- */
+.account-popups .change-popup-message {
+    font-size: 12px;
+    margin-top: 10px
+}
+
+.account-popups .change-popup-message a {
+    color: blue;
+    text-decoration: underline;
+}
+
+.account-popups .change-popup-message a:hover {
+    color: black;
 }
 
 /* -------------------------------------------------------------------------- */

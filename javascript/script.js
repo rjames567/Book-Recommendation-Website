@@ -150,6 +150,7 @@ function hideSignUpAlert () {
 // Sign Up - Popup Visibility
 // -----------------------------------------------------------------------------
 function showSignUpPopup () {
+    $(".account-popups .window#sign-in").hide(); // Hide previous popup
     $(".account-popups .window#sign-up").show();
 }
 
@@ -198,7 +199,7 @@ $(".account-popups .window#sign-up form").on("submit", function (event) {
 // -----------------------------------------------------------------------------
 // Sign Up - Link Onclick handlers
 // -----------------------------------------------------------------------------
-$("header a#sign-up-button").click(function () {
+$("a#sign-up-button").click(function () {
     showSignUpPopup();
 });
 
@@ -206,7 +207,8 @@ $("header a#sign-up-button").click(function () {
 // Sign In - Popup Visibility
 // -----------------------------------------------------------------------------
 function showSignInPopup () {
-    $(".account-popups .window#sign-in").show();
+    $(".account-popups .window#sign-in").show(); // For whatever reason, only
+        // hide on the showSignUpPopup is needed
 }
 
 // -----------------------------------------------------------------------------
@@ -246,7 +248,7 @@ $(".account-popups .window#sign-in form").on("submit", function (event) {
 // -----------------------------------------------------------------------------
 // Sign In - Link Onclick handlers
 // -----------------------------------------------------------------------------
-$("header a#sign-in-button").click(function () {
+$("a#sign-in-button").click(function () {
     showSignInPopup();
 });
 
@@ -271,15 +273,16 @@ $("header a#sign-out-button").click(function () {
 // -----------------------------------------------------------------------------
 function loadMyBooks () {
     // Get list titles
+    alert(sessionID);
     $.ajax({
         type: "POST",
         url: "cgi-bin/my_books/get_lists",
         data: sessionID,
         success: function (result) {
-            console.log(result);
+            alert(result["success"] + "    " + result["message"]);
         },
         error: function (jqXHR) {
-            console.log(jqXHR);
+            alert(result["success"] + "    " + result["message"]);
         }
     });
 }
