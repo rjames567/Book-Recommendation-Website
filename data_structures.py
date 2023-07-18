@@ -14,3 +14,7 @@ class Queue:
 
     def peek(self):
         return self._items[0]
+
+    @property
+    def size(self):
+        return len(self._items)
