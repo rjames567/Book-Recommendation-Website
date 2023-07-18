@@ -5,6 +5,10 @@ class QueueOverflowError (Exception):
     def __init__(self):
         super().__init__("Tried to push too many items into the queue")
 
+class QueueUnderflowError (Exception):
+    def __init__(self):
+        super().__init__("Tried to get a value from an empty queue")
+
 # ------------------------------------------------------------------------------
 # Queue
 # ------------------------------------------------------------------------------
@@ -20,9 +24,13 @@ class Queue:
         self._items.append(item) # Appends to end
 
     def pop(self):
+        if not self.size:
+            raise QueueUnderflowError
         return self._items.pop(0) # List is reverse order - FILO
 
     def peek(self):
+        if not self.size:
+            raise QueueUnderflowError
         return self._items[0]
 
     @property
