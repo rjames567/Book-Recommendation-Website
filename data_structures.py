@@ -7,4 +7,7 @@ class Queue:
         self._max_length = max_length
 
     def push(self, item):
-        self._items.append(item)
+        self._items.append(item) # Appends to end
+
+    def pop(self):
+        return self._items.pop(0) # List is reverse order - FILO
