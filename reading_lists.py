@@ -50,7 +50,6 @@ def get_values(name, user_id):
         	authors.surname,
         	authors.alias,
         	reading_lists.date_added,
-        	reading_list_names.list_id,
         	(SELECT GROUP_CONCAT(genres.name)
                 FROM book_genres
                 inner join books on book_genres.book_id=books.book_id
@@ -71,3 +70,30 @@ def get_values(name, user_id):
             list_name=name
         )
     )
+
+    output_queue = data_structures.Queue()
+    for i in res:
+        first_name = i[3]
+        surname = i[4]
+        alias = i[5]
+        if (alias is not None and
+                (first_name is not None and surname is not None)):
+            author = f"{alias} ({first_name} {surname})"
+        elif (alias is not None and
+                (first_name is None and surname is None)):
+            author = alias
+        else:
+            author = f"{first_name} {surname}"
+
+        output_queue.push(
+            {
+                "cover": i[0],
+                "title": i[1],
+                "synopsis": i[2],
+                "author": author,
+                "date_added": i[6].strftime("%m/%d/%Y"),
+                "genres": i[7].split(",")
+            }
+        )
+
+    return output_queue
