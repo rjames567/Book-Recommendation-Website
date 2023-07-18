@@ -86,6 +86,7 @@ function changeActiveLink (elem, linkContent) {
 }
 
 function currentPageFunction (link) {
+    checkSignInNecessary(link);
     switch (link) {
         case "My Books":
             loadMyBooks();
@@ -100,12 +101,20 @@ $("nav.bottom ul li a, footer ul li a").click(function () {
 // -----------------------------------------------------------------------------
 // Sign In/Sign Up
 // -----------------------------------------------------------------------------
+function checkSignInNecessary (link) {
+    if (["My Books", "Recommendations", "Diary"].includes(link) && !sessionID) {
+        $(".account-popups .page-sign-notice").show();
+        showSignInPopup();
+    }
+}
+
 function hideAllSignPopups () { // Needed so cancel buttons and click-off can be
     // generalised for both.
     if (!disablePopupCancel) {
         $(".account-popups .window").hide()
         hideSignUpAlert(); // Hide popup first then alert to improve percieved
             // responsivness
+        $(".account-popups .page-sign-notice").hide();
     }
 }
 
