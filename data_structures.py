@@ -11,3 +11,6 @@ class Queue:
 
     def pop(self):
         return self._items.pop(0) # List is reverse order - FILO
+
+    def peek(self):
+        return self._items[0]
