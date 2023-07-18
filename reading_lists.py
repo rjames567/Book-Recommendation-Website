@@ -58,9 +58,12 @@ def get_values(name, user_id):
                     AND book_genres.match_strength>{match_strength}
                 GROUP by books.title) as genres
         FROM reading_lists
-        INNER JOIN books ON books.book_id=reading_lists.list_id
-        INNER JOIN authors ON books.author_id=authors.author_id
-        INNER JOIN reading_list_names ON reading_list_names.list_id=reading_lists.list_id
+        INNER JOIN books
+            ON books.book_id=reading_lists.list_id
+        INNER JOIN authors
+            ON books.author_id=authors.author_id
+        INNER JOIN reading_list_names
+            ON reading_list_names.list_id=reading_lists.list_id
         WHERE reading_lists.user_id={user_id}
         	AND reading_list_names.list_name="{list_name}"
         ORDER BY reading_lists.date_added DESC, books.title ASC;
