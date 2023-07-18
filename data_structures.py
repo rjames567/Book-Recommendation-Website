@@ -1,4 +1,11 @@
 # ------------------------------------------------------------------------------
+# Custom exceptions
+# ------------------------------------------------------------------------------
+class QueueOverflowError (Exception):
+    def __init__(self):
+        super().__init__("Tried to push too many items into the queue")
+
+# ------------------------------------------------------------------------------
 # Queue
 # ------------------------------------------------------------------------------
 class Queue:
@@ -7,6 +14,9 @@ class Queue:
         self._max_length = max_length
 
     def push(self, item):
+        if self._max_length is not None and self.size + 1 > self._max_length:
+            # Checks if it is not None, and if so does not check second clause
+            raise QueueOverflowError()
         self._items.append(item) # Appends to end
 
     def pop(self):
