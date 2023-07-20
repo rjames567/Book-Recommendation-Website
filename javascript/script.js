@@ -289,6 +289,7 @@ function loadMyBooks () {
         url: "cgi-bin/my_books/get_lists",
         data: sessionID,
         success: function (result) {
+            $(".navigation ul li:not('.template') a").remove();
             var length = Object.keys(result).length;
             for (var i = 0; i < length; i++) {
                 $(".navigation ul li.template a").html(result[i]);
