@@ -158,12 +158,8 @@ class MyBooksApplication (Application):
         return json.dumps(result)
 
     def get_list_content(self, response_json):
-        log.output_message(response_json)
         response_dict = json.loads(response_json)
-        log.output_message(response_dict)
-        log.output_message(response_dict["session_id"])
         user_id = login.session.get_user_id(response_dict["session_id"])
-        log.output_message(user_id)
 
         entries = reading_lists.get_values(response_dict["list_name"], user_id)
 
