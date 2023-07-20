@@ -311,6 +311,25 @@ function assignReadingListNavigationHandlers () {
     $(".navigation ul li a").click(function () {
         $(".navigation ul li a.active").removeClass("active")
         $(this).addClass("active");
+        var x = {
+            "session_id": sessionID,
+            "list_name": $(this).html()
+        };
+
+        $.ajax({
+            type: "POST", // Post as session ids shouldn't be exposed
+            url: "cgi-bin/my_books/get_list_entries",
+            data: JSON.stringify({
+                "session_id": sessionID,
+                "list_name": $(this).html()
+            }),
+            success: function (result) {
+                alert("success");
+            },
+            error: function (jqXHR) {
+                alert(jqXHR.status + " "+ jqXHR.responseText);
+            }
+        });
     });
 }
 
