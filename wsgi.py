@@ -7,7 +7,14 @@ import json
 # Project imports
 # ------------------------------------------------------------------------------
 import environ_manipulation
+import logger
 import login
+import reading_lists
+
+# ------------------------------------------------------------------------------
+# Project imports
+# ------------------------------------------------------------------------------
+log = logger.Logging(clear=False)
 
 # ------------------------------------------------------------------------------
 # Middleware
@@ -142,16 +149,31 @@ class MyBooksApplication (Application):
     def __init__(self, environ, start_response):
         super().__init__(environ, start_response)
 
+    def get_list_names(self, session_id):
+        user_id = login.session.get_user_id(session_id)
+        log.output_message(user_id)
+
+        names = reading_lists.get_names(user_id)
+        result = {i: names.pop() for i in range(names.size)}
+
+        log.output_message(result)
+
+        return json.dumps(result)
+
+
     def __call__(self):
         environ_manipulation.application.add_sub_target(self.environ)
-        response_headers = [
-            ("Content-Type", "test/plain"),
-            ("Content-Length", str(len("This is the response")))
-        ]
         match self.environ["APPLICATION_PROCESS"]:
+            case "get_lists":
+                post_content = self.get_post_data()
+                response = self.get_list_names(post_content)
+                response_headers = [
+                    ("Content-Type", "application/json"),
+                    ("Content-Length", str(len(response)))
+                ]
+                self.start("200 OK", response_headers)
             case _:
                 response_headers = [("Content-Type", "text/plain")]
-                self.start("200 OK", response_headers)
+                self.start("404 Page Not Found", response_headers)
                 response = "Page Not Found"
-        self.start("200 OK", response_headers)
         return response.encode("utf-8")
