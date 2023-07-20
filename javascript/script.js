@@ -105,7 +105,9 @@ function checkSignInNecessary (link) {
     if (["My Books", "Recommendations", "Diary"].includes(link) && !sessionID) {
         $(".account-popups .page-sign-notice").show();
         showSignInPopup();
+        return true;
     }
+    return false;
 }
 
 function hideAllSignPopups () { // Needed so cancel buttons and click-off can be
@@ -282,17 +284,32 @@ $("header a#sign-out-button").click(function () {
 // -----------------------------------------------------------------------------
 function loadMyBooks () {
     // Get list titles
-    alert(sessionID);
     $.ajax({
         type: "POST",
         url: "cgi-bin/my_books/get_lists",
         data: sessionID,
         success: function (result) {
-            alert(result["success"] + "    " + result["message"]);
+            var length = Object.keys(result).length;
+            for (var i = 0; i < length; i++) {
+                $(".navigation ul li.template a").html(result[i]);
+                temp = $(".navigation ul li.template").clone().removeClass("template").appendTo(".navigation ul");
+                if (i == 0) {
+                    firstElem = temp.find("a");
+                }
+            }
+            assignReadingListNavigationHandlers();
+            $(firstElem).trigger("click");
         },
         error: function (jqXHR) {
             alert(result["success"] + "    " + result["message"]);
         }
+    });
+}
+
+function assignReadingListNavigationHandlers () {
+    $(".navigation ul li a").click(function () {
+        $(".navigation ul li a.active").removeClass("active")
+        $(this).addClass("active");
     });
 }
 
