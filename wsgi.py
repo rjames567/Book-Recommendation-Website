@@ -151,10 +151,29 @@ class MyBooksApplication (Application):
 
     def get_list_names(self, session_id):
         user_id = login.session.get_user_id(session_id)
-        log.output_message(user_id)
 
         names = reading_lists.get_names(user_id)
         result = {i: names.pop() for i in range(names.size)}
+
+        return json.dumps(result)
+
+    def get_list_content(self, response_json):
+        log.output_message(response_json)
+        response_dict = json.loads(response_json)
+        log.output_message(response_dict)
+        log.output_message(response_dict["session_id"])
+        user_id = login.session.get_user_id(response_dict["session_id"])
+        log.output_message(user_id)
+
+        entries = reading_lists.get_values(response_dict["list_name"], user_id)
+
+        result = {}
+
+        result["books"] = [entries.pop() for i in range(entries.size)]
+        if not entries.size:
+            result["meta"] = "You have no books in this list"
+        else:
+            result["meta"] = None
 
         log.output_message(result)
 
@@ -167,6 +186,14 @@ class MyBooksApplication (Application):
             case "get_lists":
                 post_content = self.get_post_data()
                 response = self.get_list_names(post_content)
+                response_headers = [
+                    ("Content-Type", "application/json"),
+                    ("Content-Length", str(len(response)))
+                ]
+                self.start("200 OK", response_headers)
+            case "get_list_entries":
+                post_content = self.get_post_data()
+                response = self.get_list_content(post_content)
                 response_headers = [
                     ("Content-Type", "application/json"),
                     ("Content-Length", str(len(response)))
