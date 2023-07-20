@@ -171,8 +171,6 @@ class MyBooksApplication (Application):
         else:
             result["meta"] = None
 
-        log.output_message(result)
-
         return json.dumps(result)
 
 
