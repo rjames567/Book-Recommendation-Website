@@ -19,7 +19,7 @@ body, html {
   font-family: Helvetica, Arial;
   margin: 0;
   padding: 0;
-  height: 99vh; /* 100vh is slightly larger than the screen. */
+  height: 100vh;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -125,47 +125,6 @@ header nav ul li:last-child {
 header nav ul li.pseudo-last { /* Easy way of removing border on both links. */
   padding-right: 20px;
   border: none;
-}
-
-/* -------------------------------------------------------------------------- */
-/* Footer                                                                     */
-/* -------------------------------------------------------------------------- */
-footer {
-  background-color: var(--grey);
-  color: var(--light-grey);
-  font-size: 10px;
-  padding: 10px 20px;
-}
-
-footer h1 {
-  font-size: 12px;
-  margin: 0;
-}
-
-footer ul {
-  padding: 0;
-}
-
-footer ul li {
-  padding-bottom: 5px;
-}
-
-footer ul li:last-child {
-  padding-bottom: 0; /* Remove large space between list and cp notice. */
-}
-
-footer ul li a {
-  padding: 0 50px 0 10px;
-  color: white;
-}
-
-footer ul li a:hover {
-  color: white;
-}
-
-body > footer {
-  position: sticky;
-  top: 100vh;
 }
 
 /* -------------------------------------------------------------------------- */
