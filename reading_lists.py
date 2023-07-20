@@ -16,6 +16,9 @@ connection = mysql_handler.Connection(
     host=config.get("mysql host")
 )
 
+import logger
+log = logger.Logging(clear=False, filepath="logging/2")
+
 # ------------------------------------------------------------------------------
 # Instantiating import classes
 # ------------------------------------------------------------------------------
@@ -59,7 +62,7 @@ def get_values(name, user_id):
                 GROUP by books.title) as genres
         FROM reading_lists
         INNER JOIN books
-            ON books.book_id=reading_lists.list_id
+            ON books.book_id=reading_lists.book_id
         INNER JOIN authors
             ON books.author_id=authors.author_id
         INNER JOIN reading_list_names
@@ -76,6 +79,7 @@ def get_values(name, user_id):
 
     output_queue = data_structures.Queue()
     for i in res:
+        log.output_message(i[1])
         first_name = i[3]
         surname = i[4]
         alias = i[5]
@@ -100,3 +104,5 @@ def get_values(name, user_id):
         )
 
     return output_queue
+
+get_values("Currently Reading", 1)
