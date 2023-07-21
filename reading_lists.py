@@ -98,7 +98,7 @@ def get_values(name, user_id):
                 "title": i[1],
                 "synopsis": i[2],
                 "author": author,
-                "date_added": i[6].strftime("%m/%d/%Y"),
+                "date_added": i[6].strftime("%d/%m/%Y"),
                 "genres": i[7].split(",")
             }
         )
