@@ -324,7 +324,15 @@ function assignReadingListNavigationHandlers () {
                 "list_name": $(this).html()
             }),
             success: function (result) {
-                alert("success");
+                var books = result["books"];
+                for (var i = 0; i < books.length; i++) {
+                    $(".container .entries .book.template .title").html(books[i]["title"]);
+                    $(".container .entries .book.template .author").html(books[i]["author"]);
+                    $(".container .entries .book.template .date-added").html(books[i]["date_added"]);
+                    $(".container .entries .book.template .synopsis").html(books[i]["synopsis"]);
+                    $(".container .entries .book.template .cover img").attr("src", books[i]["cover"]);
+                    $(".container .entries .book.template").clone().removeClass("template").appendTo(".container .entries");
+                }
             },
             error: function (jqXHR) {
                 alert(jqXHR.status + " "+ jqXHR.responseText);
