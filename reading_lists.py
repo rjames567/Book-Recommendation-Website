@@ -47,29 +47,32 @@ def get_values(name, user_id):
     res = connection.query(
         """
         SELECT books.cover_image,
-        	books.title,
-        	books.synopsis,
-        	authors.first_name,
-        	authors.surname,
-        	authors.alias,
-        	reading_lists.date_added,
-        	(SELECT GROUP_CONCAT(genres.name)
+            books.title,
+            books.synopsis,
+            authors.first_name,
+            authors.surname,
+            authors.alias,
+            reading_lists.date_added,
+            (SELECT GROUP_CONCAT(genres.name)
                 FROM book_genres
                 inner join books on book_genres.book_id=books.book_id
                 inner join genres on genres.genre_id=book_genres.genre_id
                 WHERE book_genres.book_id=reading_lists.book_id
                     AND book_genres.match_strength>{match_strength}
-                GROUP by books.title) as genres
-        FROM reading_lists
-        INNER JOIN books
+                GROUP by books.title) AS genres,
+            (SELECT AVG(reviews.overall_rating)
+            	FROM reviews
+            	WHERE reviews.book_id=books.book_id) AS average_rating
+            FROM reading_lists
+            INNER JOIN books
             ON books.book_id=reading_lists.book_id
-        INNER JOIN authors
+            INNER JOIN authors
             ON books.author_id=authors.author_id
-        INNER JOIN reading_list_names
+            INNER JOIN reading_list_names
             ON reading_list_names.list_id=reading_lists.list_id
-        WHERE reading_lists.user_id={user_id}
-        	AND reading_list_names.list_name="{list_name}"
-        ORDER BY reading_lists.date_added DESC, books.title ASC;
+            WHERE reading_lists.user_id={user_id}
+            AND reading_list_names.list_name="{list_name}"
+            ORDER BY reading_lists.date_added DESC, books.title ASC;
         """.format(
             match_strength=_genre_required_match,
             user_id=user_id,
@@ -92,11 +95,13 @@ def get_values(name, user_id):
         else:
             author = f"{first_name} {surname}"
 
+        synopsis = "</p><p>".join(("<p>" + i[2] + "</p>").split("\n"))
+
         output_queue.push(
             {
                 "cover": i[0],
                 "title": i[1],
-                "synopsis": i[2],
+                "synopsis": synopsis,
                 "author": author,
                 "date_added": i[6].strftime("%d/%m/%Y"),
                 "genres": i[7].split(",")
@@ -104,5 +109,3 @@ def get_values(name, user_id):
         )
 
     return output_queue
-
-get_values("Currently Reading", 1)
