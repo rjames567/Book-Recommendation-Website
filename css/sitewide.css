@@ -304,7 +304,7 @@ main .container {
 /* Reading list - books                                                       */
 /* -------------------------------------------------------------------------- */
 .book {
-  padding-top: 10px;
+  padding: 10px 20px 0 5px;
 }
 
 .book:last-child hr {
