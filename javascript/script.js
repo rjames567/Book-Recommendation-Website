@@ -321,11 +321,6 @@ function assignReadingListNavigationHandlers () {
                 "list_name": listName
             }),
             success: function (result) {
-                var newURI = ("#" + listName).toTitleCase().split(" ").join("");
-                    // Convert Name to title case, then remove ALL spaces
-                    // which is why .replace is not used, and add a hashtag to
-                    // use a bookmark in the search bar.
-                history.pushState({urlPath: newURI},"", newURI);
                 $(".container .entries .book:not('.template')").remove();
                     // Remove existing entries so only new ones are shown.
                 var books = result["books"];
@@ -335,7 +330,21 @@ function assignReadingListNavigationHandlers () {
                     $(".container .entries .book.template .date-added").html(books[i]["date_added"]);
                     $(".container .entries .book.template .synopsis").html(books[i]["synopsis"]);
                     $(".container .entries .book.template .cover img").attr("src", books[i]["cover"]);
+
+                    for (var k in books[i]["genres"]) {
+                        $(".container .entries .book.template ol li.template").find("a").html(books[i]["genres"][k]);
+                        alert($(".container .entries .book.template ol li.template").html());
+                        $(".container .entries .book.template ol li.template").clone().removeClass("template").appendTo(".container .entries .book.template ol");
+                    }
+
                     $(".container .entries .book.template").clone().removeClass("template").appendTo(".container .entries");
+
+                // Afterwards for appeared loading speed
+                var newURI = ("#" + listName).toTitleCase().split(" ").join("");
+                    // Convert Name to title case, then remove ALL spaces
+                    // which is why .replace is not used, and add a hashtag to
+                    // use a bookmark in the search bar.
+                history.pushState({urlPath: newURI},"", newURI);
                 }
             },
             error: function (jqXHR) {
