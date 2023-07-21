@@ -331,9 +331,10 @@ function assignReadingListNavigationHandlers () {
                     $(".container .entries .book.template .synopsis").html(books[i]["synopsis"]);
                     $(".container .entries .book.template .cover img").attr("src", books[i]["cover"]);
 
+                    $(".container .entries .book.template ol li:not('.template')").remove();
+                        // Remove any genres from previous entry.
                     for (var k in books[i]["genres"]) {
                         $(".container .entries .book.template ol li.template").find("a").html(books[i]["genres"][k]);
-                        alert($(".container .entries .book.template ol li.template").html());
                         $(".container .entries .book.template ol li.template").clone().removeClass("template").appendTo(".container .entries .book.template ol");
                     }
 
