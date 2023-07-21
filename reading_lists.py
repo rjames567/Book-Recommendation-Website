@@ -99,6 +99,7 @@ def get_values(name, user_id):
             author = f"{first_name} {surname}"
 
         synopsis = "</p><p>".join(("<p>" + i[2] + "</p>").split("\n"))
+            # Change new lines to new paragraphs
 
         output_queue.push(
             {
@@ -107,7 +108,9 @@ def get_values(name, user_id):
                 "synopsis": synopsis,
                 "author": author,
                 "date_added": i[6].strftime("%d/%m/%Y"),
-                "genres": i[7].split(",")
+                "genres": i[7].split(","),
+                "average_rating": i[8],
+                "num_reviews": i[9]
             }
         )
 
