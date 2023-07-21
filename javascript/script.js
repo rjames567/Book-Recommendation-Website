@@ -311,19 +311,21 @@ function assignReadingListNavigationHandlers () {
     $(".navigation ul li a").click(function () {
         $(".navigation ul li a.active").removeClass("active")
         $(this).addClass("active");
-        var x = {
-            "session_id": sessionID,
-            "list_name": $(this).html()
-        };
+        var listName = $(this).html();
 
         $.ajax({
             type: "POST", // Post as session ids shouldn't be exposed
             url: "cgi-bin/my_books/get_list_entries",
             data: JSON.stringify({
                 "session_id": sessionID,
-                "list_name": $(this).html()
+                "list_name": listName
             }),
             success: function (result) {
+                var newURI = ("#" + listName).toTitleCase().split(" ").join("");
+                    // Convert Name to title case, then remove ALL spaces
+                    // which is why .replace is not used, and add a hashtag to
+                    // use a bookmark in the search bar.
+                history.pushState({urlPath: newURI},"", newURI);
                 $(".container .entries .book:not('.template')").remove();
                     // Remove existing entries so only new ones are shown.
                 var books = result["books"];
