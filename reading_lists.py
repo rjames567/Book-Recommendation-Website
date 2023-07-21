@@ -62,7 +62,10 @@ def get_values(name, user_id):
                 GROUP by books.title) AS genres,
             (SELECT AVG(reviews.overall_rating)
             	FROM reviews
-            	WHERE reviews.book_id=books.book_id) AS average_rating
+            	WHERE reviews.book_id=books.book_id) AS average_rating,
+            (SELECT COUNT(reviews.overall_rating)
+            	FROM reviews
+            	WHERE reviews.book_id=books.book_id) AS num_ratings
             FROM reading_lists
             INNER JOIN books
             ON books.book_id=reading_lists.book_id
