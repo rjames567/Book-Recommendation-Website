@@ -324,6 +324,8 @@ function assignReadingListNavigationHandlers () {
                 "list_name": $(this).html()
             }),
             success: function (result) {
+                $(".container .entries .book:not('.template')").remove();
+                    // Remove existing entries so only new ones are shown.
                 var books = result["books"];
                 for (var i = 0; i < books.length; i++) {
                     $(".container .entries .book.template .title").html(books[i]["title"]);
