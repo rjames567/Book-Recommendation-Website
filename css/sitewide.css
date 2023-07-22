@@ -23,7 +23,7 @@ body, html {
 }
 
 /* -------------------------------------------------------------------------- */
-/* Sitewide classes                                                           */
+/* Site-wide classes                                                           */
 /* -------------------------------------------------------------------------- */
 .hidden, .template {
   display: none;
@@ -158,7 +158,7 @@ header nav ul li.pseudo-last { /* Easy way of removing border on both links. */
   position: fixed;
   z-index: 1;
   left: 0;
-  top 0;
+  top: 0;
   box-sizing: border-box;
 }
 

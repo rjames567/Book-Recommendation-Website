@@ -40,7 +40,7 @@ CREATE TABLE users (
     PRIMARY KEY (user_id)
 );
 -- Username should have a unique constraint, but it is not possible to add a
--- unique constraint to a TINYTEXT but varchars are slow so no unique constraint
+-- unique constraint to a TINYTEXT but varchar are slow so no unique constraint
 
 -- -----------------------------------
 -- Genre
@@ -55,7 +55,7 @@ CREATE TABLE genres (
     PRIMARY KEY (genre_id)
 );
 -- Name should have a unique constraint, but it is not possible to add a unique
--- constraint to a TINYTEXT but varchars are slow so no unique constraint
+-- constraint to a TINYTEXT but varchar are slow so no unique constraint
 
 CREATE TABLE book_genres (
     link_id INT NOT NULL AUTO_INCREMENT,
@@ -87,7 +87,7 @@ CREATE TABLE books (
     FOREIGN KEY (author_id) REFERENCES authors(author_id)
 );
 -- cover_image, purchase_link and isbn should have a unique constraint, but it
--- is not possible to add a unique constraint to a TINYTEXT but varchars are
+-- is not possible to add a unique constraint to a TINYTEXT but varchar are
 -- slow so no unique constraint
 
 -- -----------------------------------

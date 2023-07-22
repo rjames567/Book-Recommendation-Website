@@ -1,15 +1,15 @@
 // -----------------------------------------------------------------------------
 // Global Variables/Constants
 // -----------------------------------------------------------------------------
-var disablePopupCancel = false;
-var sessionID = null; // Easier to use, allows for if (sessionID)
+let disablePopupCancel = false;
+let sessionID = null; // Easier to use, allows for if (sessionID)
 
 // -----------------------------------------------------------------------------
 // String Manipulation
 // -----------------------------------------------------------------------------
 // https://stackoverflow.com/a/6475125/21124864
 String.prototype.toTitleCase = function () {
-    var str = this.replace(/([^\W_]+[^\s-]*) */g, function(txt) {
+    let str = this.replace(/([^\W_]+[^\s-]*) */g, function (txt) {
         return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
     });
     return str;
@@ -19,7 +19,7 @@ String.prototype.toTitleCase = function () {
 // URL Manipulation
 // -----------------------------------------------------------------------------
 function changePageURI (linkName) {
-    var newURI;
+    let newURI;
     if (linkName == "Home") {
         newURI = "/";
     } else {
@@ -29,8 +29,8 @@ function changePageURI (linkName) {
 }
 
 function getLinkNameByURI () { // Convert URI to navigation link text.
-    var uri = window.location.pathname.replace("-", " ");
-        // Replace underscores with spaces
+    let uri = window.location.pathname.replace("-", " ");
+    // Replace underscores with spaces
     return uri.slice(1).toTitleCase();
         // Remove leading slash, and convert to title case.
 }
@@ -48,7 +48,7 @@ function switchPageContent (elem, linkName) {
         linkName = "Home" // If it is blank, it must be referring to the Home
             // page.
     }
-    var file = "html/" + linkName.toLowerCase().replace(" ", "_") + ".html";
+    let file = "html/" + linkName.toLowerCase().replace(" ", "_") + ".html";
     $.ajax({
         type: "GET",
         url: file,
@@ -114,8 +114,8 @@ function hideAllSignPopups () { // Needed so cancel buttons and click-off can be
     // generalised for both.
     if (!disablePopupCancel) {
         $(".account-popups .window").hide()
-        hideSignUpAlert(); // Hide popup first then alert to improve percieved
-            // responsivness
+        hideSignUpAlert(); // Hide popup first then alert to improve perceived
+            // responsiveness
         $(".account-popups .page-sign-notice").hide();
     }
 }
@@ -147,7 +147,7 @@ $(window).click(function (event) {
 function signUpAlert (message) {
     var elem = $(".account-popups p.alert");
     elem.html(message);
-    elem.show(); // This order so their is not a delay - minimal so not vital
+    elem.show(); // This order so there is not a delay - minimal so not vital
     timeout = setTimeout(function () {
         elem.fadeOut(500); // Fade out in 1/2 seconds
     }, 8000); // Hide alert after 8 seconds
@@ -171,8 +171,8 @@ function showSignUpPopup () {
 $(".account-popups .window#sign-up form").on("submit", function (event) {
     event.preventDefault();
     disablePopupCancel = true;
-    var password1 = $(".account-popups #sign-up input[name=password]").val();
-    var password2 = $(".account-popups #sign-up input[name=password-repeat]").val();
+    let password1 = $(".account-popups #sign-up input[name=password]").val();
+    let password2 = $(".account-popups #sign-up input[name=password-repeat]").val();
     if (password1 != password2) {
         signUpAlert("Passwords do not match");
         disablePopupCancel = false;
@@ -290,8 +290,8 @@ function loadMyBooks () {
         data: sessionID,
         success: function (result) {
             $(".navigation ul li:not('.template') a").remove();
-            var length = Object.keys(result).length;
-            for (var i = 0; i < length; i++) {
+            let length = Object.keys(result).length;
+            for (let i = 0, temp, firstElem; i < length; i++) {
                 $(".navigation ul li.template a").html(result[i]);
                 temp = $(".navigation ul li.template").clone().removeClass("template").appendTo(".navigation ul");
                 if (i == 0) {
@@ -311,7 +311,7 @@ function assignReadingListNavigationHandlers () {
     $(".navigation ul li a").click(function () {
         $(".navigation ul li a.active").removeClass("active")
         $(this).addClass("active");
-        var listName = $(this).html();
+        let listName = $(this).html();
 
         $.ajax({
             type: "POST", // Post as session ids shouldn't be exposed
@@ -323,8 +323,8 @@ function assignReadingListNavigationHandlers () {
             success: function (result) {
                 $(".container .entries .book:not('.template')").remove();
                     // Remove existing entries so only new ones are shown.
-                var books = result["books"];
-                for (var i = 0; i < books.length; i++) {
+                let books = result["books"];
+                for (let i = 0; i < books.length; i++) {
                     $(".container .entries .book.template .title").html(books[i]["title"]);
                     $(".container .entries .book.template .author").html(books[i]["author"]);
                     $(".container .entries .book.template .date-added").html(books[i]["date_added"]);
@@ -333,7 +333,7 @@ function assignReadingListNavigationHandlers () {
 
                     $(".container .entries .book.template ol li:not('.template')").remove();
                         // Remove any genres from previous entry.
-                    for (var k in books[i]["genres"]) {
+                    for (let k in books[i]["genres"]) {
                         $(".container .entries .book.template ol li.template").find("a").html(books[i]["genres"][k]);
                         $(".container .entries .book.template ol li.template").clone().removeClass("template").appendTo(".container .entries .book.template ol");
                     }
@@ -341,7 +341,7 @@ function assignReadingListNavigationHandlers () {
                     $(".container .entries .book.template").clone().removeClass("template").appendTo(".container .entries");
 
                 // Afterwards for appeared loading speed
-                var newURI = ("#" + listName).toTitleCase().split(" ").join("");
+                    let newURI = ("#" + listName).toTitleCase().split(" ").join("");
                     // Convert Name to title case, then remove ALL spaces
                     // which is why .replace is not used, and add a hashtag to
                     // use a bookmark in the search bar.
@@ -359,6 +359,6 @@ function assignReadingListNavigationHandlers () {
 // window onload handlers
 // -----------------------------------------------------------------------------
 $(document).ready(function () {
-    var target = window.location.pathname;
+    let target = window.location.pathname;
     switchPageContent(null, getLinkNameByURI());
 })
