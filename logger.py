@@ -28,7 +28,7 @@ class Logging:
 
     def _write(self, message):
         with open(self._filepath + "output.log", self._method) as f:
-            f.write(message)
+            f.write(message)#
 
     def output_message(self, message):
         message = str(message)

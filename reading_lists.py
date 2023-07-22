@@ -17,7 +17,7 @@ connection = mysql_handler.Connection(
 )
 
 import logger
-log = logger.Logging(clear=False, filepath="logging/2")
+log = logger.Logging(clear=False, filepath="/tmp/logging/2/")
 
 # ------------------------------------------------------------------------------
 # Instantiating import classes
