@@ -24,7 +24,7 @@ class application:
 
         Does not have a return value
         """
-        path = environ["PATH_INFO"]
+        path = environ["REQUEST_URI:"]
         temp = re.match("/[\w-]+/([\w-]+)", path)  # Should not include dashes in result, but included, so it does
         # not break if it does.
         if temp:
@@ -51,7 +51,7 @@ class application:
 
         Does not have a return value
         """
-        path = environ["PATH_INFO"]
+        path = environ["REQUEST_URI:"]
         temp = re.match("/[\w-]+/[\w-]+/([\w-]+)", path)  # Should not
         # include dashes in result, but included, so it does not break if it
         # does.
