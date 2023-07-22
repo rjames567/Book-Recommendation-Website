@@ -3,6 +3,7 @@
 # ------------------------------------------------------------------------------
 import re
 
+
 # ------------------------------------------------------------------------------
 # Application manipulation
 # ------------------------------------------------------------------------------
@@ -24,14 +25,14 @@ class application:
         Does not have a return value
         """
         path = environ["PATH_INFO"]
-        temp = re.match("/[\w-]+/([\w-]+)", path) # Should not include dashes in
-            # in result, but included so it does not break if it does.
+        temp = re.match("/[\w-]+/([\w-]+)", path)  # Should not include dashes in result, but included, so it does
+        # not break if it does.
         if temp:
-            application = temp.group(1)
+            target = temp.group(1)
         else:
-            application = None
-        environ["TARGET_APPLICATION"] = application # Will change the dictionary
-            # passed.
+            target = None
+        environ["TARGET_APPLICATION"] = target  # Will change the dictionary
+        # passed.
 
     def add_sub_target(environ):
         """
@@ -51,9 +52,9 @@ class application:
         Does not have a return value
         """
         path = environ["PATH_INFO"]
-        temp = re.match("/[\w-]+/[\w-]+/([\w-]+)", path) # Should not
-            # include dashes in result, but included so it does not break if it
-            # does.
+        temp = re.match("/[\w-]+/[\w-]+/([\w-]+)", path)  # Should not
+        # include dashes in result, but included, so it does not break if it
+        # does.
         if temp:
             sub = temp.group(1)
         else:

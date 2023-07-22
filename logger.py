@@ -3,6 +3,7 @@
 # ------------------------------------------------------------------------------
 import datetime
 
+
 # ------------------------------------------------------------------------------
 # Logging
 # ------------------------------------------------------------------------------
@@ -28,13 +29,13 @@ class Logging:
 
     def _write(self, message):
         with open(self._filepath + "output.log", self._method) as f:
-            f.write(message)#
+            f.write(message)  #
 
     def output_message(self, message):
         message = str(message)
         now = datetime.datetime.now()
         string = "[" + now.strftime("%d-%m-%Y %H:%M:%S") + "] "
         length = len(string)
-        new_message = [message[i:i+(80-length)] for i in range(0, len(message), 80 - length)]
+        new_message = [message[i:i + (80 - length)] for i in range(0, len(message), 80 - length)]
         string += ("\n" + " " * length).join(new_message) + "\n"
         self._write(string)

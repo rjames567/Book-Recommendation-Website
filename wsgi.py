@@ -14,9 +14,10 @@ import login
 import reading_lists
 
 # ------------------------------------------------------------------------------
-# Project imports
+# Import object creation
 # ------------------------------------------------------------------------------
-log = logger.Logging(clear=False,filepath="/tmp/logging/")
+log = logger.Logging(clear=False, filepath="/tmp")
+
 
 # ------------------------------------------------------------------------------
 # Middleware
@@ -28,17 +29,18 @@ class Middleware:
 
     def __iter__(self):
         environ_manipulation.application.add_target(self.environ)
-        match self.environ["TARGET_APPLICATION"]:
-            case "account":
-                application = AccountApplication(self.environ, self.start)
-                yield application()
-            case "my_books":
-                application = MyBooksApplication(self.environ, self.start)
-                yield application()
-            case _:
-                response_headers = [("Content-Type", "text/plain")]
-                self.start("200 OK", response_headers)
-                yield "Page Not Found".encode("utf-8")
+        process = self.environ["TARGET_APPLICATION"]
+        if process == "account":
+            application = AccountApplication(self.environ, self.start)
+            yield application()
+        elif process == "my_books":
+            application = MyBooksApplication(self.environ, self.start)
+            yield application()
+        else:
+            response_headers = [("Content-Type", "text/plain")]
+            self.start("200 OK", response_headers)
+            yield "Page Not Found".encode("utf-8")
+
 
 # ------------------------------------------------------------------------------
 # Application base class
@@ -56,10 +58,11 @@ class Application:
 
         return self.environ["wsgi.input"].read(body_size).decode("utf-8")
 
+
 # ------------------------------------------------------------------------------
 # Account application
 # ------------------------------------------------------------------------------
-class AccountApplication (Application):
+class AccountApplication(Application):
     def __init__(self, environ, start_response):
         super().__init__(environ, start_response)
 
@@ -76,14 +79,14 @@ class AccountApplication (Application):
             message = "Account created successfully"
         except login.UserExistsError:
             message = "Username is already taken."
-            session_id = None # json.dumps converts this to null automatically
+            session_id = None  # json.dumps converts this to null automatically
 
         result_dict = {
             "message": message,
-            "session_id": session_id # Success can be interpreted from the id
+            "session_id": session_id  # Success can be interpreted from the id
         }
 
-        return json.dumps(result_dict) # Convert dictionary to json.
+        return json.dumps(result_dict)  # Convert dictionary to json.
 
     def sign_in(self, json_response):
         response_dict = json.loads(json_response)
@@ -107,47 +110,47 @@ class AccountApplication (Application):
 
     def sign_out(self, session_id):
         login.session.close(session_id)
-        return "true" # Response does not matter - client does not wait for one.
+        return "true"  # Response does not matter - client does not wait for one.
 
     def __call__(self):
         environ_manipulation.application.add_sub_target(self.environ)
-        match self.environ["APPLICATION_PROCESS"]:
-            case "sign_up":
-                post_content = self.get_post_data()
-                response = self.create_account(post_content)
-                response_headers = [
-                    ("Content-Type", "application/json"),
-                    ("Content-Length", str(len(response)))
-                ]
-                self.start("200 OK", response_headers)
+        process = self.environ["APPLICATION_PROCESS"]
+        if process == "sign_up":
+            post_content = self.get_post_data()
+            response = self.create_account(post_content)
+            response_headers = [
+                ("Content-Type", "application/json"),
+                ("Content-Length", str(len(response)))
+            ]
+            self.start("200 OK", response_headers)
 
-            case "sign_in":
-                post_content = self.get_post_data()
-                response = self.sign_in(post_content)
-                response_headers = [
-                    ("Content-Type", "application/json"),
-                    ("Content-Length", str(len(response)))
-                ]
-                self.start("200 OK", response_headers)
-            case "sign_out":
-                post_content = self.get_post_data()
-                response = self.sign_out(post_content) # Response is for
-                    # completeness
-                response_headers = [
-                    ("Content-Type", "test/plain"),
-                    ("Content-Length", str(len(response)))
-                ]
-                self.start("200 OK", response_headers)
-            case _:
-                response_headers = [("Content-Type", "text/plain")]
-                self.start("200 OK", response_headers)
-                response = "Page Not Found"
+        elif process == "sign_in":
+            post_content = self.get_post_data()
+            response = self.sign_in(post_content)
+            response_headers = [
+                ("Content-Type", "application/json"),
+                ("Content-Length", str(len(response)))
+            ]
+            self.start("200 OK", response_headers)
+        elif process == "sign_out":
+            post_content = self.get_post_data()
+            response = self.sign_out(post_content)  # Response is for completeness
+            response_headers = [
+                ("Content-Type", "test/plain"),
+                ("Content-Length", str(len(response)))
+            ]
+            self.start("200 OK", response_headers)
+        else:
+            response_headers = [("Content-Type", "text/plain")]
+            self.start("200 OK", response_headers)
+            response = "Page Not Found"
         return response.encode("utf-8")
+
 
 # ------------------------------------------------------------------------------
 # Account application
 # ------------------------------------------------------------------------------
-class MyBooksApplication (Application):
+class MyBooksApplication(Application):
     def __init__(self, environ, start_response):
         super().__init__(environ, start_response)
 
@@ -165,7 +168,7 @@ class MyBooksApplication (Application):
 
         entries = reading_lists.get_values(response_dict["list_name"], user_id)
 
-        result = {}
+        result = dict()
 
         result["books"] = [entries.pop() for i in range(entries.size)]
         if not entries.size:
@@ -175,28 +178,27 @@ class MyBooksApplication (Application):
 
         return json.dumps(result)
 
-
     def __call__(self):
         environ_manipulation.application.add_sub_target(self.environ)
-        match self.environ["APPLICATION_PROCESS"]:
-            case "get_lists":
-                post_content = self.get_post_data()
-                response = self.get_list_names(post_content)
-                response_headers = [
-                    ("Content-Type", "application/json"),
-                    ("Content-Length", str(len(response)))
-                ]
-                self.start("200 OK", response_headers)
-            case "get_list_entries":
-                post_content = self.get_post_data()
-                response = self.get_list_content(post_content)
-                response_headers = [
-                    ("Content-Type", "application/json"),
-                    ("Content-Length", str(len(response)))
-                ]
-                self.start("200 OK", response_headers)
-            case _:
-                response_headers = [("Content-Type", "text/plain")]
-                self.start("404 Page Not Found", response_headers)
-                response = "Page Not Found"
+        process = self.environ["APPLICATION_PROCESS"]
+        if process == "get_lists":
+            post_content = self.get_post_data()
+            response = self.get_list_names(post_content)
+            response_headers = [
+                ("Content-Type", "application/json"),
+                ("Content-Length", str(len(response)))
+            ]
+            self.start("200 OK", response_headers)
+        elif process == "get_list_entries":
+            post_content = self.get_post_data()
+            response = self.get_list_content(post_content)
+            response_headers = [
+                ("Content-Type", "application/json"),
+                ("Content-Length", str(len(response)))
+            ]
+            self.start("200 OK", response_headers)
+        else:
+            response_headers = [("Content-Type", "text/plain")]
+            self.start("404 Page Not Found", response_headers)
+            response = "Page Not Found"
         return response.encode("utf-8")

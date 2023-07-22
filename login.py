@@ -27,45 +27,52 @@ connection = mysql_handler.Connection(
 # Variables
 # ------------------------------------------------------------------------------
 _number_hash_passes = config.get("passwords number_hash_passes")
-_hashing_salt = config.get("passwords salt") # Stored in the config as binary
+_hashing_salt = config.get("passwords salt")  # Stored in the config as binary
 _hashing_algorithm = config.get("passwords hashing_algorithm")
 _token_size = config.get("session_id_length")
+
 
 # ------------------------------------------------------------------------------
 # Custom exceptions
 # ------------------------------------------------------------------------------
-class SessionExpiredError (Exception):
+class SessionExpiredError(Exception):
     """
     Exception for when a client is using a session that has expired, and is no
     longer valid
     """
+
     def __init__(self, session_id):
         message = f"Session id '{session_id}' has expired"
         super().__init__(message)
 
-class UserExistsError (Exception):
+
+class UserExistsError(Exception):
     """
     Exception for when a user account already exists with a specific username,
     and it has been attempted to add a second.
 
     Usernames must be unique in the database.
     """
+
     def __init__(self, username):
         message = f"User already exists with the username {username}."
         super().__init__(message)
 
-class InvalidUserCredentialsError (Exception):
+
+class InvalidUserCredentialsError(Exception):
     """
     Exception for where a user's provided username and password are not valid.
     """
+
     def __init__(self, username):
         message = f"Incorrect username or password entered for {username}"
         super().__init__(message)
 
+
 # ------------------------------------------------------------------------------
 # Password hashing
 # ------------------------------------------------------------------------------
-def hash(password):
+def hash_password(password):
     """
     Method to hash the password, including a salt.
 
@@ -76,12 +83,13 @@ def hash(password):
     """
     result = hashlib.pbkdf2_hmac(
         _hashing_algorithm,
-        password.encode("utf-8"), # Needs to be in binary
-        _hashing_salt, # Salt needs to be in binary - stored as binary in config
-        _number_hash_passes # Recommended number of passes is 100,000
+        password.encode("utf-8"),  # Needs to be in binary
+        _hashing_salt,  # Salt needs to be in binary - stored as binary in config
+        _number_hash_passes  # Recommended number of passes is 100,000
     )
 
-    return result.hex() # Hash is returned as a hex string, so converts back
+    return result.hex()  # Hash is returned as a hex string, so converts back
+
 
 # ------------------------------------------------------------------------------
 # Account Class
@@ -102,7 +110,7 @@ class account:
 
         Returns an integer value for the
         """
-        entered_password = hash(password)
+        entered_password = hash_password(password)
         query_result = connection.query(
             """
             SELECT password_hash FROM users
@@ -153,8 +161,8 @@ class account:
                     first_name=first_name,
                     surname=surname,
                     username=username,
-                    password=hash(password) # Password must be hashed before
-                        # storing in the database.
+                    password=hash_password(password)  # Password must be hashed before
+                    # storing in the database.
                 )
             )
 
@@ -184,6 +192,7 @@ class account:
         )
 
         return query_result[0][0]
+
 
 # ------------------------------------------------------------------------------
 # Session Class
@@ -225,7 +234,7 @@ class session:
         the timeout for the session is reset.
 
         session_id -> string
-            The session id for which the creation time needs to be ipdated for
+            The session id for which the creation time needs to be updated for
 
         Does not have a return value
         """
@@ -258,14 +267,14 @@ class session:
             """.format(session_id)
         )
         if len(res) == 0:
-            raise SessionExpiredError(session_id) # If there is no entries
-                # it must have been deleted by a maintenance script, as it had
-                # expired.
+            raise SessionExpiredError(session_id)  # If there is no entries
+            # it must have been deleted by a maintenance script, as it had
+            # expired.
         else:
-            res = res[0] # Gets first element result from list - should only be
-                # one result
+            res = res[0]  # Gets first element result from list - should only be
+            # one result
         expiry_datetime = res[1] + datetime.timedelta(days=1)
-            # Set expiry date to one day after it has been last used
+        # Set expiry date to one day after it has been last used
 
         if datetime.datetime.now() > expiry_datetime:
             session.close(session_id)

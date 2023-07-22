@@ -3,46 +3,55 @@
 # ------------------------------------------------------------------------------
 import re
 
+
 # ------------------------------------------------------------------------------
 # Custom exceptions
 # ------------------------------------------------------------------------------
-class ConfigInvalidDataForType (Exception):
+class ConfigInvalidDataForType(Exception):
     """
     Exception for when a value in the configuration file is specified, but
     cannot be cast to the specified variable type.
     """
+
     def __init__(self, datatype, value, line):
         message = f"Error at line {line}: '{value}' is not a valid {datatype}"
         super().__init__(message)
 
-class ConfigInvalidDataTypeError (Exception):
+
+class ConfigInvalidDataTypeError(Exception):
     """
     Exception for when a datatype is specified in the configuration file that is
     not known to the Configuration class.
     """
+
     def __init__(self, datatype, line):
         message = f"Error at line {line}: '{datatype}' datatype is not known"
         super().__init__(message)
 
-class ConfigIndentationError (Exception):
+
+class ConfigIndentationError(Exception):
     """
     Exception for when there is an unexpected indent in the config file.
 
     Note that missing indentation will not raise errors, as it is impossible to
     tell whether that the lack of indentation is intentional.
     """
+
     def __init__(self, line):
         message = f"Error at line {line}: Unexpected Indentation"
         super().__init__(message)
 
-class ConfigVariableNotFound (Exception):
+
+class ConfigVariableNotFound(Exception):
     """
     Exception for when a variable is requested from the configuration file
     associated with the configuration instance, but is not found in the file.
     """
+
     def __init__(self, variable, file):
         message = f"Configuration file '{file}' does not contain the variable '{variable}'"
         super().__init__(message)
+
 
 # ------------------------------------------------------------------------------
 # Classes
@@ -52,6 +61,7 @@ class Configuration:
     Configuration class which handles the loading and requesting of data from
     the configuration file which is passed in.
     """
+
     def __init__(self, filename):
         """
         Constructor for the Configuration class.
@@ -84,36 +94,35 @@ class Configuration:
         Returns a value, which is the same as that specified by the datatype
         parameter.
         """
-        match datatype:
-            case "int":
-                try:
-                    return int(value)
-                except ValueError:
-                    raise ConfigInvalidDataForType(datatype, value, line_num)
-            case "str":
-                try:
-                    return str(value)
-                except ValueError:
-                    raise ConfigInvalidDataForType(datatype, value, line_num)
-            case "float":
-                try:
-                    return float(value)
-                except ValueError:
-                    raise ConfigInvalidDataForType(datatype, value, line_num)
-            case "bin-str":
-                try:
-                    return value.encode("utf-8")
-                except ValueError:
-                    raise ConfigInvalidDataForType(datatype, value, line_num)
-            case "bool":
-                if value == "true":
-                    return True
-                elif value == "false":
-                    return False
-                else:
-                    raise ConfigInvalidDataForType(datatype, value, line_num)
-            case _:
-                raise ConfigInvalidDataTypeError(datatype, line_num)
+        if datatype == "int":
+            try:
+                return int(value)
+            except ValueError:
+                raise ConfigInvalidDataForType(datatype, value, line_num)
+        elif datatype == "str":
+            try:
+                return str(value)
+            except ValueError:
+                raise ConfigInvalidDataForType(datatype, value, line_num)
+        elif datatype == "float":
+            try:
+                return float(value)
+            except ValueError:
+                raise ConfigInvalidDataForType(datatype, value, line_num)
+        elif datatype == "bin-str":
+            try:
+                return value.encode("utf-8")
+            except ValueError:
+                raise ConfigInvalidDataForType(datatype, value, line_num)
+        elif datatype == "bool":
+            if value == "true":
+                return True
+            elif value == "false":
+                return False
+            else:
+                raise ConfigInvalidDataForType(datatype, value, line_num)
+        else:
+            raise ConfigInvalidDataTypeError(datatype, line_num)
 
     def load(self):
         """
@@ -125,6 +134,7 @@ class Configuration:
             contents = f.readlines()
 
         hierarchy = {}
+        heading = None
 
         for line_num, line in enumerate(contents):
             heading_re = re.match("(\w+):\s*", line)
@@ -138,7 +148,7 @@ class Configuration:
                         hierarchy[heading][entry_re.group(1).lower()] = self._cast_to_type(
                             entry_re.group(2).lower(),
                             entry_re.group(3),
-                            line_num+1
+                            line_num + 1
                         )
                     else:
                         heading = None
@@ -148,10 +158,10 @@ class Configuration:
                         hierarchy[external_re.group(1).lower()] = self._cast_to_type(
                             external_re.group(2).lower(),
                             external_re.group(3),
-                            line_num+1
+                            line_num + 1
                         )
-                    elif not(re.match("\s*", line)):
-                        raise ConfigIndentationError(line_num+1)
+                    elif not (re.match("\s*", line)):
+                        raise ConfigIndentationError(line_num + 1)
         self._config = hierarchy
 
     def get(self, query_string):
@@ -164,7 +174,7 @@ class Configuration:
                 or
                 Variable
 
-        Note that it is not case sensitive
+        Note that it is not case-sensitive
 
         Returns the value stored in the specified variable, with the specified
         datatype.
@@ -182,7 +192,5 @@ class Configuration:
         else:
             raise ConfigVariableNotFound(query_string, self._filename)
         return res
-
-
 
 # Similar to YAML - but with more datatypes - binary strings

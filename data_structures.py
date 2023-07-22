@@ -1,13 +1,15 @@
 # ------------------------------------------------------------------------------
 # Custom exceptions
 # ------------------------------------------------------------------------------
-class QueueOverflowError (Exception):
+class QueueOverflowError(Exception):
     def __init__(self):
         super().__init__("Tried to push too many items into the queue")
 
-class QueueUnderflowError (Exception):
+
+class QueueUnderflowError(Exception):
     def __init__(self):
         super().__init__("Tried to get a value from an empty queue")
+
 
 # ------------------------------------------------------------------------------
 # Queue
@@ -21,12 +23,12 @@ class Queue:
         if self._max_length is not None and self.size + 1 > self._max_length:
             # Checks if it is not None, and if so does not check second clause
             raise QueueOverflowError()
-        self._items.append(item) # Appends to end
+        self._items.append(item)  # Appends to end
 
     def pop(self):
         if not self.size:
             raise QueueUnderflowError
-        return self._items.pop(0) # List is reverse order - FILO
+        return self._items.pop(0)  # List is reverse order - FILO
 
     def peek(self):
         if not self.size:
