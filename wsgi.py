@@ -6,10 +6,18 @@ import json
 # -----------------------------------------------------------------------------
 # Project imports
 # -----------------------------------------------------------------------------
+import configuration
 import environ_manipulation
 import logger
 import login
 import reading_lists
+
+# -----------------------------------------------------------------------------
+# Project constants
+# -----------------------------------------------------------------------------
+config = configuration.Configuration("project_config.conf")
+debugging = config.get("debugging") # Toggle whether logs are shown
+
 
 # -----------------------------------------------------------------------------
 # Utility functions
@@ -42,7 +50,7 @@ class Middleware(object):
 # -----------------------------------------------------------------------------
 class Handler(object):
     def __init__(self, log=None):
-        self._routes = {} # There are no routes for the base class - included so the __call__ should still work
+        self._routes = {}  # There are no routes for the base class - included so the __call__ should still work
         self._log = log
         write_log("Created " + __class__.__name__ + " instance", self._log)  # Cannot use
         # commas as it the method only takes 2 parameters, and these would
@@ -198,31 +206,27 @@ class MyBooksHandler(Handler):
         return response, status, response_headers
 
     def get_list_entries(self):
-        try:
-            response_json = self.get_post_data()
-            response_dict = json.loads(response_json)
+        response_json = self.get_post_data()
+        response_dict = json.loads(response_json)
 
-            session_id = response_dict["session_id"]
-            user_id = login.session.get_user_id(session_id)
-            write_log("          Session id: " + session_id, self._log)
+        session_id = response_dict["session_id"]
+        user_id = login.session.get_user_id(session_id)
+        write_log("          Session id: " + session_id, self._log)
 
-            list_name = response_dict["list_name"]
-            write_log("          List name: " + list_name, self._log)
+        list_name = response_dict["list_name"]
+        write_log("          List name: " + list_name, self._log)
 
-            entries = reading_lists.get_values(list_name, user_id)
+        entries = reading_lists.get_values(list_name, user_id)
 
-            result = dict()
+        result = dict()
 
-            result["books"] = [entries.pop() for i in range(entries.size)]
-            if not entries.size:
-                result["meta"] = "You have no books in this list"
-            else:
-                result["meta"] = None
+        result["books"] = [entries.pop() for i in range(entries.size)]
+        if not entries.size:
+            result["meta"] = "You have no books in this list"
+        else:
+            result["meta"] = None
 
-            response = json.dumps(result)
-        except Exception as e:
-            write_log(e, self._log)
-            response = "f"
+        response = json.dumps(result)  # Logging this will be slow – remove debug for production from config.
 
         status = "200 OK"
 
@@ -271,11 +275,15 @@ class ErrorHandler(Handler):
 # -----------------------------------------------------------------------------
 # Object initialisation
 # -----------------------------------------------------------------------------
-log = logger.Logging()
+if debugging:
+    log = logger.Logging()
+else:
+    log = None
 
 routes = {
     "account": AccountHandler(log),
-    "my_books": MyBooksHandler(log) # Objects are persistent, so will the response should be faster and more memory efficient
+    "my_books": MyBooksHandler(log)
+    # Objects are persistent, so will the response should be faster and more memory efficient
 }
 
 app = Middleware(routes, log)
