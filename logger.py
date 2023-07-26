@@ -8,7 +8,7 @@ import datetime
 # Logging
 # ------------------------------------------------------------------------------
 class Logging:
-    def __init__(self, filepath="tmp/", clear=True):
+    def __init__(self, filepath="/tmp/", clear=True):
         self._filepath = filepath
         self._clear = clear
         self._open()
