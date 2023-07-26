@@ -16,9 +16,6 @@ connection = mysql_handler.Connection(
     host=config.get("mysql host")
 )
 
-import logger
-log = logger.Logging(clear=False, filepath="/tmp/logging/2/")
-
 # ------------------------------------------------------------------------------
 # Instantiating import classes
 # ------------------------------------------------------------------------------
@@ -60,7 +57,7 @@ def get_values(name, user_id):
                 WHERE book_genres.book_id=reading_lists.book_id
                     AND book_genres.match_strength>{match_strength}
                 GROUP by books.title) AS genres,
-            (SELECT AVG(reviews.overall_rating)
+            (SELECT CAST(AVG(reviews.overall_rating) as FLOAT)
             	FROM reviews
             	WHERE reviews.book_id=books.book_id) AS average_rating,
             (SELECT COUNT(reviews.overall_rating)
@@ -85,7 +82,6 @@ def get_values(name, user_id):
 
     output_queue = data_structures.Queue()
     for i in res:
-        log.output_message(i[1])
         first_name = i[3]
         surname = i[4]
         alias = i[5]
