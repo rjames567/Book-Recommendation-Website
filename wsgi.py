@@ -1,204 +1,281 @@
-#!/usr/bin/env python3.10
-
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Standard Python library imports
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 import json
 
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Project imports
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 import environ_manipulation
 import logger
 import login
 import reading_lists
 
-# ------------------------------------------------------------------------------
-# Import object creation
-# ------------------------------------------------------------------------------
-log = logger.Logging(clear=False, filepath="/tmp")
+# -----------------------------------------------------------------------------
+# Utility functions
+# -----------------------------------------------------------------------------
+def write_log(msg, log):
+    if log is not None:
+        log.output_message(msg)
 
 
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Middleware
-# ------------------------------------------------------------------------------
-class Middleware:
-    def __init__(self, environ, start_response):
-        self.environ = environ
-        self.start = start_response
+# -----------------------------------------------------------------------------
+# Note that this is not technically a middleware as it is not totally
+# transparent, but it performs the same role.
+class Middleware(object):
+    def __init__(self, routes, log=None):
+        self._routes = routes
+        self._log = log
+        write_log(f"Create Middleware object", self._log)
 
-    def __iter__(self):
-        environ_manipulation.application.add_target(self.environ)
-        process = self.environ["TARGET_APPLICATION"]
-        if process == "account":
-            application = AccountApplication(self.environ, self.start)
-            yield application()
-        elif process == "my_books":
-            application = MyBooksApplication(self.environ, self.start)
-            yield application()
-        else:
-            response_headers = [("Content-Type", "text/plain")]
-            self.start("200 OK", response_headers)
-            yield "Page Not Found".encode("utf-8")
+    def __call__(self, environ, start_response):
+        target_name = environ_manipulation.application.get_target(environ)
+        write_log(f"Attempting to redirect to {target_name} application", self._log)
+        target_application = self._routes.get(target_name) or ErrorHandler("404 Not Found", log)
+        return target_application(environ, start_response)
 
 
-# ------------------------------------------------------------------------------
-# Application base class
-# ------------------------------------------------------------------------------
-class Application:
-    def __init__(self, environ, start_response):
-        self.environ = environ
-        self.start = start_response
+# -----------------------------------------------------------------------------
+# Handler Base Class
+# -----------------------------------------------------------------------------
+class Handler(object):
+    def __init__(self, log=None):
+        self._routes = {} # There are no routes for the base class - included so the __call__ should still work
+        self._log = log
+        write_log("Created " + __class__.__name__ + " instance", self._log)  # Cannot use
+        # commas as it the method only takes 2 parameters, and these would
+        # pass each element as a parameter
 
     def get_post_data(self):
         try:
-            body_size = int(self.environ["CONTENT_LENGTH"])
+            body_size = int(self._environ["CONTENT_LENGTH"])
         except ValueError:
             body_size = 0
 
-        return self.environ["wsgi.input"].read(body_size).decode("utf-8")
+        return self._environ["wsgi.input"].read(body_size).decode("utf-8")
+
+    def __call__(self, environ, start_response):
+        self._environ = environ  # Set so methods do not need to have it as a parameter.
+        write_log(self.__class__.__name__ + " object called", self._log)
+        write_log(f"     Handling request. URI: {self._environ['REQUEST_URI']}", self._log)
+        target_name = environ_manipulation.application.get_sub_target(self._environ)
+        write_log(f"     Redirecting to {self.__class__.__name__}.{target_name}", self._log)
+        target_function = self._routes.get(target_name) or ErrorHandler("404 Not Found", log).error_response
+        response, status, response_headers = target_function()
+        start_response(status, response_headers)
+        write_log(f"     Response given.    status: {status}    headers: {response_headers}    response: {response}",
+                  self._log)
+        yield response.encode("utf-8")
 
 
-# ------------------------------------------------------------------------------
-# Account application
-# ------------------------------------------------------------------------------
-class AccountApplication(Application):
-    def __init__(self, environ, start_response):
-        super().__init__(environ, start_response)
-
-    def create_account(self, json_response):
-        response_dict = json.loads(json_response)
-        try:
-            user_id = login.account.create_user(
-                first_name=response_dict["first_name"],
-                surname=response_dict["surname"],
-                username=response_dict["username"],
-                password=response_dict["password"]
-            )
-            session_id = login.session.create_session(user_id)
-            message = "Account created successfully"
-        except login.UserExistsError:
-            message = "Username is already taken."
-            session_id = None  # json.dumps converts this to null automatically
-
-        result_dict = {
-            "message": message,
-            "session_id": session_id  # Success can be interpreted from the id
+# -----------------------------------------------------------------------------
+# Account Handler
+# -----------------------------------------------------------------------------
+class AccountHandler(Handler):
+    def __init__(self, log=None):
+        super().__init__(log=log)
+        self._routes = {
+            "sign_in": self.sign_in,
+            "sign_out": self.sign_out,
+            "sign_up": self.sign_up
         }
 
-        return json.dumps(result_dict)  # Convert dictionary to json.
-
-    def sign_in(self, json_response):
+    def sign_in(self):
+        # Method is already specified for log - redirecting to object.method
+        json_response = self.get_post_data()
         response_dict = json.loads(json_response)
+        username = response_dict["username"]
         try:
             user_id = login.account.check_credentials(
-                username=response_dict["username"],
+                username=username,
                 password=response_dict["password"]
             )
             session_id = login.session.create_session(user_id)
             message = "Signed in successfully"
+            write_log("          Signed into account     Username: " + username, self._log)
         except login.InvalidUserCredentialsError:
+            write_log("          Failed to sign into account     Username: " + username, self._log)
             message = "Invalid username or password"
             session_id = None
 
-        result_dict = {
+        write_log("          Session id: " + session_id, self._log)
+
+        response = json.dumps({
             "message": message,
             "session_id": session_id
+        })
+
+        status = "200 OK"
+
+        response_headers = [
+            ("Content-Type", "application/json"),
+            ("Content-Length", str(len(response)))
+        ]
+
+        return response, status, response_headers
+
+    def sign_out(self):
+        session_id = self.get_post_data()
+        login.session.close(session_id)
+        write_log("          Closed session     Session id: " + session_id, self._log)
+
+        status = "200 OK"
+
+        response = "true"  # Response is not needed – it is for completeness only. The client does not wait or respond.
+
+        response_headers = [
+            ("Content-Type", "application/json"),
+            ("Content-Length", str(len(response)))
+        ]
+
+        return response, status, response_headers
+
+    def sign_up(self):
+        json_response = self.get_post_data()
+        response_dict = json.loads(json_response)
+        username = response_dict["username"]
+        try:
+            user_id = login.account.create_user(
+                first_name=response_dict["first_name"],
+                surname=response_dict["surname"],
+                username=username,
+                password=response_dict["password"]
+            )
+            session_id = login.session.create_session(user_id)
+            message = "Account created successfully"
+            write_log("          Created account     Username: " + username, self._log)
+        except login.UserExistsError:
+            write_log("          Failed to create account - username is taken     Username: " + username, self._log)
+            message = "Username is already taken."
+            session_id = None  # json.dumps converts this to null automatically
+
+        write_log("          Session id: " + session_id, self._log)
+
+        response = json.dumps({
+            "message": message,
+            "session_id": session_id  # Success can be interpreted from the id
+        })
+
+        status = "200 OK"
+
+        response_headers = [
+            ("Content-Type", "application/json"),
+            ("Content-Length", str(len(response)))
+        ]
+
+        return response, status, response_headers
+
+
+# -----------------------------------------------------------------------------
+# My Books Handler
+# -----------------------------------------------------------------------------
+class MyBooksHandler(Handler):
+    def __init__(self, log=None):
+        super().__init__(log=log)
+        self._routes = {
+            "get_lists": self.get_list_names,
+            "get_list_entries": self.get_list_entries
         }
 
-        return json.dumps(result_dict)
-
-    def sign_out(self, session_id):
-        login.session.close(session_id)
-        return "true"  # Response does not matter - client does not wait for one.
-
-    def __call__(self):
-        environ_manipulation.application.add_sub_target(self.environ)
-        process = self.environ["APPLICATION_PROCESS"]
-        if process == "sign_up":
-            post_content = self.get_post_data()
-            response = self.create_account(post_content)
-            response_headers = [
-                ("Content-Type", "application/json"),
-                ("Content-Length", str(len(response)))
-            ]
-            self.start("200 OK", response_headers)
-
-        elif process == "sign_in":
-            post_content = self.get_post_data()
-            response = self.sign_in(post_content)
-            response_headers = [
-                ("Content-Type", "application/json"),
-                ("Content-Length", str(len(response)))
-            ]
-            self.start("200 OK", response_headers)
-        elif process == "sign_out":
-            post_content = self.get_post_data()
-            response = self.sign_out(post_content)  # Response is for completeness
-            response_headers = [
-                ("Content-Type", "test/plain"),
-                ("Content-Length", str(len(response)))
-            ]
-            self.start("200 OK", response_headers)
-        else:
-            response_headers = [("Content-Type", "text/plain")]
-            self.start("200 OK", response_headers)
-            response = "Page Not Found"
-        return response.encode("utf-8")
-
-
-# ------------------------------------------------------------------------------
-# Account application
-# ------------------------------------------------------------------------------
-class MyBooksApplication(Application):
-    def __init__(self, environ, start_response):
-        super().__init__(environ, start_response)
-
-    def get_list_names(self, session_id):
+    def get_list_names(self):
+        session_id = self.get_post_data()
+        write_log("          Session id: " + session_id, self._log)
         user_id = login.session.get_user_id(session_id)
+        write_log("          User id: " + session_id, self._log)
 
         names = reading_lists.get_names(user_id)
-        result = {i: names.pop() for i in range(names.size)}
+        response = json.dumps({i: names.pop() for i in range(names.size)})
 
-        return json.dumps(result)
+        status = "200 OK"
 
-    def get_list_content(self, response_json):
-        response_dict = json.loads(response_json)
-        user_id = login.session.get_user_id(response_dict["session_id"])
+        response_headers = [
+            ("Content-Type", "application/json"),
+            ("Content-Length", str(len(response)))
+        ]
 
-        entries = reading_lists.get_values(response_dict["list_name"], user_id)
+        return response, status, response_headers
 
-        result = dict()
+    def get_list_entries(self):
+        try:
+            response_json = self.get_post_data()
+            response_dict = json.loads(response_json)
 
-        result["books"] = [entries.pop() for i in range(entries.size)]
-        if not entries.size:
-            result["meta"] = "You have no books in this list"
-        else:
-            result["meta"] = None
+            session_id = response_dict["session_id"]
+            user_id = login.session.get_user_id(session_id)
+            write_log("          Session id: " + session_id, self._log)
 
-        return json.dumps(result)
+            list_name = response_dict["list_name"]
+            write_log("          List name: " + list_name, self._log)
 
-    def __call__(self):
-        environ_manipulation.application.add_sub_target(self.environ)
-        process = self.environ["APPLICATION_PROCESS"]
-        if process == "get_lists":
-            post_content = self.get_post_data()
-            response = self.get_list_names(post_content)
-            response_headers = [
-                ("Content-Type", "application/json"),
-                ("Content-Length", str(len(response)))
-            ]
-            self.start("200 OK", response_headers)
-        elif process == "get_list_entries":
-            post_content = self.get_post_data()
-            response = self.get_list_content(post_content)
-            response_headers = [
-                ("Content-Type", "application/json"),
-                ("Content-Length", str(len(response)))
-            ]
-            self.start("200 OK", response_headers)
-        else:
-            response_headers = [("Content-Type", "text/plain")]
-            self.start("404 Page Not Found", response_headers)
-            response = "Page Not Found"
-        return response.encode("utf-8")
+            entries = reading_lists.get_values(list_name, user_id)
+
+            result = dict()
+
+            result["books"] = [entries.pop() for i in range(entries.size)]
+            if not entries.size:
+                result["meta"] = "You have no books in this list"
+            else:
+                result["meta"] = None
+
+            response = json.dumps(result)
+        except Exception as e:
+            write_log(e, self._log)
+            response = "f"
+
+        status = "200 OK"
+
+        response_headers = [
+            ("Content-Type", "application/json"),
+            ("Content-Length", str(len(response)))
+        ]
+
+        return response, status, response_headers
+
+
+# -----------------------------------------------------------------------------
+# Error Handler
+# -----------------------------------------------------------------------------
+class ErrorHandler(Handler):
+    def __init__(self, status, log=None):
+        super().__init__(log=log)
+        self._status = status
+
+    def error_response(self):
+        write_log(f"     Handling error: {self._status}", self._log)
+        response = f"<h1>{self._status}</h1>"
+        if self._status[0] == "4":  # Other messages are successful, so do not need to be created.
+            response += "<p>The page you were looking for does not exist.</p>"
+        elif self._status[0] == "5":
+            response += "<p>An server error has occurred. Please try again later.</p>"
+
+        response_headers = [
+            ("Content-Type", "text/html")
+        ]
+
+        return response, self._status, response_headers  # Status is needed as this format is needed elsewhere
+
+    def __call__(self, environ, start_response):
+        write_log(self.__class__.__name__ + " object called", self._log)
+        write_log(f"     Handling request. URI: {environ['REQUEST_URI']}", self._log)
+        response, status, response_headers = self.error_response()  # Overwrite standard method. Different to reduce
+        # necessary processing - it is known an error has occurred, it does not need to be checked for.
+        start_response(status, response_headers)
+        write_log(
+            f"     Response given.    status: {self._status}    headers: {response_headers}    response: {response}",
+            self._log)
+        yield response.encode("utf-8")
+
+
+# -----------------------------------------------------------------------------
+# Object initialisation
+# -----------------------------------------------------------------------------
+log = logger.Logging()
+
+routes = {
+    "account": AccountHandler(log),
+    "my_books": MyBooksHandler(log) # Objects are persistent, so will the response should be faster and more memory efficient
+}
+
+app = Middleware(routes, log)
