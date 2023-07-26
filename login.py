@@ -38,7 +38,7 @@ _token_size = config.get("session_id_length")
 class SessionExpiredError(Exception):
     """
     Exception for when a client is using a session that has expired, and is no
-    longer valid
+    longer valid.
     """
 
     def __init__(self, session_id):
@@ -150,6 +150,7 @@ class account:
             WHERE username="{}"
             """.format(username)
         )
+        print(query_result)
         if len(query_result):
             raise UserExistsError(username)
         else:
