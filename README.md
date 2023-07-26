@@ -34,6 +34,6 @@ There will be a prompt for a password, which will be the same as what was entere
 Create the database with name OpenBook. Remember the credentials used for the username, ip and password.
 > CREATE DATABASE OpenBook;\
 > CREATE USER "_username_"@"_database ip_" IDENTIFIED BY "_user password_";\
-> GRANT ALL PRIVILEGES ON OpenBook TO "_username_"@"_database ip_";\
+> GRANT ALL PRIVILEGES ON OpenBook.* TO "_username_"@"_database ip_";\
 > FLUSH PRIVILEGES;\
 > QUIT;
