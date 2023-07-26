@@ -7,56 +7,47 @@ import re
 # ------------------------------------------------------------------------------
 # Application manipulation
 # ------------------------------------------------------------------------------
-class application:
-    def add_target(environ):
+class application():
+    def get_target(environ):
         """
         Modifies the environ dictionary given when using WSGI, to contain the
         target sub application, as dictated by the first part of the URI.
 
         Example path: /application_name/sub_process
-            Adds TARGET_APPLICATION, with value application_name
+            Returns application_name
 
         Example path: /
-            Adds TARGET_APPLICATION, with value None.
+            Returns None.
 
-        Modifies the environ dictionary, and adds "TARGET_APPLICATION" to it.
-        This can be accessed directly, and does not need to be reassigned.
-
-        Does not have a return value
+        Returns the target name, if applicable, as a string, otherwise it
+        returns None
         """
-        path = environ["REQUEST_URI:"]
+        path = environ["REQUEST_URI"]
         temp = re.match("/[\w-]+/([\w-]+)", path)  # Should not include dashes in result, but included, so it does
         # not break if it does.
         if temp:
-            target = temp.group(1)
-        else:
-            target = None
-        environ["TARGET_APPLICATION"] = target  # Will change the dictionary
-        # passed.
+            return temp.group(1)
+        return None
 
-    def add_sub_target(environ):
+    def get_sub_target(environ):
         """
         Modifies the environ dictionary given when using WSGI, to contain the
         target process within the sub application, as dictated by the second
         part of the URI.
 
-        Example path: /application_name/sub_process/
-            Adds APPLICATION_PROCESS, with value sub_process
+        Example path: /application_name/sub_process
+            Returns sub_process
 
-        Example path: /application_name/
-            Adds APPLICATION_PROCESS, with value None.
+        Example path: /
+            Returns None.
 
-        Modifies the environ dictionary, and adds "APPLICATION_PROCESS" to it.
-        This can be accessed directly, and does not need to be reassigned.
-
-        Does not have a return value
+        Returns the target name, if applicable, as a string, otherwise it
+        returns None
         """
-        path = environ["REQUEST_URI:"]
+        path = environ["REQUEST_URI"]
         temp = re.match("/[\w-]+/[\w-]+/([\w-]+)", path)  # Should not
         # include dashes in result, but included, so it does not break if it
         # does.
         if temp:
-            sub = temp.group(1)
-        else:
-            sub = None
-        environ["APPLICATION_PROCESS"] = sub
+            return temp.group(1)
+        return None
