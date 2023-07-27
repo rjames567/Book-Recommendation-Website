@@ -381,6 +381,7 @@ function assignReadingListNavigationHandlers () {
                 history.pushState({urlPath: newURI},"", newURI);
                 }
                 assignDeleteHandlers(listName); // Assign delete handlers to remove entries
+                assignMovementHandlers(listName);
             },
             error: function (jqXHR) {
                 alert(jqXHR.status + " "+ jqXHR.responseText);
@@ -398,6 +399,28 @@ function assignDeleteHandlers (listName) {
             data: JSON.stringify({
                 "list_name": listName,
                 "book_title": $(book).find(".title").html(),
+                "session_id": sessionID
+            }),
+            success: function (result) {
+                $(book).fadeOut(500); // Hide the entry from the list
+            },
+            error: function (jqXHR) {
+                alert(jqXHR.status + " "+ jqXHR.responseText);
+            }
+        });
+    });
+}
+
+function assignMovementHandlers (listName) {
+    $(".container .entries .book button.read").click(function () {
+        let book = $(this).closest("div.book");
+        $.ajax({
+            type: "POST",
+            url: "cgi-bin/my_books/move_list_entry",
+            data: JSON.stringify({
+                "list_name": listName,
+                "book_title": $(book).find(".title").html(),
+                "button_name": $(book).find(".reading-list-manipulation").html(),
                 "session_id": sessionID
             }),
             success: function (result) {
