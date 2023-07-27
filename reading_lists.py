@@ -57,7 +57,7 @@ def get_values(name, user_id):
                 WHERE book_genres.book_id=reading_lists.book_id
                     AND book_genres.match_strength>{match_strength}
                 GROUP by books.title) AS genres,
-            (SELECT CAST(AVG(reviews.overall_rating) as FLOAT)
+            (SELECT CAST(IFNULL(AVG(reviews.overall_rating), 0) as FLOAT)  # Prevent any null values - replace with 0s.
             	FROM reviews
             	WHERE reviews.book_id=books.book_id) AS average_rating,
             (SELECT COUNT(reviews.overall_rating)
