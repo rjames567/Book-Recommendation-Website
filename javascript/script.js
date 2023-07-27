@@ -340,13 +340,29 @@ function assignReadingListNavigationHandlers () {
 
                 let books = result["books"];
                 for (let i = 0; i < books.length; i++) {
+                    let averageRating = books[i]["average_rating"];
                     $(".container .entries .book.template .title").html(books[i]["title"]);
                     $(".container .entries .book.template .author").html(books[i]["author"]);
                     $(".container .entries .book.template .date-added").html(books[i]["date_added"]);
                     $(".container .entries .book.template .synopsis").html(books[i]["synopsis"]);
-                    $(".container .entries .book.template .about-review .average-review").html(books[i]["average_rating"]);
+                    $(".container .entries .book.template .about-review .average-review").html(averageRating);
                     $(".container .entries .book.template .about-review span.num-review").html(books[i]["num_reviews"]);
                     $(".container .entries .book.template .cover img").attr("src", books[i]["cover"]);
+
+                    let icons = $(".container .entries .book.template .rating-container i");
+                    let numFull = Math.trunc(averageRating);
+                    for (let i = 0; i < numFull; i++) {
+                        $(icons[i]).removeClass().addClass("fa fa-star"); // Removes all classes first. This is easier
+                        // as it then does not need to worry about removing the two other possibilities. Does mean
+                        // fa needs to be added as well
+                    }
+                    if (numFull != averageRating) {
+                        $(icons[numFull]).removeClass().addClass("fa fa-star-half-o");
+                        numFull += 1;
+                    }
+                    for (let i = numFull; i < 5; i++) {
+                        $(icons[i]).removeClass().addClass("fa fa-star-o");
+                    }
 
                     $(".container .entries .book.template ol li:not('.template')").remove();
                         // Remove any genres from previous entry.
