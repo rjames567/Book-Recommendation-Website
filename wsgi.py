@@ -16,7 +16,7 @@ import reading_lists
 # Project constants
 # -----------------------------------------------------------------------------
 config = configuration.Configuration("project_config.conf")
-debugging = config.get("debugging") # Toggle whether logs are shown
+debugging = config.get("debugging")  # Toggle whether logs are shown
 
 
 # -----------------------------------------------------------------------------
@@ -76,7 +76,6 @@ class Handler(object):
 
         return res
 
-
     def __call__(self, environ, start_response):
         self._environ = environ  # Set so methods do not need to have it as a parameter.
         self.retrieve_get_parameters()
@@ -123,7 +122,6 @@ class AccountHandler(Handler):
             message = "Invalid username or password"
             session_id = None
             write_log("          Session id: #N/A", self._log)
-
 
         response = json.dumps({
             "message": message,
@@ -197,14 +195,15 @@ class MyBooksHandler(Handler):
         super().__init__(log=log)
         self._routes = {
             "get_lists": self.get_list_names,
-            "get_list_entries": self.get_list_entries
+            "get_list_entries": self.get_list_entries,
+            "remove_list_entry": self.remove_list_entry
         }
 
     def get_list_names(self):
         session_id = self.retrieve_get_parameters()["session_id"]
         write_log("          Session id: " + session_id, self._log)
         user_id = login.session.get_user_id(session_id)
-        write_log("          User id: " + session_id, self._log)
+        write_log("          User id: " + str(user_id), self._log)
 
         names = reading_lists.get_names(user_id)
         response = json.dumps({i: names.pop() for i in range(names.size)})
@@ -246,6 +245,32 @@ class MyBooksHandler(Handler):
             result["meta"] = None
 
         response = json.dumps(result)  # Logging this will be slow – remove debug for production from config.
+
+        status = "200 OK"
+
+        response_headers = [
+            ("Content-Type", "application/json"),
+            ("Content-Length", str(len(response)))
+        ]
+
+        return response, status, response_headers
+
+    def remove_list_entry(self):
+        json_response = self.retrieve_post_parameters()
+        response_dict = json.loads(json_response)
+        session_id = response_dict["session_id"]
+        list_name = response_dict["list_name"]
+        book_title = response_dict["book_title"].replace("&amp;", "&")  # Replace ampersand code with character
+
+        write_log("          Session id: " + session_id, self._log)
+        user_id = login.session.get_user_id(session_id)
+        write_log("          User id: " + str(user_id), self._log)
+
+        write_log("          List name: " + list_name, self._log)
+        write_log("          Book title: " + book_title, self._log)
+
+        reading_lists.remove_entry(user_id, list_name, book_title)
+        response = "true"  # A response is needed to use this result, but does not impact the client at all.
 
         status = "200 OK"
 
