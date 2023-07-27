@@ -381,10 +381,7 @@ main .container {
 
 .book .about-review {
   padding: 0 10px;
-}
-
-.book .num-review {
-  float: right;
+  font-size: 14px;
 }
 
 .book .right-content .actions {
