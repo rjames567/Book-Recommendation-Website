@@ -329,6 +329,15 @@ function assignReadingListNavigationHandlers () {
             success: function (result) {
                 $(".container .entries .book:not('.template')").remove();
                     // Remove existing entries so only new ones are shown.
+
+                if (result["button"]) {
+                    $(".container .entries .book.template .actions .read").show()
+                    // incase it was hidden by previous action
+                    $(".container .entries .book.template .actions .read .reading-list-manipulation").html(result["button"])
+                } else {
+                    $(".container .entries .book.template .actions .read").hide()
+                }
+
                 let books = result["books"];
                 for (let i = 0; i < books.length; i++) {
                     $(".container .entries .book.template .title").html(books[i]["title"]);

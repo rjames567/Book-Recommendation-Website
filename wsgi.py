@@ -233,6 +233,13 @@ class MyBooksHandler(Handler):
         result = dict()
 
         result["books"] = [entries.pop() for i in range(entries.size)]
+        if list_name == "Currently Reading":
+            result["button"] = "Mark as read"
+        elif list_name == "Want to Read":
+            result["button"] = "Start Reading"
+        else:
+            result["button"] = None
+
         if not entries.size:
             result["meta"] = "You have no books in this list"
         else:
