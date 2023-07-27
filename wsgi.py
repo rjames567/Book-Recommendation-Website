@@ -64,8 +64,24 @@ class Handler(object):
 
         return self._environ["wsgi.input"].read(body_size).decode("utf-8")
 
+    def retrieve_get_parameters(self):
+        query = self._environ.get("QUERY_STRING")
+        if len(query) == 0:
+            write_log("          Get parameters: #N/A", self._log)
+            return None
+        res = dict()
+        write_log(query.split("&"), self._log)
+        for i in query.split("&"):
+            pair = i.split("=")
+            res[pair[0]] = pair[1].replace("%20", " ")
+
+        write_log("          Get parameters: " + json.dumps(res), self._log)
+        return res
+
+
     def __call__(self, environ, start_response):
         self._environ = environ  # Set so methods do not need to have it as a parameter.
+        self.retrieve_get_parameters()
         write_log(self.__class__.__name__ + " object called", self._log)
         write_log(f"     Handling request. URI: {self._environ['REQUEST_URI']}", self._log)
         target_name = environ_manipulation.application.get_sub_target(self._environ)
@@ -187,7 +203,7 @@ class MyBooksHandler(Handler):
         }
 
     def get_list_names(self):
-        session_id = self.retrieve_post_parameters()
+        session_id = self.retrieve_get_parameters()["session_id"]
         write_log("          Session id: " + session_id, self._log)
         user_id = login.session.get_user_id(session_id)
         write_log("          User id: " + session_id, self._log)
@@ -205,8 +221,7 @@ class MyBooksHandler(Handler):
         return response, status, response_headers
 
     def get_list_entries(self):
-        response_json = self.retrieve_post_parameters()
-        response_dict = json.loads(response_json)
+        response_dict = self.retrieve_get_parameters()
 
         session_id = response_dict["session_id"]
         user_id = login.session.get_user_id(session_id)

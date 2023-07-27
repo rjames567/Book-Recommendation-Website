@@ -35,6 +35,13 @@ function getLinkNameByURI () { // Convert URI to navigation link text.
         // Remove leading slash, and convert to title case.
 }
 
+// JavaScript for Web Developers    ISBN: 978-1-119-36644-7
+function addGetParameter (url, name, value) {
+    url += (url.indexOf("?") == -1 ? "?" : "&");
+    url += `${encodeURIComponent(name)}=${encodeURIComponent(value)}`;
+    return url;
+}
+
 // -----------------------------------------------------------------------------
 // Page Switching
 // -----------------------------------------------------------------------------
@@ -285,10 +292,10 @@ $("header a#sign-out-button").click(function () {
 function loadMyBooks () {
     // Get list titles
     $.ajax({
-        type: "POST",
-        url: "cgi-bin/my_books/get_lists",
-        data: sessionID,
+        type: "GET",
+        url: addGetParameter("cgi-bin/my_books/get_lists", "session_id", sessionID),
         success: function (result) {
+            var firstElem;
             $(".navigation ul li:not('.template') a").remove();
             let length = Object.keys(result).length;
             for (let i = 0, temp, firstElem; i < length; i++) {
@@ -301,7 +308,7 @@ function loadMyBooks () {
             assignReadingListNavigationHandlers();
             $(firstElem).trigger("click");
         },
-        error: function (jqXHR) {
+        error: function (result, jqXHR) {
             alert(result["success"] + "    " + result["message"]);
         }
     });
@@ -313,13 +320,12 @@ function assignReadingListNavigationHandlers () {
         $(this).addClass("active");
         let listName = $(this).html();
 
+        var requestURL = "cgi-bin/my_books/get_list_entries";
+        requestURL = addGetParameter(requestURL, "session_id", sessionID)
+        requestURL = addGetParameter(requestURL, "list_name", listName)
         $.ajax({
-            type: "POST", // Post as session ids shouldn't be exposed
-            url: "cgi-bin/my_books/get_list_entries",
-            data: JSON.stringify({
-                "session_id": sessionID,
-                "list_name": listName
-            }),
+            type: "GET",
+            url: requestURL,
             success: function (result) {
                 $(".container .entries .book:not('.template')").remove();
                     // Remove existing entries so only new ones are shown.
