@@ -379,7 +379,8 @@ function assignDeleteHandlers (listName) {
             url: "cgi-bin/my_books/remove_list_entry",
             data: JSON.stringify({
                 "list_name": listName,
-                "book_title": $(book).find(".title").html()
+                "book_title": $(book).find(".title").html(),
+                "session_id": sessionID
             }),
             success: function (result) {
                 $(book).fadeOut(500); // Hide the entry from the list
