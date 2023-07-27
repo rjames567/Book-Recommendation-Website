@@ -56,7 +56,7 @@ class Handler(object):
         # commas as it the method only takes 2 parameters, and these would
         # pass each element as a parameter
 
-    def get_post_data(self):
+    def retrieve_post_parameters(self):
         try:
             body_size = int(self._environ["CONTENT_LENGTH"])
         except ValueError:
@@ -92,7 +92,7 @@ class AccountHandler(Handler):
 
     def sign_in(self):
         # Method is already specified for log - redirecting to object.method
-        json_response = self.get_post_data()
+        json_response = self.retrieve_post_parameters()
         response_dict = json.loads(json_response)
         username = response_dict["username"]
         try:
@@ -103,12 +103,13 @@ class AccountHandler(Handler):
             session_id = login.session.create_session(user_id)
             message = "Signed in successfully"
             write_log("          Signed into account     Username: " + username, self._log)
+            write_log("          Session id: " + session_id, self._log)
         except login.InvalidUserCredentialsError:
             write_log("          Failed to sign into account     Username: " + username, self._log)
             message = "Invalid username or password"
             session_id = None
+            write_log("          Session id: #N/A", self._log)
 
-        write_log("          Session id: " + session_id, self._log)
 
         response = json.dumps({
             "message": message,
@@ -125,7 +126,7 @@ class AccountHandler(Handler):
         return response, status, response_headers
 
     def sign_out(self):
-        session_id = self.get_post_data()
+        session_id = self.retrieve_post_parameters()
         login.session.close(session_id)
         write_log("          Closed session     Session id: " + session_id, self._log)
 
@@ -141,7 +142,7 @@ class AccountHandler(Handler):
         return response, status, response_headers
 
     def sign_up(self):
-        json_response = self.get_post_data()
+        json_response = self.retrieve_post_parameters()
         response_dict = json.loads(json_response)
         username = response_dict["username"]
         try:
@@ -167,12 +168,10 @@ class AccountHandler(Handler):
         })
 
         status = "200 OK"
-
         response_headers = [
             ("Content-Type", "application/json"),
             ("Content-Length", str(len(response)))
         ]
-
         return response, status, response_headers
 
 
@@ -188,7 +187,7 @@ class MyBooksHandler(Handler):
         }
 
     def get_list_names(self):
-        session_id = self.get_post_data()
+        session_id = self.retrieve_post_parameters()
         write_log("          Session id: " + session_id, self._log)
         user_id = login.session.get_user_id(session_id)
         write_log("          User id: " + session_id, self._log)
@@ -206,7 +205,7 @@ class MyBooksHandler(Handler):
         return response, status, response_headers
 
     def get_list_entries(self):
-        response_json = self.get_post_data()
+        response_json = self.retrieve_post_parameters()
         response_dict = json.loads(response_json)
 
         session_id = response_dict["session_id"]
