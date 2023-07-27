@@ -362,6 +362,27 @@ function assignReadingListNavigationHandlers () {
                     // use a bookmark in the search bar.
                 history.pushState({urlPath: newURI},"", newURI);
                 }
+                assignDeleteHandlers(listName); // Assign delete handlers to remove entries
+            },
+            error: function (jqXHR) {
+                alert(jqXHR.status + " "+ jqXHR.responseText);
+            }
+        });
+    });
+}
+
+function assignDeleteHandlers (listName) {
+    $(".container .entries .book button.delete").click(function () {
+        let book = $(this).closest("div.book");
+        $.ajax({
+            type: "POST",
+            url: "cgi-bin/my_books/remove_list_entry",
+            data: JSON.stringify({
+                "list_name": listName,
+                "book_title": $(book).find(".title").html()
+            }),
+            success: function (result) {
+                $(book).fadeOut(500); // Hide the entry from the list
             },
             error: function (jqXHR) {
                 alert(jqXHR.status + " "+ jqXHR.responseText);
