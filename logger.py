@@ -2,7 +2,7 @@
 # Standard Python library imports
 # ------------------------------------------------------------------------------
 import datetime
-
+import json
 
 # ------------------------------------------------------------------------------
 # Logging
@@ -30,8 +30,15 @@ class Logging:
         self._method = "a+"
 
     def _write(self, message):
+        if type(message) == list:
+            message = f"[{','.join(message)}]"
+        elif type(message) == dict:
+            message = json.dumps(message)
+        elif type(message) != str:
+            message = str(message) # Make it easier to write too – and faster if it is not in debugging mode as
+            # conversions do not need to be made
         with open(self._filepath + "output.log", self._method) as f:
-            f.write(message)  #
+            f.write(message)
 
     def output_message(self, message):
         message = str(message)
