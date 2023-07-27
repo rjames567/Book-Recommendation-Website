@@ -70,12 +70,10 @@ class Handler(object):
             write_log("          Get parameters: #N/A", self._log)
             return None
         res = dict()
-        write_log(query.split("&"), self._log)
         for i in query.split("&"):
             pair = i.split("=")
-            res[pair[0]] = pair[1].replace("%20", " ")
+            res[pair[0]] = pair[1].replace("%20", " ")  # Fix spaces in the result
 
-        write_log("          Get parameters: " + json.dumps(res), self._log)
         return res
 
 
