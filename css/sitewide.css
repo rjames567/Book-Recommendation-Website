@@ -25,8 +25,8 @@ body, html {
 /* -------------------------------------------------------------------------- */
 /* Site-wide classes                                                           */
 /* -------------------------------------------------------------------------- */
-.hidden, .template {
-  display: none;
+.hidden, .template{
+  display: none !important;
 }
 
 .row {
@@ -262,7 +262,7 @@ main .container {
 }
 
 /* -------------------------------------------------------------------------- */
-/* Reading list - List Maintenance                                           */
+/* Reading list - List Maintenance                                            */
 /* -------------------------------------------------------------------------- */
 .edit-lists button {
   display: inline-block;
@@ -288,6 +288,40 @@ main .container {
 }
 
 .edit-lists button.create-list:hover {
+  background-color: var(--light-blue);
+}
+
+.edit-lists .add-container {
+  float: left;
+  width: 30%;
+  height: 40px;
+  border: 2px solid var(--blue);
+}
+.edit-lists .add-container input[type=text] {
+  float: left;
+  height: 39px;
+  padding: 0 0 0 10px;
+  width: calc(100% - 54px);
+  background-color: transparent;
+  border: none;
+  outline: none;
+}
+
+.edit-lists .add-container input[type=text]:focus {
+  background-color: var(--light-grey);
+}
+
+.edit-lists .add-container button {
+  float: right;
+  background-color: var(--blue);
+  cursor: pointer;
+  width: 42px;
+  height: 40px;
+  margin: 0;
+  border: 1px solid var(--blue);
+}
+
+.edit-lists .add-container button:hover {
   background-color: var(--light-blue);
 }
 
