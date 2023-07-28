@@ -21,6 +21,20 @@ connection = mysql_handler.Connection(
 # ------------------------------------------------------------------------------
 _genre_required_match = config.get("books genre_match_threshold")
 
+
+# ------------------------------------------------------------------------------
+# Exceptions
+# ------------------------------------------------------------------------------
+class ProtectedListDeletionError(Exception):
+    """
+    Exception for when a reading list is tried to be deleted, which is protected, and should not be deleted.
+    """
+
+    def __init__(self, list_name):
+        message = f"'{list_name}' list is protected and cannot be deleted."
+        super().__init__(message)
+
+
 # ------------------------------------------------------------------------------
 # List names
 # ------------------------------------------------------------------------------
@@ -30,12 +44,13 @@ def get_names(user_id):
         SELECT list_name from reading_list_names
         WHERE user_id={};
         """.format(user_id)
-    ) # List of single element tuples
+    )  # List of single element tuples
     output_queue = data_structures.Queue()
     for i in res:
-        output_queue.push(i[0]) # i is a single element tuple
+        output_queue.push(i[0])  # i is a single element tuple
 
     return output_queue
+
 
 # ------------------------------------------------------------------------------
 # List values
@@ -89,13 +104,13 @@ def get_values(name, user_id):
                 (first_name is not None and surname is not None)):
             author = f"{alias} ({first_name} {surname})"
         elif (alias is not None and
-                (first_name is None and surname is None)):
+              (first_name is None and surname is None)):
             author = alias
         else:
             author = f"{first_name} {surname}"
 
         synopsis = "</p><p>".join(("<p>" + i[2] + "</p>").split("\n"))
-            # Change new lines to new paragraphs
+        # Change new lines to new paragraphs
 
         output_queue.push(
             {
@@ -112,6 +127,7 @@ def get_values(name, user_id):
 
     return output_queue
 
+
 def remove_entry(user_id, list_name, book_title):
     list_id = connection.query("""
     SELECT list_id FROM reading_list_names
@@ -120,7 +136,7 @@ def remove_entry(user_id, list_name, book_title):
     """.format(
         user_id=user_id,
         list_name=list_name
-    ))[0][0] # Will only be one iteem, so first element of only tuple is selected.
+    ))[0][0]  # Will only be one iteem, so first element of only tuple is selected.
 
     book_id = connection.query("""
     SELECT book_id FROM books
@@ -137,6 +153,7 @@ def remove_entry(user_id, list_name, book_title):
         user_id=user_id,
         list_id=list_id
     ))
+
 
 def add_entry(user_id, list_name, book_title):
     book_id = connection.query("""
@@ -158,11 +175,42 @@ def add_entry(user_id, list_name, book_title):
     ({user_id}, {book_id}, {list_id})
     """.format(
         user_id=user_id,
-        book_id = book_id,
+        book_id=book_id,
         list_id=list_id
     ))
 
+
 def move_entry(user_id, start_list_name, end_list_name, book_title):
     remove_entry(user_id, start_list_name, book_title)
-    add_entry(user_id, end_list_name, book_title) # This changes the date added, but this is not an issue as
+    add_entry(user_id, end_list_name, book_title)  # This changes the date added, but this is not an issue as
     # as once moved, it would be a new addition to the list, so the date should change.
+
+
+# ------------------------------------------------------------------------------
+# List management
+# ------------------------------------------------------------------------------
+def remove_list(user_id, list_name):
+    if list_name in ["Currently Reading", "Want to Read", "Have Read"]:
+        raise ProtectedListDeletionError(list_name)
+
+    list_name_id = connection.query("""
+        SELECT list_id FROM reading_list_names
+        WHERE user_id={user_id}
+            AND list_name="{list_name}";
+    """.format(
+        user_id=user_id,
+        list_name=list_name
+    ))[0][0]
+
+    connection.query("""
+        DELETE FROM reading_lists
+        WHERE list_id={};
+    """.format(list_name_id))
+    # Only the specific users list will be deleted, as it targets the single list
+    # Delete the entries
+
+    connection.query("""
+        DELETE FROM reading_list_names
+        WHERE list_id={}
+    """.format(list_name_id))
+    # Delete the list name
