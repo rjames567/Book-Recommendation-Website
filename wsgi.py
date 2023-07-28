@@ -2,6 +2,7 @@
 # Standard Python library imports
 # -----------------------------------------------------------------------------
 import json
+import urllib.parse
 
 # -----------------------------------------------------------------------------
 # Project imports
@@ -66,14 +67,9 @@ class Handler(object):
 
     def retrieve_get_parameters(self):
         query = self._environ.get("QUERY_STRING")
-        if len(query) == 0:
-            write_log("          Get parameters: #N/A", self._log)
-            return None
-        res = dict()
-        for i in query.split("&"):
-            pair = i.split("=")
-            res[pair[0]] = pair[1].replace("%20", " ")  # Fix spaces in the result
-
+        arr_dict = urllib.parse.parse_qs(query)  # Returns dictionary of arrays {str: list}
+        res = {i: arr_dict[i][0] for i in arr_dict.keys()}  # Convert to dictionary {str: str}
+        #  Use urllib as it handles the non-printable characters – %xx
         return res
 
     def __call__(self, environ, start_response):
@@ -297,7 +293,7 @@ class MyBooksHandler(Handler):
 
         button_text = response_dict["button_name"]
         write_log("          Button name: " + button_text, self._log)
-        if button_text == "Mark as Read": # Can only be triggered by one of these options being clicked, so target_list
+        if button_text == "Mark as Read":  # Can only be triggered by one of these options being clicked, so target_list
             # will ne defined regardless.
             target_list = "Have Read"
         elif button_text == "Start Reading":
