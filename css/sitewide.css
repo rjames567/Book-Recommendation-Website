@@ -275,7 +275,7 @@ main .container {
 
 .edit-lists button.delete-list {
   background-color: var(--red);
-  float: left;
+  float: right;
 }
 
 .edit-lists button.delete-list:hover {
@@ -284,7 +284,7 @@ main .container {
 
 .edit-lists button.create-list {
   background-color: var(--blue);
-  float: right;
+  float: left;
 }
 
 .edit-lists button.create-list:hover {
