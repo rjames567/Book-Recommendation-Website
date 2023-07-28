@@ -295,6 +295,7 @@ main .container {
   float: left;
   width: 30%;
   height: 40px;
+  margin: 0 30px 20px 30px;
   border: 2px solid var(--blue);
 }
 .edit-lists .add-container input[type=text] {

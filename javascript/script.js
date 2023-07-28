@@ -309,6 +309,10 @@ function loadMyBooks () {
             alert(result["success"] + "    " + result["message"]);
         }
     });
+    $(".container .entries .edit-lists button.create-list").click(function () {
+        $(this).hide();
+        $(".container .entries .edit-lists .add-container").removeClass("hidden");
+    });
 }
 
 function assignReadingListNavigationHandlers () {
