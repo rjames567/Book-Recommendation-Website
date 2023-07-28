@@ -193,6 +193,7 @@ class MyBooksHandler(Handler):
             "get_list_entries": self.get_list_entries,
             "remove_list_entry": self.remove_list_entry,
             "move_list_entry": self.move_list_entry,
+            "remove_list": self.remove_list
         }
 
     def get_list_names(self):
@@ -301,6 +302,30 @@ class MyBooksHandler(Handler):
         write_log("          Target list name: " + target_list, self._log)
 
         reading_lists.move_entry(user_id, list_name, target_list, book_title)
+
+        response = "true"  # A response is needed to use this result, but does not impact the client at all.
+
+        status = "200 OK"
+
+        response_headers = [
+            ("Content-Type", "application/json"),
+            ("Content-Length", str(len(response)))
+        ]
+
+        return response, status, response_headers
+
+    def remove_list(self):
+        json_response = self.retrieve_post_parameters()
+        response_dict = json.loads(json_response)
+        session_id = response_dict["session_id"]
+        list_name = response_dict["list_name"]
+
+        write_log("          Session id: " + session_id, self._log)
+        user_id = login.session.get_user_id(session_id)
+        write_log("          User id: " + str(user_id), self._log)
+        write_log("          List name: " + list_name, self._log)
+
+        reading_lists.remove_list(user_id, list_name)
 
         response = "true"  # A response is needed to use this result, but does not impact the client at all.
 
