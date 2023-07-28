@@ -297,7 +297,8 @@ class MyBooksHandler(Handler):
 
         button_text = response_dict["button_name"]
         write_log("          Button name: " + button_text, self._log)
-        if button_text == "Mark as Read":
+        if button_text == "Mark as Read": # Can only be triggered by one of these options being clicked, so target_list
+            # will ne defined regardless.
             target_list = "Have Read"
         elif button_text == "Start Reading":
             target_list = "Currently Reading"
