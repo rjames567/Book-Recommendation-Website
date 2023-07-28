@@ -214,3 +214,10 @@ def remove_list(user_id, list_name):
         WHERE list_id={}
     """.format(list_name_id))
     # Delete the list name
+
+
+def create_list(user_id, list_name):
+    connection.query("""
+        INSERT INTO reading_list_names (user_id, list_name) VALUES
+        ({user_id}, "{list_name}")
+    """.format(user_id=user_id, list_name=list_name))
