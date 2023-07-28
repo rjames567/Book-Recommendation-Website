@@ -133,11 +133,11 @@ $(".account-popups button.cancel-button").click(function () {
 
 function changeAccountButtons () {
     if (sessionID) {
-        $("header nav.top ul li.account-enter").hide();
-        $("header nav.top ul li.account-exit").show();
+        $("header nav.top ul li.account-enter").addClass("hidden");
+        $("header nav.top ul li.account-exit").removeClass("hidden");
     } else {
-        $("header nav.top ul li.account-enter").show();
-        $("header nav.top ul li.account-exit").hide();
+        $("header nav.top ul li.account-enter").removeClass("hidden");
+        $("header nav.top ul li.account-exit").addClass("hidden");
     }
 }
 
@@ -322,7 +322,13 @@ function loadMyBooks () {
                 "session_id": sessionID,
                 "list_name": $(".container .entries .edit-lists form input[name=list-name]").val()
             }),
-            success: loadMyBooks,
+            success: function () {
+                loadMyBooks();
+                $(".container .entries .edit-lists form input[name=list-name]").val("");
+                // Remove the entered string incase it is re-entered before page refresh.
+                $(".container .entries .edit-lists .add-container").addClass("hidden");
+                $(".container .entries .edit-lists button.create-list").show();
+            },
             error: function (result, jqXHR) {
                 alert(result["success"] + "    " + result["message"]);
             }
