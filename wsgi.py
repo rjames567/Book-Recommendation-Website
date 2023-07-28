@@ -193,7 +193,8 @@ class MyBooksHandler(Handler):
             "get_list_entries": self.get_list_entries,
             "remove_list_entry": self.remove_list_entry,
             "move_list_entry": self.move_list_entry,
-            "remove_list": self.remove_list
+            "remove_list": self.remove_list,
+            "create_list": self.create_list
         }
 
     def get_list_names(self):
@@ -338,6 +339,29 @@ class MyBooksHandler(Handler):
 
         return response, status, response_headers
 
+    def create_list(self):
+        json_response = self.retrieve_post_parameters()
+        response_dict = json.loads(json_response)
+        session_id = response_dict["session_id"]
+        list_name = response_dict["list_name"]
+
+        write_log("          Session id: " + session_id, self._log)
+        user_id = login.session.get_user_id(session_id)
+        write_log("          User id: " + str(user_id), self._log)
+        write_log("          List name: " + list_name, self._log)
+
+        reading_lists.create_list(user_id, list_name)
+
+        response = "true"  # A response is needed to use this result, but does not impact the client at all.
+
+        status = "200 OK"
+
+        response_headers = [
+            ("Content-Type", "application/json"),
+            ("Content-Length", str(len(response)))
+        ]
+
+        return response, status, response_headers
 
 # -----------------------------------------------------------------------------
 # Error Handler
