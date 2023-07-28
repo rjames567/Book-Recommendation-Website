@@ -313,6 +313,21 @@ function loadMyBooks () {
         $(this).hide();
         $(".container .entries .edit-lists .add-container").removeClass("hidden");
     });
+    $(".container .entries .edit-lists form").on("submit", function (event) {
+        event.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: "cgi-bin/my_books/create_list",
+            data: JSON.stringify({
+                "session_id": sessionID,
+                "list_name": $(".container .entries .edit-lists form input[name=list-name]").val()
+            }),
+            success: loadMyBooks,
+            error: function (result, jqXHR) {
+                alert(result["success"] + "    " + result["message"]);
+            }
+        });
+    });
 }
 
 function assignReadingListNavigationHandlers () {
