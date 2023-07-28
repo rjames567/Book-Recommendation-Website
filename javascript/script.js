@@ -385,9 +385,28 @@ function assignReadingListNavigationHandlers () {
                 }
                 assignDeleteHandlers(listName); // Assign delete handlers to remove entries
                 assignMovementHandlers(listName);
+                assignListDeleteHandlers(listName); // Slower, but avoids the difficulty and possible cost of finding the list Name again.
             },
             error: function (jqXHR) {
-                alert(jqXHR.status + " "+ jqXHR.responseText);
+                alert(jqXHR.status + " " + jqXHR.responseText);
+            }
+        });
+    });
+}
+
+function assignListDeleteHandlers (listName) {
+    $(".container .entries .edit-lists button.delete-list").off("click"); // Remove
+    $(".container .entries .edit-lists button.delete-list").click(function () {
+        $.ajax({
+            type: "POST",
+            url: "cgi-bin/my_books/remove_list",
+            data: JSON.stringify({
+                "session_id": sessionID,
+                "list_name": listName
+            }),
+            success: loadMyBooks, // Get the new list names, and move back to the first list and get content
+            error: function (jqXHR) {
+                alert(jqXHR.status + " " + jqXHR.responseText);
             }
         });
     });
@@ -408,7 +427,7 @@ function assignDeleteHandlers (listName) {
                 $(book).fadeOut(500); // Hide the entry from the list
             },
             error: function (jqXHR) {
-                alert(jqXHR.status + " "+ jqXHR.responseText);
+                alert(jqXHR.status + " " + jqXHR.responseText);
             }
         });
     });
@@ -430,7 +449,7 @@ function assignMovementHandlers (listName) {
                 $(book).fadeOut(500); // Hide the entry from the list
             },
             error: function (jqXHR) {
-                alert(jqXHR.status + " "+ jqXHR.responseText);
+                alert(jqXHR.status + " " + jqXHR.responseText);
             }
         });
     });
