@@ -78,7 +78,6 @@ class Handler(object):
 
     def __call__(self, environ, start_response):
         self._environ = environ  # Set so methods do not need to have it as a parameter.
-        self.retrieve_get_parameters()
         write_log(self.__class__.__name__ + " object called", self._log)
         write_log(f"     Handling request. URI: {self._environ['REQUEST_URI']}", self._log)
         target_name = environ_manipulation.application.get_sub_target(self._environ)
@@ -196,7 +195,8 @@ class MyBooksHandler(Handler):
         self._routes = {
             "get_lists": self.get_list_names,
             "get_list_entries": self.get_list_entries,
-            "remove_list_entry": self.remove_list_entry
+            "remove_list_entry": self.remove_list_entry,
+            "move_list_entry": self.move_list_entry,
         }
 
     def get_list_names(self):
@@ -233,7 +233,7 @@ class MyBooksHandler(Handler):
 
         result["books"] = [entries.pop() for i in range(entries.size)]
         if list_name == "Currently Reading":
-            result["button"] = "Mark as read"
+            result["button"] = "Mark as Read"
         elif list_name == "Want to Read":
             result["button"] = "Start Reading"
         else:
@@ -270,6 +270,41 @@ class MyBooksHandler(Handler):
         write_log("          Book title: " + book_title, self._log)
 
         reading_lists.remove_entry(user_id, list_name, book_title)
+        response = "true"  # A response is needed to use this result, but does not impact the client at all.
+
+        status = "200 OK"
+
+        response_headers = [
+            ("Content-Type", "application/json"),
+            ("Content-Length", str(len(response)))
+        ]
+
+        return response, status, response_headers
+
+    def move_list_entry(self):
+        json_response = self.retrieve_post_parameters()
+        response_dict = json.loads(json_response)
+        session_id = response_dict["session_id"]
+        list_name = response_dict["list_name"]
+        book_title = response_dict["book_title"].replace("&amp;", "&")
+
+        write_log("          Session id: " + session_id, self._log)
+        user_id = login.session.get_user_id(session_id)
+        write_log("          User id: " + str(user_id), self._log)
+
+        write_log("          List name: " + list_name, self._log)
+        write_log("          Book title: " + book_title, self._log)
+
+        button_text = response_dict["button_name"]
+        write_log("          Button name: " + button_text, self._log)
+        if button_text == "Mark as Read":
+            target_list = "Have Read"
+        elif button_text == "Start Reading":
+            target_list = "Currently Reading"
+        write_log("          Target list name: " + target_list, self._log)
+
+        reading_lists.move_entry(user_id, list_name, target_list, book_title)
+
         response = "true"  # A response is needed to use this result, but does not impact the client at all.
 
         status = "200 OK"
