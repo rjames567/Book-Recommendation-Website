@@ -161,3 +161,8 @@ def add_entry(user_id, list_name, book_title):
         book_id = book_id,
         list_id=list_id
     ))
+
+def move_entry(user_id, start_list_name, end_list_name, book_title):
+    remove_entry(user_id, start_list_name, book_title)
+    add_entry(user_id, end_list_name, book_title) # This changes the date added, but this is not an issue as
+    # as once moved, it would be a new addition to the list, so the date should change.
