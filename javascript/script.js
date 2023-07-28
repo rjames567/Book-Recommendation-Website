@@ -300,13 +300,10 @@ function loadMyBooks () {
             let length = Object.keys(result).length;
             for (let i = 0, temp, firstElem; i < length; i++) {
                 $(".navigation ul li.template a").html(result[i]);
-                temp = $(".navigation ul li.template").clone().removeClass("template").appendTo(".navigation ul");
-                if (i == 0) {
-                    firstElem = temp.find("a");
-                }
+                $(".navigation ul li.template").clone().removeClass("template").appendTo(".navigation ul");
             }
             assignReadingListNavigationHandlers();
-            $(firstElem).trigger("click");
+            $(".navigation ul li").children().eq(1).trigger("click");
         },
         error: function (result, jqXHR) {
             alert(result["success"] + "    " + result["message"]);
