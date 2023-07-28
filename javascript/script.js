@@ -324,6 +324,12 @@ function assignReadingListNavigationHandlers () {
             type: "GET",
             url: requestURL,
             success: function (result) {
+                if (["Currently Reading", "Want to Read", "Have Read"].includes(listName)) {
+                    $(".container .entries .edit-lists button.delete-list").hide(); // Ensure that permanent lists
+                    // cannot be deleted
+                } else {
+                    $(".container .entries .edit-lists button.delete-list").show();
+                }
                 $(".container .entries .book:not('.template')").remove();
                     // Remove existing entries so only new ones are shown.
 
