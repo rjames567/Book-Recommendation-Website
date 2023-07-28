@@ -262,6 +262,36 @@ main .container {
 }
 
 /* -------------------------------------------------------------------------- */
+/* Reading list - List Maintenance                                           */
+/* -------------------------------------------------------------------------- */
+.edit-lists button {
+  display: inline-block;
+  height: 40px;
+  width: 30%;
+  color: white;
+  margin: 0 30px 20px 30px; /* Add gap to left and right, and create gap to bottom of the page */
+  border: none;
+}
+
+.edit-lists button.delete-list {
+  background-color: var(--red);
+  float: left;
+}
+
+.edit-lists button.delete-list:hover {
+  background-color: var(--light-red);
+}
+
+.edit-lists button.create-list {
+  background-color: var(--blue);
+  float: right;
+}
+
+.edit-lists button.create-list:hover {
+  background-color: var(--light-blue);
+}
+
+/* -------------------------------------------------------------------------- */
 /* Reading list - Navigation                                                  */
 /* -------------------------------------------------------------------------- */
 .container .content {
@@ -272,9 +302,10 @@ main .container {
 .container .navigation {
   background-color: var(--blue);
   border: solid 3px var(--blue);
-  margin: 10px 0 20px 0; /* Margin at bottom needs to be greater than top for some reason */
+  margin: 10px 0; /* Add gap between top and bottom of navigation bar */
   min-width: 160px; /* Any longer will wrap. Fits for default lists*/
   max-width: 160px; /* Ensure that width doesn't increase either */
+  min-height: fit-content;
 }
 
 .container ul {
@@ -307,7 +338,7 @@ main .container {
   padding: 10px 20px 0 5px;
 }
 
-.book:last-child hr {
+.book:nth-last-child(2) hr { /* Last child would not remove the last hr between the last entry and buttons */
   display: none;
 }
 

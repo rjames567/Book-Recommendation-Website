@@ -368,7 +368,7 @@ function assignReadingListNavigationHandlers () {
                         $(".container .entries .book.template ol li.template").clone().removeClass("template").appendTo(".container .entries .book.template ol");
                     }
 
-                    $(".container .entries .book.template").clone().removeClass("template").appendTo(".container .entries");
+                    $(".container .entries .book.template").clone().removeClass("template").insertBefore(".edit-lists");
 
                 // Afterwards for appeared loading speed
                     let newURI = ("#" + listName).toTitleCase().split(" ").join("");
