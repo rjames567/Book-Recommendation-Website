@@ -23,7 +23,7 @@ function changePageURI (linkName) {
     if (linkName == "Home") {
         newURI = "/";
     } else {
-        newURI = linkName.toLowerCase().replace(" ", "-");
+        newURI = "/" + linkName.toLowerCase().replace(" ", "-");
     }
     history.pushState({urlPath: newURI},"", newURI);
 }
@@ -55,31 +55,40 @@ function switchPageContent (elem, linkName) {
         linkName = "Home" // If it is blank, it must be referring to the Home
             // page.
     }
-    let file = "html/" + linkName.toLowerCase().replace(" ", "_") + ".html";
+    let file = "/html/" + linkName.toLowerCase().replace(" ", "_") + ".html";
+    changePageContent(file, elem, linkName);
+    changePageURI(linkName);
+}
+
+function changePageContent (file, elem=null, linkName=null) {
+    // elem and linkName must BOTH be specified, or BOTH must not be specified.
+    console.log(file);
     $.ajax({
         type: "GET",
         url: file,
         success: function (result) {
             $("main").html(result);
+            console.log("scueess");
         },
         error: function (jqXHR) {
             $("main").html(jqXHR.responseText);
         },
         complete: function () { // Runs after error/success
+            console.log("Hello9");
             if (elem) { // Allow for both element or link name to be used.
                 changeActiveLink(elem, null);
                 linkName = $(elem).html();
             } else {
                 changeActiveLink(null, linkName);
             }// Navigation links are always updated
-                // regardless of success. Improves appeared responsiveness
-            changePageURI(linkName);
+            // regardless of success. Improves appeared responsiveness
             currentPageFunction(linkName);
         }
     });
 }
 
 function changeActiveLink (elem, linkContent) {
+    console.log("change " + elem + " " + linkContent);
     $("nav.bottom ul li a.active").removeClass("active");
     if (elem) {
         $(elem).addClass("active");
@@ -484,6 +493,12 @@ function assignMovementHandlers (listName) {
 // window onload handlers
 // -----------------------------------------------------------------------------
 $(document).ready(function () {
-    let target = window.location.pathname;
-    switchPageContent(null, getLinkNameByURI());
+    let target = getLinkNameByURI().split("/")[0];
+    if (target == "Genre") { // Target is in title case
+        changePageContent("/html/genre.html");
+    } else if (target == "Book") {
+        changePageContent("/html/book.html");
+    } else { // Manually check the others as they url switching is not necessary
+        switchPageContent(null, getLinkNameByURI());
+    }
 })
