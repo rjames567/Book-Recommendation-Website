@@ -496,3 +496,30 @@ main .container {
   font-size: 13px;
   padding-bottom: 2px;
 }
+
+/* -------------------------------------------------------------------------- */
+/* Book summaries                                                             */
+/* -------------------------------------------------------------------------- */
+.book-summary {
+  display: inline-block;
+  padding: 0 15px;
+  margin: 0 5px;
+}
+
+.book-summary img {
+  height: 300px;
+}
+
+.book-summary .title {
+  display: block;
+  text-align: center;
+  color: black;
+  font-size: 15px;
+}
+
+.book-summary .author {
+  display: block;
+  color: var(--red);
+  font-size: 10px;
+  text-align: center;
+}
