@@ -311,7 +311,7 @@ function loadMyBooks () {
             $(".navigation ul li").children().eq(1).trigger("click");
         },
         error: function (result, jqXHR) {
-            alert(result["success"] + "    " + result["message"]);
+            console.log(result["success"] + "    " + result["message"]);
         }
     });
     $(".container .entries .edit-lists button.create-list").click(function () {
@@ -335,7 +335,7 @@ function loadMyBooks () {
                 $(".container .entries .edit-lists button.create-list").show();
             },
             error: function (result, jqXHR) {
-                alert(result["success"] + "    " + result["message"]);
+                console.log(result["success"] + "    " + result["message"]);
             }
         });
     });
@@ -418,7 +418,7 @@ function assignReadingListNavigationHandlers () {
                 assignListDeleteHandlers(listName); // Slower, but avoids the difficulty and possible cost of finding the list Name again.
             },
             error: function (jqXHR) {
-                alert(jqXHR.status + " " + jqXHR.responseText);
+                console.log(jqXHR.status + " " + jqXHR.responseText);
             }
         });
     });
@@ -436,7 +436,7 @@ function assignListDeleteHandlers (listName) {
             }),
             success: loadMyBooks, // Get the new list names, and move back to the first list and get content
             error: function (jqXHR) {
-                alert(jqXHR.status + " " + jqXHR.responseText);
+                console.log(jqXHR.status + " " + jqXHR.responseText);
             }
         });
     });
@@ -457,7 +457,7 @@ function assignDeleteHandlers (listName) {
                 $(book).fadeOut(500); // Hide the entry from the list
             },
             error: function (jqXHR) {
-                alert(jqXHR.status + " " + jqXHR.responseText);
+                console.log(jqXHR.status + " " + jqXHR.responseText);
             }
         });
     });
@@ -479,7 +479,7 @@ function assignMovementHandlers (listName) {
                 $(book).fadeOut(500); // Hide the entry from the list
             },
             error: function (jqXHR) {
-                alert(jqXHR.status + " " + jqXHR.responseText);
+                console.log(jqXHR.status + " " + jqXHR.responseText);
             }
         });
     });
