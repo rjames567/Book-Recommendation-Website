@@ -211,7 +211,8 @@ class session:
         Return a string, which is the session token, to be sent to the client
         after login.
         """
-        token = secrets.token_bytes(_token_size).hex() + str(time.time())
+        token = secrets.token_bytes(_token_size).hex() + str(time.time()).replace(".", "") # Remove the fullstops from
+        # the time to make it shorter
         # Generates a random string, and adds time to reduce required size of
         # the randomly generated string for speed.
         # https://docs.python.org/3/library/secrets.html#:~:text=it%20is%20believed%20that%2032%20bytes%20(256%20bits)%20of%20randomness%20is%20sufficient%20for%20the%20typical%20use%2Dcase%20expected%20for%20the%20secrets%20module
