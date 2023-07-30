@@ -62,19 +62,16 @@ function switchPageContent (elem, linkName) {
 
 function changePageContent (file, elem=null, linkName=null) {
     // elem and linkName must BOTH be specified, or BOTH must not be specified.
-    console.log(file);
     $.ajax({
         type: "GET",
         url: file,
         success: function (result) {
             $("main").html(result);
-            console.log("scueess");
         },
         error: function (jqXHR) {
             $("main").html(jqXHR.responseText);
         },
         complete: function () { // Runs after error/success
-            console.log("Hello9");
             if (elem) { // Allow for both element or link name to be used.
                 changeActiveLink(elem, null);
                 linkName = $(elem).html();
@@ -88,7 +85,6 @@ function changePageContent (file, elem=null, linkName=null) {
 }
 
 function changeActiveLink (elem, linkContent) {
-    console.log("change " + elem + " " + linkContent);
     $("nav.bottom ul li a.active").removeClass("active");
     if (elem) {
         $(elem).addClass("active");
