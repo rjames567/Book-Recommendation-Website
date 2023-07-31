@@ -499,15 +499,15 @@ function assignGenreNavigationHandlers () {
 }
 
 function switchGenrePage (genre) {
+    changePageContent("/html/genre.html");
     $.ajax({
         type: "GET",
-        url: addGetParameter("/cgi-bin/genres", "genre_name", genre),
+        url: addGetParameter("/cgi-bin/genres/about_data", "genre_name", genre),
         success: function (result) {
-            changePageContent("/html/genre.html");
-            $("h1.genre-title").html(result["name"]);
+            $(".genre-name").html(result["name"]);
             $(".about").html(result["about"]);
             let books = result["books"];
-            for (let i = 0; i < books.length; i++) {
+            for (let i = 0; i < Object.keys(books).length; i++) {
                 $(".book-summary.template .title").html(books[i]["title"]);
                 $(".book-summary.template .author").html(books[i]["author"]);
                 $(".book-summary.template img").attr("src", books[i]["cover"]);
