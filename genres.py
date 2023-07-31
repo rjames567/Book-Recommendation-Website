@@ -16,14 +16,29 @@ connection = mysql_handler.Connection(
 )
 
 # ------------------------------------------------------------------------------
+# Exceptions
+# ------------------------------------------------------------------------------
+class GenreNotFoundError(Exception):
+    """
+    Exception for when a genre is not found.
+    """
+    def __init__(self, genre_name):
+        message = f"Genre '{genre_name}' was not found"
+
+# ------------------------------------------------------------------------------
 # About data
 # ------------------------------------------------------------------------------
 def get_about_data(genre_name):
     res = connection.query("""
         SELECT genre_id, name, about FROM genres
         WHERE name="{genre_name}";
-    """.format(genre_name=genre_name))[0]  # There will only be one entry with that name, so take only tuple from result
+    """.format(genre_name=genre_name))  # There will only be one entry with that name, so take only tuple from result
     # list
+
+    if len(res) == 0: # Protect against a list out of range errors
+        raise GenreNotFoundError(genre_name)
+    else:
+        res = res[0]
 
     books = connection.query("""
         SELECT books.title, books.cover_image, authors.first_name, authors.surname, authors.alias FROM books
