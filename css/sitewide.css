@@ -523,3 +523,15 @@ main .container {
   font-size: 10px;
   text-align: center;
 }
+
+/* -------------------------------------------------------------------------- */
+/* Genre Pages                                                                */
+/* -------------------------------------------------------------------------- */
+.genre-book-items {
+  text-align: center; /* Align summaries to the center */
+  padding-bottom: 15px; /* Add spacing to bottom of page (top is included by summaries. Margin does not work */
+}
+
+.genre-book-items .book-summary {
+  margin-top: 15px;
+}
