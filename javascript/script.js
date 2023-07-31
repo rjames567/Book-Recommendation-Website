@@ -79,8 +79,9 @@ function changePageContent (file, async, elem=null, linkName=null) {
             } else {
                 changeActiveLink(null, linkName);
             }// Navigation links are always updated
-            // regardless of success. Improves appeared responsiveness
+            // regardless of success. Improves appeared responsiveness.
             currentPageFunction(linkName);
+            $(window).scrollTop(0); // Move user to the top of the window
             assignGenreNavigationHandlers(); // Needs to be in this function as it needs to reassign it based upon the page
             // content.
         },
