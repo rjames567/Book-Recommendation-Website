@@ -318,7 +318,6 @@ function loadMyBooks () {
             console.log(result["success"] + "    " + result["message"]);
         }
     });
-    console.log("")
     $(".container .entries .edit-lists button.create-list").off("click"); // Remove any preexisting handlers to prevent duplicate results
     $(".container .entries .edit-lists button.create-list").click(function () {
         $(this).hide();
