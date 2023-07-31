@@ -82,6 +82,8 @@ function changePageContent (file, elem=null, linkName=null) {
             currentPageFunction(linkName);
         }
     });
+    assignGenreNavigationHandlers(); // Needs to be in this function as it needs to reassign it based upon the page
+    // content.
 }
 
 function changeActiveLink (elem, linkContent) {
@@ -191,7 +193,7 @@ $(".account-popups .window#sign-up form").on("submit", function (event) {
     } else {
         $.ajax({
             type: "POST",
-            url: "cgi-bin/account/sign_up",
+            url: "/cgi-bin/account/sign_up",
             data: JSON.stringify({
                 first_name: $(".account-popups #sign-up input[name=first-name]").val(),
                 surname: $(".account-popups #sign-up input[name=surname]").val(),
@@ -242,7 +244,7 @@ $(".account-popups .window#sign-in form").on("submit", function (event) {
     disablePopupCancel = true;
     $.ajax({
         type: "POST",
-        url: "cgi-bin/account/sign_in",
+        url: "/cgi-bin/account/sign_in",
         data: JSON.stringify({
             username: $(".account-popups #sign-in input[name=username]").val(),
             password: $(".account-popups #sign-in input[name=password]").val()
@@ -281,7 +283,7 @@ $("a#sign-in-button").click(function () {
 $("header a#sign-out-button").click(function () {
     $.ajax({
         type: "POST",
-        url: "cgi-bin/account/sign_out",
+        url: "/cgi-bin/account/sign_out",
         data: sessionID
     });
     sessionID = null; // Must come after, as sessionID is needed unaltered
@@ -298,7 +300,7 @@ function loadMyBooks () {
     // Get list titles
     $.ajax({
         type: "GET",
-        url: addGetParameter("cgi-bin/my_books/get_lists", "session_id", sessionID),
+        url: addGetParameter("/cgi-bin/my_books/get_lists", "session_id", sessionID),
         success: function (result) {
             var firstElem;
             $(".navigation ul li:not('.template') a").remove();
@@ -322,7 +324,7 @@ function loadMyBooks () {
         event.preventDefault();
         $.ajax({
             type: "POST",
-            url: "cgi-bin/my_books/create_list",
+            url: "/cgi-bin/my_books/create_list",
             data: JSON.stringify({
                 "session_id": sessionID,
                 "list_name": $(".container .entries .edit-lists form input[name=list-name]").val()
@@ -347,7 +349,7 @@ function assignReadingListNavigationHandlers () {
         $(this).addClass("active");
         let listName = $(this).html();
 
-        var requestURL = "cgi-bin/my_books/get_list_entries";
+        var requestURL = "/cgi-bin/my_books/get_list_entries";
         requestURL = addGetParameter(requestURL, "session_id", sessionID)
         requestURL = addGetParameter(requestURL, "list_name", listName)
         $.ajax({
@@ -406,11 +408,12 @@ function assignReadingListNavigationHandlers () {
 
                     $(".container .entries .book.template").clone().removeClass("template").insertBefore(".edit-lists");
 
-                // Afterwards for appeared loading speed
                     let newURI = ("#" + listName).toTitleCase().split(" ").join("");
                     // Convert Name to title case, then remove ALL spaces
                     // which is why .replace is not used, and add a hashtag to
                     // use a bookmark in the search bar.
+                    assignGenreNavigationHandlers(); // Assign handlers for the genre buttons once they have loaded
+                    // Handlers are not kept by the clone for whatever reason.
                 history.pushState({urlPath: newURI},"", newURI);
                 }
                 assignDeleteHandlers(listName); // Assign delete handlers to remove entries
@@ -429,7 +432,7 @@ function assignListDeleteHandlers (listName) {
     $(".container .entries .edit-lists button.delete-list").click(function () {
         $.ajax({
             type: "POST",
-            url: "cgi-bin/my_books/remove_list",
+            url: "/cgi-bin/my_books/remove_list",
             data: JSON.stringify({
                 "session_id": sessionID,
                 "list_name": listName
@@ -447,7 +450,7 @@ function assignDeleteHandlers (listName) {
         let book = $(this).closest("div.book");
         $.ajax({
             type: "POST",
-            url: "cgi-bin/my_books/remove_list_entry",
+            url: "/cgi-bin/my_books/remove_list_entry",
             data: JSON.stringify({
                 "list_name": listName,
                 "book_title": $(book).find(".title").html(),
@@ -468,7 +471,7 @@ function assignMovementHandlers (listName) {
         let book = $(this).closest("div.book");
         $.ajax({
             type: "POST",
-            url: "cgi-bin/my_books/move_list_entry",
+            url: "/cgi-bin/my_books/move_list_entry",
             data: JSON.stringify({
                 "list_name": listName,
                 "book_title": $(book).find(".title").html(),
@@ -486,12 +489,42 @@ function assignMovementHandlers (listName) {
 }
 
 // -----------------------------------------------------------------------------
+// Genres
+// -----------------------------------------------------------------------------
+function assignGenreNavigationHandlers () {
+    $(".genre-button").one("click", function (event) {
+        event.stopPropagation();
+        switchGenrePage($(this).html());
+    });
+}
+
+function switchGenrePage (genre) {
+    $.ajax({
+        type: "GET",
+        url: addGetParameter("/cgi-bin/genres", "genre_name", genre),
+        success: function (result) {
+            changePageContent("/html/genre.html");
+            $("h1.genre-title").html(result["genre_title"]);
+            $(".about").html(result["about"]);
+            let books = result["books"];
+            for (let i = 0; i < books.length; i++) {
+                $(".book-summary.template .title").html(books[i]["title"]);
+                $(".book-summary.template .author").html(books[i]["author"]);
+                $(".book-summary.template img").attr("src", books[i]["cover"]);
+                $(".book-summary.template").clone().removeClass("template").appendTo(".genre-book-items");
+            }
+        }
+    });
+}
+
+// -----------------------------------------------------------------------------
 // window onload handlers
 // -----------------------------------------------------------------------------
 $(document).ready(function () {
-    let target = getLinkNameByURI().split("/")[0];
+    let target_arr = getLinkNameByURI().split("/");
+    let target = target_arr[0];
     if (target == "Genre") { // Target is in title case
-        changePageContent("/html/genre.html");
+        switchGenrePage(target_arr[1]);
     } else if (target == "Book") {
         changePageContent("/html/book.html");
     } else { // Manually check the others as they url switching is not necessary
