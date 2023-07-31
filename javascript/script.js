@@ -502,7 +502,6 @@ function assignMovementHandlers (listName) {
 function assignGenreNavigationHandlers () {
     $(".genre-button").off("click");
     $(".genre-button").click(function (event) {
-        console.log("dasdas");
         switchGenrePage($(this).html());
     });
 }
