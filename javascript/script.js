@@ -81,11 +81,11 @@ function changePageContent (file, async, elem=null, linkName=null) {
             }// Navigation links are always updated
             // regardless of success. Improves appeared responsiveness
             currentPageFunction(linkName);
+            assignGenreNavigationHandlers(); // Needs to be in this function as it needs to reassign it based upon the page
+            // content.
         },
         async: async
     });
-    assignGenreNavigationHandlers(); // Needs to be in this function as it needs to reassign it based upon the page
-    // content.
 }
 
 function changeActiveLink (elem, linkContent) {
@@ -318,10 +318,13 @@ function loadMyBooks () {
             console.log(result["success"] + "    " + result["message"]);
         }
     });
+    console.log("")
+    $(".container .entries .edit-lists button.create-list").off("click"); // Remove any preexisting handlers to prevent duplicate results
     $(".container .entries .edit-lists button.create-list").click(function () {
         $(this).hide();
         $(".container .entries .edit-lists .add-container").removeClass("hidden");
     });
+    $(".container .entries .edit-lists form").off("submit"); // Remove any prexisting handlers to prevent duplicate results
     $(".container .entries .edit-lists form").on("submit", function (event) {
         event.preventDefault();
         $.ajax({
@@ -346,6 +349,7 @@ function loadMyBooks () {
 }
 
 function assignReadingListNavigationHandlers () {
+    $(".navigation ul li a").off("click");
     $(".navigation ul li a").click(function () {
         $(".navigation ul li a.active").removeClass("active")
         $(this).addClass("active");
@@ -448,6 +452,7 @@ function assignListDeleteHandlers (listName) {
 }
 
 function assignDeleteHandlers (listName) {
+    $(".container .entries .book button.delete").off("click");
     $(".container .entries .book button.delete").click(function () {
         let book = $(this).closest("div.book");
         $.ajax({
@@ -469,6 +474,7 @@ function assignDeleteHandlers (listName) {
 }
 
 function assignMovementHandlers (listName) {
+    $(".container .entries .book button.read").off("click");
     $(".container .entries .book button.read").click(function () {
         let book = $(this).closest("div.book");
         $.ajax({
@@ -494,8 +500,9 @@ function assignMovementHandlers (listName) {
 // Genres
 // -----------------------------------------------------------------------------
 function assignGenreNavigationHandlers () {
-    $(".genre-button").one("click", function (event) {
-        event.stopPropagation();
+    $(".genre-button").off("click");
+    $(".genre-button").click(function (event) {
+        console.log("dasdas");
         switchGenrePage($(this).html());
     });
 }
