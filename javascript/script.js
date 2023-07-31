@@ -504,7 +504,7 @@ function switchGenrePage (genre) {
         url: addGetParameter("/cgi-bin/genres", "genre_name", genre),
         success: function (result) {
             changePageContent("/html/genre.html");
-            $("h1.genre-title").html(result["genre_title"]);
+            $("h1.genre-title").html(result["name"]);
             $(".about").html(result["about"]);
             let books = result["books"];
             for (let i = 0; i < books.length; i++) {
