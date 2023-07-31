@@ -523,6 +523,8 @@ function switchGenrePage (genre) {
                 $(".book-summary.template img").attr("src", books[i]["cover"]);
                 $(".book-summary.template").clone().removeClass("template").appendTo(".genre-book-items");
             }
+            changePageURI("genre/" + genre); // Update page URL to point to the new genre and allow for refreshing
+            // Last as it is least likely to be seen, so appears smoother
         }
     });
 }
