@@ -9,6 +9,7 @@ import urllib.parse
 # -----------------------------------------------------------------------------
 import configuration
 import environ_manipulation
+import genres
 import logger
 import login
 import reading_lists
@@ -273,7 +274,7 @@ class MyBooksHandler(Handler):
         status = "200 OK"
 
         response_headers = [
-            ("Content-Type", "application/json"),
+            ("Content-Type", "text/plain"),
             ("Content-Length", str(len(response)))
         ]
 
@@ -309,7 +310,7 @@ class MyBooksHandler(Handler):
         status = "200 OK"
 
         response_headers = [
-            ("Content-Type", "application/json"),
+            ("Content-Type", "text/plain"),
             ("Content-Length", str(len(response)))
         ]
 
@@ -333,7 +334,7 @@ class MyBooksHandler(Handler):
         status = "200 OK"
 
         response_headers = [
-            ("Content-Type", "application/json"),
+            ("Content-Type", "text/plain"),
             ("Content-Length", str(len(response)))
         ]
 
@@ -363,6 +364,41 @@ class MyBooksHandler(Handler):
 
         return response, status, response_headers
 
+
+# -----------------------------------------------------------------------------
+# Genres
+# -----------------------------------------------------------------------------
+class GenreHandler(Handler):
+    def __init__(self, log=None):
+        super().__init__(log=log)
+        self._routes = {
+            "about_data": self.get_genre_data
+        }
+
+    def get_genre_data(self):
+        genre_name = self.retrieve_get_parameters()["genre_name"]
+        write_log("          Genre name: " + genre_name, self._log)
+        try:
+            result = genres.get_about_data(genre_name)
+            status = "200 OK"
+            write_log("          Success", self._log)
+
+            response = json.dumps(result)
+            write_log("          Response: " + response, self._log)
+            write_log("          Status: " + status, self._log)
+
+            response_headers = [
+                ("Content-Type", "application/json"),
+                ("Content-Length", str(len(response)))
+            ]
+
+            return response, status, response_headers
+
+        except genres.GenreNotFoundError:
+            status = "404 Not Found"
+            write_log("          Status: " + status, self._log)
+            return ErrorHandler("404 Not Found").error_response()  # Return the content for a 404 error
+
 # -----------------------------------------------------------------------------
 # Error Handler
 # -----------------------------------------------------------------------------
@@ -389,7 +425,7 @@ class ErrorHandler(Handler):
         write_log(self.__class__.__name__ + " object called", self._log)
         write_log(f"     Handling request. URI: {environ['REQUEST_URI']}", self._log)
         response, status, response_headers = self.error_response()  # Overwrite standard method. Different to reduce
-        # necessary processing - it is known an error has occurred, it does not need to be checked for.
+        # necessary processing – it is known an error has occurred, it does not need to be checked for.
         start_response(status, response_headers)
         write_log(
             f"     Response given.    status: {self._status}    headers: {response_headers}    response: {response}",
@@ -407,8 +443,9 @@ else:
 
 routes = {
     "account": AccountHandler(log),
-    "my_books": MyBooksHandler(log)
-    # Objects are persistent, so will the response should be faster and more memory efficient
+    "my_books": MyBooksHandler(log),
+    "genres": GenreHandler(log)
+    # Objects are persistent, so will the response should be faster and more memory efficient.
 }
 
 app = Middleware(routes, log)

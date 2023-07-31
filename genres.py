@@ -68,7 +68,7 @@ def get_about_data(genre_name):
 
     output_dict = {
         "name": res[1],
-        "about": "</p><p>".join(("<p>" + res[2] + "</p>").split("\n")),
+        "about": "</p><p>".join(("<p>" + res[2] + "</p>").split("\n")), # Split each paragraph into <p></p> elements
         "books": book_dict
     }
 
