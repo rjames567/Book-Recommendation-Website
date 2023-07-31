@@ -523,6 +523,11 @@ function switchGenrePage (genre) {
                 $(".book-summary.template img").attr("src", books[i]["cover"]);
                 $(".book-summary.template").clone().removeClass("template").appendTo(".genre-book-items");
             }
+        },
+        error: function (jqXHR) {
+            $("main").html(jqXHR.responseText); // Fills in the main body with 404 error message
+        },
+        complete: function () {
             changePageURI("genre/" + genre); // Update page URL to point to the new genre and allow for refreshing
             // Last as it is least likely to be seen, so appears smoother
         }
