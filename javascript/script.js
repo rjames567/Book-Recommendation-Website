@@ -56,12 +56,13 @@ function switchPageContent (elem, linkName) {
             // page.
     }
     let file = "/html/" + linkName.toLowerCase().replace(" ", "_") + ".html";
-    changePageContent(file, elem, linkName);
+    changePageContent(file, true, elem, linkName);
     changePageURI(linkName);
 }
 
-function changePageContent (file, elem=null, linkName=null) {
-    // elem and linkName must BOTH be specified, or BOTH must not be specified.
+function changePageContent (file, async, elem=null, linkName=null) {
+    // Elem and linkName must BOTH be specified, or BOTH must not be specified.
+    // Async specifies whether the request is synchronous (false) or asynchronous (true)
     $.ajax({
         type: "GET",
         url: file,
@@ -80,7 +81,8 @@ function changePageContent (file, elem=null, linkName=null) {
             }// Navigation links are always updated
             // regardless of success. Improves appeared responsiveness
             currentPageFunction(linkName);
-        }
+        },
+        async: async
     });
     assignGenreNavigationHandlers(); // Needs to be in this function as it needs to reassign it based upon the page
     // content.
@@ -499,11 +501,12 @@ function assignGenreNavigationHandlers () {
 }
 
 function switchGenrePage (genre) {
-    changePageContent("/html/genre.html");
     $.ajax({
         type: "GET",
         url: addGetParameter("/cgi-bin/genres/about_data", "genre_name", genre),
         success: function (result) {
+            changePageContent("/html/genre.html", false); // Must be synchronous, otherwise subsequent
+            // population of the template the request supplies may fail, as it may not arrive in time.
             $(".genre-name").html(result["name"]);
             $(".about").html(result["about"]);
             let books = result["books"];
@@ -526,7 +529,7 @@ $(document).ready(function () {
     if (target == "Genre") { // Target is in title case
         switchGenrePage(target_arr[1]);
     } else if (target == "Book") {
-        changePageContent("/html/book.html");
+        changePageContent("/html/book.html", true);
     } else { // Manually check the others as they url switching is not necessary
         switchPageContent(null, getLinkNameByURI());
     }
