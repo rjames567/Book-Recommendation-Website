@@ -60,6 +60,10 @@ a {
   cursor: pointer;
 }
 
+button {
+  cursor: pointer;
+}
+
 main {
   padding: 0 20px;
   min-height: 72%; /* Set height to fill minimum space between header and footer */
@@ -715,4 +719,106 @@ main .container {
   padding-bottom: 20px;
   margin-bottom: 20px;
   font-size: 15px
+}
+
+/* -------------------------------------------------------------------------- */
+/* Book Pages - Leave a Review                                                */
+/* -------------------------------------------------------------------------- */
+.book-about .user-review {
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  border-bottom: solid 2px var(--light-grey);
+}
+
+.book-about .user-review .rating-entry .rating-entry-container { /* Prevent the cursor changing between the buttons and looking wrong */
+  display: inline-block;
+  cursor: pointer;
+}
+
+.book-about .user-review .rating-entry p {
+  display: inline-block;
+  margin-right: 5px;
+}
+
+/* https://stackoverflow.com/a/73854551 */
+.book-about .user-review .rating-entry button {
+  border: none;
+  margin: 0;
+  padding: 0;
+  font-size: 15px;
+  background-color: white;
+  color: var(--light-grey);
+}
+
+.book-about .user-review .rating-entry:hover button {
+  color: var(--yellow);
+}
+
+.book-about .user-review .rating-entry button:hover ~ button {
+  color: var(--light-grey);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Book Pages - Summary                                                       */
+/* -------------------------------------------------------------------------- */
+.book-about .user-review input[type=text] {
+  border: none;
+  font-size: 16px;
+  width: calc(100% - 20px); /* Remove page padding from 100%, as it is included for some reason */
+  padding: 5px 0 10px 0;
+}
+
+.book-about .user-review input[type=text]:focus {
+  outline: solid 1px var(--light-grey);
+  padding: 5px 0.5rem 10px 0.5rem;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Book Pages - Body                                                          */
+/* -------------------------------------------------------------------------- */
+textarea {
+  border: none;
+  font-size: 16px;
+  padding: 5px 0 10px 0;
+}
+
+textarea:focus {
+  outline: solid 1px var(--light-grey);
+  padding: 5px 0.5rem 10px 0.5rem;
+}
+
+.textarea-grow-container {
+  display: grid;
+}
+
+.textarea-grow-container::after {
+  content: attr(data-replicated-value) " ";
+  white-space: pre-wrap;
+  visibility: hidden;
+}
+
+.textarea-grow-container > textarea {
+  resize: none;
+  overflow: hidden;
+}
+
+.textarea-grow-container > textarea, .textarea-grow-container::after {
+  font: inherit;
+  grid-area: 1 / 1 / 2 / 2;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Book Pages - Submit                                                        */
+/* -------------------------------------------------------------------------- */
+.book-about .user-review button.submit-review {
+  margin: 10px 30px 0 0;
+  font-size: 15px; /* Slightly smaller than the h3 for the author's name */
+  padding: 10px 15px;
+  border: none;
+  background-color: var(--blue);
+  color: white;
+}
+
+.book-about .user-review button.submit-review:hover {
+  background-color: var(--light-blue);
 }
