@@ -58,43 +58,80 @@
         </div>
         <div class="user-review">
             <button class="write-review">Write a Review</button>
-            <form class="write-review" action="">
+            <div class="leave-review">
+                <h3>Leave a review</h3>
+                <form class="write-review" action="">
+                    <div class="overall-rating">
+                        <span><b>Overall Rating: </b></span>
+                        <!-- https://stackoverflow.com/a/73854551 -->
+                        <button class="star"><i class="fa fa-star"></i></button>
+                        <button class="star"><i class="fa fa-star"></i></button>
+                        <button class="star"><i class="fa fa-star"></i></button>
+                        <button class="star"><i class="fa fa-star"></i></button>
+                        <button class="star"><i class="fa fa-star"></i></button>
+                    </div>
+
+                    <div class="plot-rating">
+                        <span><b>Plot Rating: </b></span>
+                        <!-- https://stackoverflow.com/a/73854551 -->
+                        <button class="star"><i class="fa fa-star"></i></button>
+                        <button class="star"><i class="fa fa-star"></i></button>
+                        <button class="star"><i class="fa fa-star"></i></button>
+                        <button class="star"><i class="fa fa-star"></i></button>
+                        <button class="star"><i class="fa fa-star"></i></button>
+                    </div>
+
+                    <div class="character-rating">
+                        <span><b>Character Development Rating: </b></span>
+                        <!-- https://stackoverflow.com/a/73854551 -->
+                        <button class="star"><i class="fa fa-star"></i></button>
+                        <button class="star"><i class="fa fa-star"></i></button>
+                        <button class="star"><i class="fa fa-star"></i></button>
+                        <button class="star"><i class="fa fa-star"></i></button>
+                        <button class="star"><i class="fa fa-star"></i></button>
+                    </div>
+
+                    <label for="summary"><b>Summary</b></label>
+                    <input type="text" placeholder="Review summary..." name="summary">
+
+                    <label for="thoughts"><b>Thoughts and Feelings</b></label>
+                    <input type="text" placeholder= "Thoughts and feelings..." name="thoughts">
+                </form>
+            </div>
+            <div class="leave-review hidden">
                 <div class="overall-rating">
                     <span><b>Overall Rating: </b></span>
-                    <!-- https://stackoverflow.com/a/73854551 -->
-                    <button class="star"><i class="fa fa-star"></i></button>
-                    <button class="star"><i class="fa fa-star"></i></button>
-                    <button class="star"><i class="fa fa-star"></i></button>
-                    <button class="star"><i class="fa fa-star"></i></button>
-                    <button class="star"><i class="fa fa-star"></i></button>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
                 </div>
 
                 <div class="plot-rating">
                     <span><b>Plot Rating: </b></span>
-                    <!-- https://stackoverflow.com/a/73854551 -->
-                    <button class="star"><i class="fa fa-star"></i></button>
-                    <button class="star"><i class="fa fa-star"></i></button>
-                    <button class="star"><i class="fa fa-star"></i></button>
-                    <button class="star"><i class="fa fa-star"></i></button>
-                    <button class="star"><i class="fa fa-star"></i></button>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
                 </div>
 
                 <div class="character-rating">
                     <span><b>Character Development Rating: </b></span>
-                    <!-- https://stackoverflow.com/a/73854551 -->
-                    <button class="star"><i class="fa fa-star"></i></button>
-                    <button class="star"><i class="fa fa-star"></i></button>
-                    <button class="star"><i class="fa fa-star"></i></button>
-                    <button class="star"><i class="fa fa-star"></i></button>
-                    <button class="star"><i class="fa fa-star"></i></button>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
                 </div>
 
-                <label for="summary"><b>Summary</b></label>
-                <input type="text" placeholder="Review summary..." name="summary">
-
-                <label for="thoughts"><b>Thoughts and Feelings</b></label>
-                <input type="text" placeholder= "Thoughts and feelings..." name="thoughts">
-            </form>
+                <p><b class="book-summary">It was a good book.</b></p>
+                <div class="review-body">
+                    <p>This is a book.</p>
+                    <p>It was a good book</p>
+                </div>
+            </div>
         </div>
         <div class="reviews">
             <div class="average-review">
