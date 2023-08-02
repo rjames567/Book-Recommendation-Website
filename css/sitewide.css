@@ -787,6 +787,7 @@ textarea:focus {
   padding: 5px 0.5rem 10px 0.5rem;
 }
 
+/* https://css-tricks.com/the-cleanest-trick-for-autogrowing-textareas/ */
 .textarea-grow-container {
   display: grid;
 }
