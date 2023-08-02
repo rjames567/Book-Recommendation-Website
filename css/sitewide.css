@@ -776,34 +776,34 @@ main .container {
 /* -------------------------------------------------------------------------- */
 /* Book Pages - Body                                                          */
 /* -------------------------------------------------------------------------- */
-textarea {
+.book-about .user-review textarea {
   border: none;
   font-size: 16px;
   padding: 5px 0 10px 0;
 }
 
-textarea:focus {
+.book-about .user-review textarea:focus {
   outline: solid 1px var(--light-grey);
   padding: 5px 0.5rem 10px 0.5rem;
 }
 
 /* https://css-tricks.com/the-cleanest-trick-for-autogrowing-textareas/ */
-.textarea-grow-container {
+.book-about .user-review .textarea-grow-container {
   display: grid;
 }
 
-.textarea-grow-container::after {
+.book-about .user-review .textarea-grow-container::after {
   content: attr(data-replicated-value) " ";
   white-space: pre-wrap;
   visibility: hidden;
 }
 
-.textarea-grow-container > textarea {
+.book-about .user-review .textarea-grow-container > .book-about .user-review textarea {
   resize: none;
   overflow: hidden;
 }
 
-.textarea-grow-container > textarea, .textarea-grow-container::after {
+.book-about .user-review .textarea-grow-container > textarea, .book-about .user-review .textarea-grow-container::after {
   font: inherit;
   grid-area: 1 / 1 / 2 / 2;
 }
