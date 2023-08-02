@@ -663,8 +663,8 @@ main .container {
 /* Book Pages - Author Summary                                                */
 /* -------------------------------------------------------------------------- */
 .book-about .author-about {
-  margin: 10px 0;
-  padding: 10px 0;
+  margin: 20px 0;
+  padding: 20px 0;
   border-top: solid 2px var(--light-grey);
   border-bottom: solid 2px var(--light-grey);
 }
@@ -702,4 +702,17 @@ main .container {
 .book-about .author-about .about p {
   margin-top: 0; /* Remove the large space between the text and author name */
   font-size: 15px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Book Pages - Book Stats                                                    */
+/* -------------------------------------------------------------------------- */
+.book-about .book-stats {
+  display: flex;
+  align-content: center;
+  justify-content: space-evenly;
+  border-bottom: solid 2px var(--light-grey);
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  font-size: 15px
 }
