@@ -565,6 +565,12 @@ main .container {
   font-weight: lighter;
 }
 
+.book-about h3 {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
+}
+
 /* -------------------------------------------------------------------------- */
 /* Book Pages - Left column                                                   */
 /* -------------------------------------------------------------------------- */
@@ -611,4 +617,38 @@ main .container {
 /* -------------------------------------------------------------------------- */
 .book-about .synopsis {
   padding: 5px 0 15px 0
+}
+
+/* -------------------------------------------------------------------------- */
+/* Book Pages - Genres                                                        */
+/* -------------------------------------------------------------------------- */
+.book-about .genres h3 {
+  display: inline-block;
+  padding-right: 15px;
+}
+
+.book-about ol {
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+}
+
+.book-about ol li {
+  display: inline-block;
+}
+
+/* https://nerdcowboy.com/blog/sliding-underlined-links/ */
+.book-about ol li a {
+  margin-right: 13px; /* Margin so the underline does not include the gap */
+  text-decoration: none;
+  background-image: linear-gradient(var(--blue), var(--blue));
+  background-size: 0% 2px;
+  background-position-y: 100%;
+  background-position-x: 50%;
+  background-repeat: no-repeat;
+  transition: background-size 0.3s ease-in-out;
+}
+
+.book-about ol li a:hover {
+  background-size: 100% 2px;
 }
