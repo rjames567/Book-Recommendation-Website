@@ -535,3 +535,26 @@ main .container {
 .genre-book-items .book-summary {
   margin-top: 15px;
 }
+
+/* -------------------------------------------------------------------------- */
+/* Book Pages - General                                                       */
+/* -------------------------------------------------------------------------- */
+.book-about {
+  margin-top: 20px;
+}
+.book-about {
+  display: flex;
+}
+
+.book-about .right { /* Left only needs width specified as fit-content, which is handled by flex */
+  flex-grow: 100; /* Will wrap words on page */
+  padding-left: 20px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Book Pages - Left column                                                   */
+/* -------------------------------------------------------------------------- */
+.book-about .left img {
+  padding-top: 30px;
+  width: 200px;
+}
