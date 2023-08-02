@@ -70,6 +70,24 @@ li {
 }
 
 /* -------------------------------------------------------------------------- */
+/* Link Hover Underlines                                                      */
+/* -------------------------------------------------------------------------- */
+/* https://nerdcowboy.com/blog/sliding-underlined-links/ */
+li a.highlight {
+  text-decoration: none;
+  background-image: linear-gradient(var(--blue), var(--blue));
+  background-size: 0% 2px;
+  background-position-y: 100%;
+  background-position-x: 50%;
+  background-repeat: no-repeat;
+  transition: background-size 0.3s ease-in-out;
+}
+
+li a.highlight:hover {
+  background-size: 100% 2px;
+}
+
+/* -------------------------------------------------------------------------- */
 /* Header                                                                     */
 /* -------------------------------------------------------------------------- */
 header .title {
@@ -637,18 +655,6 @@ main .container {
   display: inline-block;
 }
 
-/* https://nerdcowboy.com/blog/sliding-underlined-links/ */
 .book-about ol li a {
   margin-right: 13px; /* Margin so the underline does not include the gap */
-  text-decoration: none;
-  background-image: linear-gradient(var(--blue), var(--blue));
-  background-size: 0% 2px;
-  background-position-y: 100%;
-  background-position-x: 50%;
-  background-repeat: no-repeat;
-  transition: background-size 0.3s ease-in-out;
-}
-
-.book-about ol li a:hover {
-  background-size: 100% 2px;
 }
