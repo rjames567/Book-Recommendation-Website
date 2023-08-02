@@ -136,7 +136,7 @@ header nav ul li.pseudo-last { /* Easy way of removing border on both links. */
 }
 
 .account-popups p {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -195,17 +195,17 @@ header nav ul li.pseudo-last { /* Easy way of removing border on both links. */
 /* Sign In/Sign Up - Change between popups                                    */
 /* -------------------------------------------------------------------------- */
 .account-popups .change-popup-message {
-    font-size: 12px;
-    margin-top: 10px
+  font-size: 12px;
+  margin-top: 10px
 }
 
 .account-popups .change-popup-message a {
-    color: blue;
-    text-decoration: underline;
+  color: blue;
+  text-decoration: underline;
 }
 
 .account-popups .change-popup-message a:hover {
-    color: black;
+  color: black;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -549,6 +549,20 @@ main .container {
 .book-about .right { /* Left only needs width specified as fit-content, which is handled by flex */
   flex-grow: 100; /* Will wrap words on page */
   padding-left: 20px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Book Pages - Standard Tags                                                 */
+/* -------------------------------------------------------------------------- */
+.book-about h1 {
+  margin: 0;
+}
+
+.book-about h2 {
+  margin:  10px 0;
+  font-size: 19px;
+  color: var(--grey);
+  font-weight: lighter;
 }
 
 /* -------------------------------------------------------------------------- */
