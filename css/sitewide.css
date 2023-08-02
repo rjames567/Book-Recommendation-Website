@@ -572,3 +572,15 @@ main .container {
   padding-top: 30px;
   width: 200px;
 }
+
+/* -------------------------------------------------------------------------- */
+/* Book Pages - Book details                                                  */
+/* -------------------------------------------------------------------------- */
+.book-about .book-details {
+  color: grey; /* Slightly lighter than var(--light-grey) */
+  font-size: 13px;
+}
+
+.book-about .book-details .isbn {
+  padding-right: 20px;
+}
