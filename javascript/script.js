@@ -84,6 +84,8 @@ function changePageContent (file, async, elem=null, linkName=null) {
             $(window).scrollTop(0); // Move user to the top of the window
             assignGenreNavigationHandlers(); // Needs to be in this function as it needs to reassign it based upon the page
             // content.
+            assignBookNavigationHandlers(); // Needs to be in this function as it needs to reassign it based upon the page
+            // content.
         },
         async: async
     });
@@ -418,10 +420,11 @@ function assignReadingListNavigationHandlers () {
                     // Convert Name to title case, then remove ALL spaces
                     // which is why .replace is not used, and add a hashtag to
                     // use a bookmark in the search bar.
-                    assignGenreNavigationHandlers(); // Assign handlers for the genre buttons once they have loaded
-                    // Handlers are not kept by the clone for whatever reason.
                     history.pushState({urlPath: newURI},"", newURI);
                 }
+                assignGenreNavigationHandlers(); // Assign handlers for the genre buttons once they have loaded
+                // Handlers are not kept by the clone for whatever reason.
+                assignBookNavigationHandlers();
                 assignDeleteHandlers(listName); // Assign delete handlers to remove entries
                 assignMovementHandlers(listName);
                 assignListDeleteHandlers(listName); // Slower, but avoids the difficulty and possible cost of finding the list Name again.
