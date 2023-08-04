@@ -968,6 +968,7 @@ main .container {
 .book-about button.purchase_link {
   font-size: 15px; /* Slightly smaller than the h3 for the author's name */
   padding: 10px 15px;
+  margin-top: 15px;
   width: 160px;
   border: none;
   background-color: var(--blue);
@@ -989,6 +990,7 @@ main .container {
   font-size: 15px; /* Slightly smaller than the h3 for the author's name */
   padding: 10px 15px; /* Keep padding on sides for long names to change the wrapping */
   width: 160px;
+  margin-top: 15px;
   border: none;
   background-color: var(--red);
   color: white;
