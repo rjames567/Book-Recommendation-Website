@@ -16,6 +16,18 @@ connection = mysql_handler.Connection(
 )
 
 # ------------------------------------------------------------------------------
+# Exceptions
+# ------------------------------------------------------------------------------
+class BookNotFoundError(Exception):
+    """
+    Exception for when a genre is not found.
+    """
+    def __init__(self, book_title):
+        message = f"Book '{book_title}' was not found"
+        super().__init__(message)
+
+
+# ------------------------------------------------------------------------------
 # About data
 # ------------------------------------------------------------------------------
 def get_about_data(book_title, user_id):
@@ -36,7 +48,10 @@ def get_about_data(book_title, user_id):
     FROM books
     INNER JOIN authors ON authors.author_id=books.book_id
     WHERE books.title="{book_title}";
-    """.format(book_title=book_title))[0]
+    """.format(book_title=book_title))
+
+    if len(res) == 0:
+        raise BookNotFoundError(book_title)  # If the query result has 0 entries, no book was found with the target name
 
     book_id = res[0]  # Avoids joins for subsequent queries
     first_name = res[7]
