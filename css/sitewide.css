@@ -823,3 +823,24 @@ main .container {
 .book-about .user-review button.submit-review:hover {
   background-color: var(--light-blue);
 }
+
+/* -------------------------------------------------------------------------- */
+/* Book Pages - Existing Review                                               */
+/* -------------------------------------------------------------------------- */
+.book-about .user-review .existing-review .overall-rating i,
+.book-about .user-review .existing-review .plot-rating i,
+.book-about .user-review .existing-review .character-rating i {
+  color: var(--yellow);
+  font-size: 16px;
+}
+
+.book-about .user-review .existing-review .overall-rating p,
+.book-about .user-review .existing-review .plot-rating p,
+.book-about .user-review .existing-review .character-rating p {
+  display: inline-block; /* Makes the label be next to the icons */
+  margin-bottom: 0;
+}
+
+.book-about .user-review .existing-review .character-rating {
+  margin-bottom: 25px;
+}
