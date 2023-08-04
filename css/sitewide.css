@@ -573,6 +573,14 @@ main .container {
   padding-left: 20px;
 }
 
+.book-about .left {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-content: center;
+  flex-direction: column;
+}
+
 /* -------------------------------------------------------------------------- */
 /* Book Pages - Standard Tags                                                 */
 /* -------------------------------------------------------------------------- */
@@ -968,3 +976,4 @@ main .container {
 .book-about button.purchase_link:hover {
   background-color: var(--light-blue);
 }
+
