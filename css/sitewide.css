@@ -737,7 +737,8 @@ main .container {
 
 .book-about .user-review .rating-entry p {
   display: inline-block;
-  margin-right: 5px;
+  margin-bottom: 0;
+  margin-right: 5px; /* Using shorthand changes the padding at the top from the default */
 }
 
 /* https://stackoverflow.com/a/73854551 */
