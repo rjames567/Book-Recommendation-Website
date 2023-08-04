@@ -849,3 +849,62 @@ main .container {
 .book-about .user-review .existing-review .character-rating {
   margin-bottom: 25px;
 }
+
+/* -------------------------------------------------------------------------- */
+/* Book Pages - Book Review Summary                                           */
+/* -------------------------------------------------------------------------- */
+.book-about .reviews .average-review {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.book-about .reviews .average-review i {
+  color: var(--yellow);
+  font-size: 40px;
+}
+
+.book-about .reviews .average-review p {
+  font-size: 25px;
+  margin: 0;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Book Pages - Review Distribution                                           */
+/* -------------------------------------------------------------------------- */
+.book-about .reviews .review-distribution {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: solid 2px var(--light-grey);
+}
+
+.book-about .reviews .review-distribution .bar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.book-about .reviews .review-distribution em {
+  color: var(--grey);
+}
+
+.book-about .reviews .review-distribution span.number {
+  padding-right: 10px; /* Add spacing between the number and percentage */
+}
+
+.book-about .reviews .review-distribution meter {
+  width: 80%;
+  margin: 5px 10px;
+  padding: 0 10px;
+}
+
+.book-about .reviews .review-distribution meter::-webkit-meter-bar {
+  border-radius: 0;
+  border: none;
+  height: 25px;
+  background-color: var(--light-grey); /* This changes the background colour*/
+}
+
+.book-about .reviews .review-distribution meter::-webkit-meter-optimum-value {
+  background: red; /* Optimum is not defined, so this applies to all values*/
+}
