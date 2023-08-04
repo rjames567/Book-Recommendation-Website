@@ -536,6 +536,13 @@ function switchGenrePage (genre) {
 // -----------------------------------------------------------------------------
 // Book pages
 // -----------------------------------------------------------------------------
+function assignGenreNavigationHandlers () {
+    $(".book-button").off("click");
+    $(".book-button").click(function () {
+        switchBookPage($(this).html());
+    });
+}
+
 function switchBookPage (book) {
     $.ajax({
         type: "GET",
