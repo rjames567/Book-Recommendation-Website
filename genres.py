@@ -24,6 +24,7 @@ class GenreNotFoundError(Exception):
     """
     def __init__(self, genre_name):
         message = f"Genre '{genre_name}' was not found"
+        super().__init__(message)
 
 # ------------------------------------------------------------------------------
 # About data
