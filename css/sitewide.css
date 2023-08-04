@@ -906,5 +906,6 @@ main .container {
 }
 
 .book-about .reviews .review-distribution meter::-webkit-meter-optimum-value {
-  background: red; /* Optimum is not defined, so this applies to all values*/
+  background: var(--yellow); /* Optimum is not defined, so this applies to all values*/
 }
+
