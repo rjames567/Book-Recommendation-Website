@@ -44,7 +44,19 @@ def get_about_data(book_title, user_id):
         authors.alias,
         authors.about,
         (SELECT COUNT(author_followers.author_id) FROM author_followers
-                WHERE author_followers.author_id=books.author_id) as author_num_followers
+                WHERE author_followers.author_id=books.author_id) AS author_num_followers,
+        (SELECT COUNT(reading_lists.book_id) FROM reading_lists
+                INNER JOIN reading_list_names ON reading_lists.list_id=reading_list_names.list_id
+                WHERE reading_list_names.list_name="Have Read"
+                        AND reading_lists.book_id=books.book_id) AS num_read,
+        (SELECT COUNT(reading_lists.book_id) FROM reading_lists
+                INNER JOIN reading_list_names ON reading_lists.list_id=reading_list_names.list_id
+                WHERE reading_list_names.list_name="Currently Reading"
+                        AND reading_lists.book_id=books.book_id) AS num_reading,
+        (SELECT COUNT(reading_lists.book_id) FROM reading_lists
+                INNER JOIN reading_list_names ON reading_lists.list_id=reading_list_names.list_id
+                WHERE reading_list_names.list_name="Want to Read"
+                        AND reading_lists.book_id=books.book_id) AS num_want_read
     FROM books
     INNER JOIN authors ON authors.author_id=books.book_id
     WHERE books.title="{book_title}";
@@ -73,7 +85,12 @@ def get_about_data(book_title, user_id):
         "purchase_link": res[4],
         "release_date": res[5],
         "isbn": res[6],
-        "author": author
+        "author": author,
+        "author_about": res[10],
+        "author_number_followers": res[11],
+        "num_want_read": res[12],
+        "num_reading": res[13],
+        "num_read": res[14]
     }
 
     return output_dict
