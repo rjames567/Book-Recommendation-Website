@@ -741,6 +741,10 @@ main .container {
   margin-right: 5px; /* Using shorthand changes the padding at the top from the default */
 }
 
+.book-about .user-review .leave-review .character-rating {
+  margin-bottom: 25px;
+}
+
 /* https://stackoverflow.com/a/73854551 */
 .book-about .user-review .rating-entry button {
   border: none;
