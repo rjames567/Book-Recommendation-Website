@@ -952,3 +952,19 @@ main .container {
 .book-about .reviews .user-reviews .review .review-main .review-body p:last-child {
   margin-bottom: 0; /* Prevent the margin on the p tag effecting the spacing to the next review */
 }
+
+/* -------------------------------------------------------------------------- */
+/* Book Pages - Purchase Button                                               */
+/* -------------------------------------------------------------------------- */
+.book-about button.purchase_link {
+  margin: 0 30px 0 auto; /* Indented from the right as it looks out of place otherwise */
+  font-size: 15px; /* Slightly smaller than the h3 for the author's name */
+  padding: 10px 15px;
+  border: none;
+  background-color: var(--blue);
+  color: white;
+}
+
+.book-about button.purchase_link:hover {
+  background-color: var(--light-blue);
+}
