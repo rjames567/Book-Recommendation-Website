@@ -7,35 +7,31 @@
     <div class="entries">
         <div class="book template">
             <div class="content">
-                <a class="book-link" href="#">
-                    <div class="cover">
-                        <img src="">
-                    </div>
-                </a>
-                <a class="book-link" href="#">
-                    <div class="main-content">
-                        <div class="top-row-container">
-                            <div class="title-container">
-                                <span class="title">This is the book title</span>
-                                <span class="author">First name, surname</span>
+                <div class="cover">
+                    <img src="">
+                </div>
+                <div class="main-content">
+                    <div class="top-row-container">
+                        <div class="title-container">
+                            <a class="book-button highlight title"></a>
+                            <span class="author"></span>
+                        </div>
+                        <div class="rating-container">
+                            <div class="rating">
+                                <i></i>
+                                <i></i>
+                                <i></i>
+                                <i></i>
+                                <i></i> <!-- Class specification is not necessary - hardcoded in the JS-->
                             </div>
-                            <div class="rating-container">
-                                <div class="rating">
-                                    <i></i>
-                                    <i></i>
-                                    <i></i>
-                                    <i></i>
-                                    <i></i> <!-- Class specification is not necessary - hardcoded in the JS-->
-                                </div>
-                                <div class="about-review">
-                                    <span><b>Average Rating: </b><b class="average-review"></b> <em>(<span class="num-review"></span>)</em></span>
-                                </div>
+                            <div class="about-review">
+                                <span><b>Average Rating: </b><b class="average-review"></b> <em>(<span class="num-review"></span>)</em></span>
                             </div>
                         </div>
-                        <div class="synopsis">
-                        </div>
                     </div>
-                </a>
+                    <div class="synopsis">
+                    </div>
+                </div>
                 <div class="right-content">
                     <div> <!-- Div only so they are kept as block items by flex -->
                         <span class="book-info"><b>Date Added: </b><span class="date-added"></span></span>
