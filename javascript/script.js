@@ -32,7 +32,7 @@ function getLinkNameByURI () { // Convert URI to navigation link text.
     let uri = window.location.pathname.replace("-", " ");
     // Replace underscores with spaces
     return uri.slice(1).toTitleCase();
-        // Remove leading slash, and convert to title case.
+    // Remove leading slash, and convert to title case.
 }
 
 // JavaScript for Web Developers    ISBN: 978-1-119-36644-7
@@ -47,13 +47,13 @@ function addGetParameter (url, name, value) {
 // -----------------------------------------------------------------------------
 function switchPageContent (elem, linkName) {
     // Does not switch elem to link as using links is very slow, as it needs to
-        // iterate through all available link names, to find the correct one.
+    // iterate through all available link names, to find the correct one.
     if (elem) {
         linkName = $(elem).html();
     }
     if (linkName == "") {
         linkName = "Home" // If it is blank, it must be referring to the Home
-            // page.
+        // page.
     }
     let file = "/html/" + linkName.toLowerCase().replace(" ", "_") + ".html";
     changePageContent(file, true, elem, linkName);
@@ -132,7 +132,7 @@ function hideAllSignPopups () { // Needed so cancel buttons and click-off can be
     if (!disablePopupCancel) {
         $(".account-popups .window").hide()
         hideSignUpAlert(); // Hide popup first then alert to improve perceived
-            // responsiveness
+        // responsiveness
         $(".account-popups .page-sign-notice").hide();
     }
 }
@@ -153,7 +153,7 @@ function changeAccountButtons () {
 
 $(window).click(function (event) {
     if ([$("#sign-up")[0],  $("#sign-in")[0]].includes(event.target)
-            && !disablePopupCancel) {
+        && !disablePopupCancel) {
         hideAllSignPopups();
     }
 });
@@ -205,11 +205,11 @@ $(".account-popups .window#sign-up form").on("submit", function (event) {
             }),
             success: function (result) {
                 disablePopupCancel = false; // Cannot go in complete, as it runs
-                    // after success, so hiding the popup does not work.
+                // after success, so hiding the popup does not work.
                 if (result["session_id"]) {
                     sessionID = result["session_id"];
                     changeAccountButtons(); // Change before it can be seen to
-                        // appear smoother
+                    // appear smoother
                     hideAllSignPopups();
                 } else {
                     signUpAlert(result["message"]);
@@ -236,7 +236,7 @@ $("a#sign-up-button").click(function () {
 // -----------------------------------------------------------------------------
 function showSignInPopup () {
     $(".account-popups .window#sign-in").show(); // For whatever reason, only
-        // hide on the showSignUpPopup is needed
+    // hide on the showSignUpPopup is needed
 }
 
 // -----------------------------------------------------------------------------
@@ -254,11 +254,11 @@ $(".account-popups .window#sign-in form").on("submit", function (event) {
         }),
         success: function (result) {
             disablePopupCancel = false; // Cannot go in complete, as it runs
-                // after success, so hiding the popup does not work.
+            // after success, so hiding the popup does not work.
             if (result["session_id"]) {
                 sessionID = result["session_id"];
                 changeAccountButtons(); // Change before it can be seen to
-                    // appear smoother
+                // appear smoother
                 hideAllSignPopups();
 
             } else {
@@ -290,10 +290,10 @@ $("header a#sign-out-button").click(function () {
         data: sessionID
     });
     sessionID = null; // Must come after, as sessionID is needed unaltered
-        // Minimal impact on speed, as AJAX is asynchronous
+    // Minimal impact on speed, as AJAX is asynchronous
     changeAccountButtons(); // Success does not matter - just improves database
-        // maintainability, any non-cleared sessions will be deleted through a
-        // maintenance script
+    // maintainability, any non-cleared sessions will be deleted through a
+    // maintenance script
 });
 
 // -----------------------------------------------------------------------------
@@ -369,7 +369,7 @@ function assignReadingListNavigationHandlers () {
                     $(".container .entries .edit-lists button.delete-list").show();
                 }
                 $(".container .entries .book:not('.template')").remove();
-                    // Remove existing entries so only new ones are shown.
+                // Remove existing entries so only new ones are shown.
 
                 if (result["button"]) {
                     $(".container .entries .book.template .actions .read").show()
@@ -406,7 +406,7 @@ function assignReadingListNavigationHandlers () {
                     }
 
                     $(".container .entries .book.template ol li:not('.template')").remove();
-                        // Remove any genres from previous entry.
+                    // Remove any genres from previous entry.
                     for (let k in books[i]["genres"]) {
                         $(".container .entries .book.template ol li.template").find("a").html(books[i]["genres"][k]);
                         $(".container .entries .book.template ol li.template").clone().removeClass("template").appendTo(".container .entries .book.template ol");
@@ -420,7 +420,7 @@ function assignReadingListNavigationHandlers () {
                     // use a bookmark in the search bar.
                     assignGenreNavigationHandlers(); // Assign handlers for the genre buttons once they have loaded
                     // Handlers are not kept by the clone for whatever reason.
-                history.pushState({urlPath: newURI},"", newURI);
+                    history.pushState({urlPath: newURI},"", newURI);
                 }
                 assignDeleteHandlers(listName); // Assign delete handlers to remove entries
                 assignMovementHandlers(listName);
@@ -528,6 +528,26 @@ function switchGenrePage (genre) {
         },
         complete: function () {
             changePageURI("genre/" + genre); // Update page URL to point to the new genre and allow for refreshing
+            // Last as it is least likely to be seen, so appears smoother
+        }
+    });
+}
+
+// -----------------------------------------------------------------------------
+// Book pages
+// -----------------------------------------------------------------------------
+function switchBookPage (book) {
+    $.ajax({
+        type: "GET",
+        url: addGetParameter("/cgi-bin/book/about_data", "book_name", book),
+        success: function (result) {
+
+        },
+        error: function (jqXHR) {
+            $("main").html(jqXHR.responseText); // Fills in the main body with 404 error message
+        },
+        complete: function () {
+            changePageURI("book/" + book); // Update page URL to point to the new genre and allow for refreshing
             // Last as it is least likely to be seen, so appears smoother
         }
     });
