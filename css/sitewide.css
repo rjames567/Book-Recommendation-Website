@@ -832,21 +832,21 @@ main .container {
 /* -------------------------------------------------------------------------- */
 /* Book Pages - Existing Review                                               */
 /* -------------------------------------------------------------------------- */
-.book-about .user-review .existing-review .overall-rating i,
-.book-about .user-review .existing-review .plot-rating i,
-.book-about .user-review .existing-review .character-rating i {
+.book-about .overall-rating i,
+.book-about .plot-rating i,
+.book-about .character-rating i {
   color: var(--yellow);
   font-size: 16px;
 }
 
-.book-about .user-review .existing-review .overall-rating p,
-.book-about .user-review .existing-review .plot-rating p,
-.book-about .user-review .existing-review .character-rating p {
+.book-about .overall-rating p,
+.book-about .plot-rating p,
+.book-about .character-rating p {
   display: inline-block; /* Makes the label be next to the icons */
   margin-bottom: 0;
 }
 
-.book-about .user-review .existing-review .character-rating {
+.book-about .character-rating {
   margin-bottom: 25px;
 }
 
@@ -909,3 +909,36 @@ main .container {
   background: var(--yellow); /* Optimum is not defined, so this applies to all values*/
 }
 
+/* -------------------------------------------------------------------------- */
+/* Book Pages - Review Distribution                                           */
+/* -------------------------------------------------------------------------- */
+.book-about .reviews .user-reviews .review {
+  display: flex;
+  padding-bottom: 15px;
+  margin-bottom: 15px;
+  border-bottom: solid 2px var(--light-grey);
+}
+
+.book-about .reviews .user-reviews .review:last-child {
+  border-bottom: none; /* Removes the on the bottom of the final review */
+}
+
+.book-about .reviews .user-reviews .review:last-child {
+  margin-bottom: 0; /* Prevent a large gap between the bottom of review and the page end */
+}
+
+.book-about .reviews .user-reviews .review .user b {
+  font-size: 18px
+}
+
+.book-about .reviews .user-reviews .review .review-main {
+  padding-left: 20px;
+}
+
+.book-about .reviews .user-reviews .review .review-main .overall-rating p {
+  margin-top: 0;
+}
+
+.book-about .reviews .user-reviews .review .review-main .review-body p:last-child {
+  margin-bottom: 0; /* Prevent the margin on the p tag effecting the spacing to the next review */
+}
