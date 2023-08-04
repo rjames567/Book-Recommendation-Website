@@ -579,6 +579,7 @@ main .container {
   justify-content: flex-start;
   align-content: center;
   flex-direction: column;
+  align-items: center;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -965,9 +966,9 @@ main .container {
 /* Book Pages - Purchase Button                                               */
 /* -------------------------------------------------------------------------- */
 .book-about button.purchase_link {
-  margin: 0 30px 0 auto; /* Indented from the right as it looks out of place otherwise */
   font-size: 15px; /* Slightly smaller than the h3 for the author's name */
   padding: 10px 15px;
+  width: 160px;
   border: none;
   background-color: var(--blue);
   color: white;
@@ -977,3 +978,22 @@ main .container {
   background-color: var(--light-blue);
 }
 
+/* -------------------------------------------------------------------------- */
+/* Book Pages - Reading List Button                                           */
+/* -------------------------------------------------------------------------- */
+.book-about .list-name {
+  width: fit-content;
+}
+
+.book-about .list-name button {
+  font-size: 15px; /* Slightly smaller than the h3 for the author's name */
+  padding: 10px 15px; /* Keep padding on sides for long names to change the wrapping */
+  width: 160px;
+  border: none;
+  background-color: var(--red);
+  color: white;
+}
+
+.book-about .list-name button:hover {
+  background-color: var(--light-red);
+}
