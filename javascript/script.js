@@ -536,7 +536,7 @@ function switchGenrePage (genre) {
 // -----------------------------------------------------------------------------
 // Book pages
 // -----------------------------------------------------------------------------
-function assignGenreNavigationHandlers () {
+function assignBookNavigationHandlers () {
     $(".book-button").off("click");
     $(".book-button").click(function () {
         switchBookPage($(this).html());
