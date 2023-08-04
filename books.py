@@ -32,34 +32,34 @@ class BookNotFoundError(Exception):
 # ------------------------------------------------------------------------------
 def get_about_data(book_title, user_id):
     res = connection.query("""
-    SELECT books.book_id,
-        books.title,
-        books.cover_image,
-        books.synopsis,
-        books.purchase_link,
-        books.release_date,
-        books.isbn,
-        authors.first_name,
-        authors.surname,
-        authors.alias,
-        authors.about,
-        (SELECT COUNT(author_followers.author_id) FROM author_followers
-                WHERE author_followers.author_id=books.author_id) AS author_num_followers,
-        (SELECT COUNT(reading_lists.book_id) FROM reading_lists
-                INNER JOIN reading_list_names ON reading_lists.list_id=reading_list_names.list_id
-                WHERE reading_list_names.list_name="Have Read"
-                        AND reading_lists.book_id=books.book_id) AS num_read,
-        (SELECT COUNT(reading_lists.book_id) FROM reading_lists
-                INNER JOIN reading_list_names ON reading_lists.list_id=reading_list_names.list_id
-                WHERE reading_list_names.list_name="Currently Reading"
-                        AND reading_lists.book_id=books.book_id) AS num_reading,
-        (SELECT COUNT(reading_lists.book_id) FROM reading_lists
-                INNER JOIN reading_list_names ON reading_lists.list_id=reading_list_names.list_id
-                WHERE reading_list_names.list_name="Want to Read"
-                        AND reading_lists.book_id=books.book_id) AS num_want_read
-    FROM books
-    INNER JOIN authors ON authors.author_id=books.book_id
-    WHERE books.title="{book_title}";
+        SELECT books.book_id,
+            books.title,
+            books.cover_image,
+            books.synopsis,
+            books.purchase_link,
+            books.release_date,
+            books.isbn,
+            authors.first_name,
+            authors.surname,
+            authors.alias,
+            authors.about,
+            (SELECT COUNT(author_followers.author_id) FROM author_followers
+                    WHERE author_followers.author_id=books.author_id) AS author_num_followers,
+            (SELECT COUNT(reading_lists.book_id) FROM reading_lists
+                    INNER JOIN reading_list_names ON reading_lists.list_id=reading_list_names.list_id
+                    WHERE reading_list_names.list_name="Have Read"
+                            AND reading_lists.book_id=books.book_id) AS num_read,
+            (SELECT COUNT(reading_lists.book_id) FROM reading_lists
+                    INNER JOIN reading_list_names ON reading_lists.list_id=reading_list_names.list_id
+                    WHERE reading_list_names.list_name="Currently Reading"
+                            AND reading_lists.book_id=books.book_id) AS num_reading,
+            (SELECT COUNT(reading_lists.book_id) FROM reading_lists
+                    INNER JOIN reading_list_names ON reading_lists.list_id=reading_list_names.list_id
+                    WHERE reading_list_names.list_name="Want to Read"
+                            AND reading_lists.book_id=books.book_id) AS num_want_read
+        FROM books
+        INNER JOIN authors ON authors.author_id=books.book_id
+        WHERE books.title="{book_title}";
     """.format(book_title=book_title))
 
     if len(res) == 0:
@@ -78,6 +78,12 @@ def get_about_data(book_title, user_id):
     else:
         author = f"{first_name} {surname}"
 
+    genres = [i[0] for i in connection.query("""
+        SELECT genres.name FROM genres
+        INNER JOIN book_genres ON book_genres.genre_id=genres.genre_id
+        WHERE book_genres.book_id={book_id};
+    """.format(book_id=book_id))]  # The query returns a tuple, so this converts the list of tuples to a flat list
+
     output_dict = {
         "title": res[1],
         "cover_image": res[2],
@@ -90,7 +96,8 @@ def get_about_data(book_title, user_id):
         "author_number_followers": res[11],
         "num_want_read": res[12],
         "num_reading": res[13],
-        "num_read": res[14]
+        "num_read": res[14],
+        "genres": genres
     }
 
     return output_dict
