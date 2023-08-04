@@ -525,6 +525,7 @@ function switchGenrePage (genre) {
                 $(".book-summary.template img").attr("src", books[i]["cover"]);
                 $(".book-summary.template").clone().removeClass("template").appendTo(".genre-book-items");
             }
+            assignBookNavigationHandlers(true); // Assign navigation for the book summaries.
         },
         error: function (jqXHR) {
             $("main").html(jqXHR.responseText); // Fills in the main body with 404 error message
@@ -540,10 +541,17 @@ function switchGenrePage (genre) {
 // -----------------------------------------------------------------------------
 // Book pages
 // -----------------------------------------------------------------------------
-function assignBookNavigationHandlers () {
+function assignBookNavigationHandlers (summary=false) {
+    // If the link is an entire div, with an image, title etc, it needs to navigate down the DOM to find the title
     $(".book-button").off("click");
     $(".book-button").click(function () {
-        switchBookPage($(this).html());
+        let title;
+        if (summary) {
+            title = $(this).find(".title").html();
+        } else {
+            title = $(this).html();
+        }
+        switchBookPage(title);
     });
 }
 
