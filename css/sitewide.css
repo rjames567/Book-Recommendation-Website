@@ -730,23 +730,29 @@ main .container {
   border-bottom: solid 2px var(--light-grey);
 }
 
-.book-about .user-review .rating-entry .rating-entry-container { /* Prevent the cursor changing between the buttons and looking wrong */
+.book-about .user-review .overall-rating-entry .rating-entry-container,
+.book-about .user-review .plot-rating-entry .rating-entry-container,
+.book-about .user-review .character-rating-entry .rating-entry-container{ /* Prevent the cursor changing between the buttons and looking wrong */
   display: inline-block;
   cursor: pointer;
 }
 
-.book-about .user-review .rating-entry p {
+.book-about .user-review .overall-rating-entry p,
+.book-about .user-review .plot-rating-entry p,
+.book-about .user-review .character-rating-entry p {
   display: inline-block;
   margin-bottom: 0;
   margin-right: 5px; /* Using shorthand changes the padding at the top from the default */
 }
 
-.book-about .user-review .leave-review .character-rating {
+.book-about .user-review .leave-review .character-rating-entry {
   margin-bottom: 25px;
 }
 
 /* https://stackoverflow.com/a/73854551 */
-.book-about .user-review .rating-entry button {
+.book-about .user-review .overall-rating-entry button,
+.book-about .user-review .plot-rating-entry button,
+.book-about .user-review .character-rating-entry button {
   border: none;
   margin: 0;
   padding: 0;
@@ -755,11 +761,15 @@ main .container {
   color: var(--light-grey);
 }
 
-.book-about .user-review .rating-entry:hover button {
+.book-about .user-review .overall-rating-entry:hover button,
+.book-about .user-review .plot-rating-entry:hover button,
+.book-about .user-review .character-rating-entry:hover button {
   color: var(--yellow);
 }
 
-.book-about .user-review .rating-entry button:hover ~ button {
+.book-about .user-review .overall-rating-entry button:hover ~ button,
+.book-about .user-review .plot-rating-entry button:hover ~ button,
+.book-about .user-review .character-rating-entry button:hover ~ button {
   color: var(--light-grey);
 }
 
