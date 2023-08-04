@@ -528,6 +528,7 @@ function switchGenrePage (genre) {
         },
         error: function (jqXHR) {
             $("main").html(jqXHR.responseText); // Fills in the main body with 404 error message
+            // FIXME Fix not changing active link on AJAX fail
         },
         complete: function () {
             changePageURI("genre/" + genre); // Update page URL to point to the new genre and allow for refreshing
@@ -553,9 +554,12 @@ function switchBookPage (book) {
         success: function (result) {
             changePageContent("/html/book.html", false); // Must be synchronous, otherwise subsequent
             // population of the template the request supplies may fail, as it may not arrive in time.
+
+            assignGenreNavigationHandlers(); // Genre navigation handlers need to be reassigned as there will be new ones added
         },
         error: function (jqXHR) {
             $("main").html(jqXHR.responseText); // Fills in the main body with 404 error message
+            // FIXME Fix not changing active link on AJAX fail
         },
         complete: function () {
             changePageURI("book/" + book); // Update page URL to point to the new genre and allow for refreshing
@@ -578,5 +582,3 @@ $(document).ready(function () {
         switchPageContent(null, getLinkNameByURI());
     }
 })
-
-// TODO Fix not changing active link on AJAX fail
