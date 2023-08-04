@@ -573,8 +573,10 @@ $(document).ready(function () {
     if (target == "Genre") { // Target is in title case
         switchGenrePage(target_arr[1]);
     } else if (target == "Book") {
-        changePageContent("/html/book.html", true);
+        switchBookPage(target_arr[1]);
     } else { // Manually check the others as they url switching is not necessary
         switchPageContent(null, getLinkNameByURI());
     }
 })
+
+// TODO Fix not changing active link on AJAX fail
