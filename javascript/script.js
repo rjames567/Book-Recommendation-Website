@@ -548,7 +548,8 @@ function switchBookPage (book) {
         type: "GET",
         url: addGetParameter("/cgi-bin/book/about_data", "book_name", book),
         success: function (result) {
-
+            changePageContent("/html/book.html", false); // Must be synchronous, otherwise subsequent
+            // population of the template the request supplies may fail, as it may not arrive in time.
         },
         error: function (jqXHR) {
             $("main").html(jqXHR.responseText); // Fills in the main body with 404 error message
