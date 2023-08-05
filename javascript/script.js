@@ -581,21 +581,15 @@ function switchBookPage (book) {
             let numWantRead = result["num_want_read"];
             if (numWantRead == 1) {
                 $(".book-about .book-stats .num-want-read .person-qualifier").html("person");
-            } else {
-                $(".book-about .book-stats .num-want-read .person-qualifier").html("people");
             }
             let numReading = result["num_reading"];
             if (numReading == 1) {
                 $(".book-about .book-stats .num-reading .person-qualifier").html("person");
-            } else {
-                $(".book-about .book-stats .num-reading .person-qualifier").html("people");
             }
             let numRead = result["num_read"];
             if (numRead == 1) {
                 $(".book-about .book-stats .num-read .person-qualifier").html("person has");
-            } else {
-                $(".book-about .book-stats .num-read .person-qualifier").html("people have");
-            }
+            } // Other option is the default as it is hardcoded in the HTML
             $(".book-about .book-stats .num-want-read .value").html(numWantRead);
             $(".book-about .book-stats .num-reading .value").html(numReading);
             $(".book-about .book-stats .num-read .value").html(numRead);
@@ -612,30 +606,24 @@ function switchBookPage (book) {
             $(".book-about .review-distribution .bar#3-star .number").html(result["num_3_stars"]);
             $(".book-about .review-distribution .bar#2-star .number").html(result["num_2_stars"]);
             $(".book-about .review-distribution .bar#1-star .number").html(result["num_1_star"]);
-            if (numRatings == 0) { // Avoid 0 division error
-                $(".book-about .review-distribution .bar#5-star .percentage").html(0);
-                $(".book-about .review-distribution .bar#4-star .percentage").html(0);
-                $(".book-about .review-distribution .bar#3-star .percentage").html(0);
-                $(".book-about .review-distribution .bar#2-star .percentage").html(0);
-                $(".book-about .review-distribution .bar#1-star .percentage").html(0);
 
-            } else {
-                let percentage = ((result["num_5_stars"] / numRatings) * 100)
-                $(".book-about .review-distribution .bar#5-star .percentage").html(percentage.toFixed(2));
-                $(".book-about .review-distribution .bar#5-star meter").val(percentage);
-                percentage = ((result["num_4_stars"] / numRatings) * 100)
-                $(".book-about .review-distribution .bar#4-star .percentage").html(percentage.toFixed(2));
-                $(".book-about .review-distribution .bar#4-star meter").val(percentage);
-                percentage = ((result["num_3_stars"] / numRatings) * 100)
-                $(".book-about .review-distribution .bar#3-star .percentage").html(percentage.toFixed(2));
-                $(".book-about .review-distribution .bar#3-star meter").val(percentage);
-                percentage = ((result["num_2_stars"] / numRatings) * 100)
-                $(".book-about .review-distribution .bar#2-star .percentage").html(percentage.toFixed(2));
-                $(".book-about .review-distribution .bar#2-star meter").val(percentage);
-                percentage = ((result["num_1_star"] / numRatings) * 100)
-                $(".book-about .review-distribution .bar#1-star .percentage").html(percentage.toFixed(2));
-                $(".book-about .review-distribution .bar#1-star meter").val(percentage);
-            }
+            numRatings = Math.max(numRatings, 1); // If numRatings is 0, it changes it to 1, which does not affect the
+            // percentages but avoids 0 division errors.
+            let percentage = ((result["num_5_stars"] / numRatings) * 100)
+            $(".book-about .review-distribution .bar#5-star .percentage").html(percentage.toFixed(2));
+            $(".book-about .review-distribution .bar#5-star meter").val(percentage);
+            percentage = ((result["num_4_stars"] / numRatings) * 100)
+            $(".book-about .review-distribution .bar#4-star .percentage").html(percentage.toFixed(2));
+            $(".book-about .review-distribution .bar#4-star meter").val(percentage);
+            percentage = ((result["num_3_stars"] / numRatings) * 100)
+            $(".book-about .review-distribution .bar#3-star .percentage").html(percentage.toFixed(2));
+            $(".book-about .review-distribution .bar#3-star meter").val(percentage);
+            percentage = ((result["num_2_stars"] / numRatings) * 100)
+            $(".book-about .review-distribution .bar#2-star .percentage").html(percentage.toFixed(2));
+            $(".book-about .review-distribution .bar#2-star meter").val(percentage);
+            percentage = ((result["num_1_star"] / numRatings) * 100)
+            $(".book-about .review-distribution .bar#1-star .percentage").html(percentage.toFixed(2));
+            $(".book-about .review-distribution .bar#1-star meter").val(percentage);
 
             $(".book-about a.purchase_link").attr("href", result["purchase_link"])
 
