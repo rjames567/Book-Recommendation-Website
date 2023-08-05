@@ -569,6 +569,7 @@ function switchBookPage (book) {
             $(".book-about .author").html(result["author"]);
             $(".book-about .synopsis").html(result["synopsis"]);
             $(".book-about img.cover").attr("src", result["cover_image"]);
+            $(".book-about .isbn").html(result["isbn"]);
 
             assignGenreNavigationHandlers(); // Genre navigation handlers need to be reassigned as there will be new ones added
         },
