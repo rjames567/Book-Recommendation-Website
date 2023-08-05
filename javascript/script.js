@@ -392,20 +392,7 @@ function assignReadingListNavigationHandlers () {
                     $(".container .entries .book.template .about-review span.num-review").html(books[i]["num_reviews"]);
                     $(".container .entries .book.template .cover img").attr("src", books[i]["cover"]);
 
-                    let icons = $(".container .entries .book.template .rating-container i");
-                    let numFull = Math.trunc(averageRating);
-                    for (let i = 0; i < numFull; i++) {
-                        $(icons[i]).removeClass().addClass("fa fa-star"); // Removes all classes first. This is easier
-                        // as it then does not need to worry about removing the two other possibilities. Does mean
-                        // fa needs to be added as well
-                    }
-                    if (numFull != averageRating) {
-                        $(icons[numFull]).removeClass().addClass("fa fa-star-half-o");
-                        numFull += 1;
-                    }
-                    for (let i = numFull; i < 5; i++) {
-                        $(icons[i]).removeClass().addClass("fa fa-star-o");
-                    }
+                    changeElemStars($(".container .entries .book.template .rating-container i"), averageRating);
 
                     $(".container .entries .book.template ol li:not('.template')").remove();
                     // Remove any genres from previous entry.
@@ -627,7 +614,44 @@ function switchBookPage (book) {
 
             $(".book-about a.purchase_link").attr("href", result["purchase_link"])
 
-            assignGenreNavigationHandlers(); // Genre navigation handlers need to be reassigned as there will be new ones added
+            let reviews = result["reviews"];
+            for (let i = 0; i < Object.keys(reviews).length; i++) {
+                $(".book-about .user-reviews .review.template .username").html(reviews[i]["username"]);
+                $(".book-about .user-reviews .review.template .date").html(reviews[i]["date_added"]);
+                if (reviews[i]["summary"] == null) {
+                    $(".book-about .user-reviews .review.template .summary").addClass("hidden");
+                } else {
+                    $(".book-about .user-reviews .review.template .summary").removeClass("hidden");
+                    $(".book-about .user-reviews .review.template .summary").html(reviews[i]["summary"]);
+                }
+                if (reviews[i]["rating_body"] == null) {
+                    $(".book-about .user-reviews .review.template .review-body").addClass("hidden");
+                } else {
+                    $(".book-about .user-reviews .review.template .review-body").removeClass("hidden");
+                    $(".book-about .user-reviews .review.template .review-body").html(reviews[i]["rating_body"]);
+                }
+
+                changeElemStars($(".book-about .user-reviews .review .overall-rating i"), reviews[i]["overall_rating"]);
+                if (reviews[i]["plot_rating"] == null) {
+                    $(".book-about .user-reviews .review .plot-rating").addClass("hidden");
+                } else {
+                    $(".book-about .user-reviews .review .plot-rating").removeClass("hidden");
+                    changeElemStars($(".book-about .user-reviews .review .plot-rating i"), reviews[i]["plot_rating"]);
+                }
+                if (reviews[i]["character_rating"] == null) {
+                    $(".book-about .user-reviews .review .character-rating").addClass("hidden");
+                } else {
+                    $(".book-about .user-reviews .review .character-rating").removeClass("hidden");
+                    changeElemStars(
+                        $(".book-about .user-reviews .review .character-rating i"),
+                        reviews[i]["character_rating"]
+                    );
+                }
+                $(".book-about .user-reviews .review.template").clone().removeClass("template").appendTo(".book-about .user-reviews");
+            }
+
+            assignGenreNavigationHandlers(); // Genre navigation handlers need to be reassigned as there will be new ones
+            // added
         },
         error: function (jqXHR) {
             $("main").html(jqXHR.responseText); // Fills in the main body with 404 error message
@@ -638,6 +662,26 @@ function switchBookPage (book) {
             // Last as it is least likely to be seen, so appears smoother
         }
     });
+}
+
+
+// -----------------------------------------------------------------------------
+// Rating stars
+// -----------------------------------------------------------------------------
+function changeElemStars (icons, averageRating) {
+    let numFull = Math.trunc(averageRating);
+    for (let i = 0; i < numFull; i++) {
+        $(icons[i]).removeClass().addClass("fa fa-star"); // Removes all classes first. This is easier
+        // as it then does not need to worry about removing the two other possibilities. Does mean
+        // fa needs to be added as well
+    }
+    if (numFull != averageRating) {
+        $(icons[numFull]).removeClass().addClass("fa fa-star-half-o");
+        numFull += 1;
+    }
+    for (let i = numFull; i < 5; i++) {
+        $(icons[i]).removeClass().addClass("fa fa-star-o");
+    }
 }
 
 // -----------------------------------------------------------------------------
