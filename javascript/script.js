@@ -556,9 +556,11 @@ function assignBookNavigationHandlers (summary=false) {
 }
 
 function switchBookPage (book) {
+    let request_url = addGetParameter("/cgi-bin/books/about_data", "book_name", book);
+    request_url = addGetParameter(request_url, "session_id", sessionID);
     $.ajax({
         type: "GET",
-        url: addGetParameter("/cgi-bin/books/about_data", "book_name", book),
+        url: request_url,
         success: function (result) {
             changePageContent("/html/book.html", false); // Must be synchronous, otherwise subsequent
             // population of the template the request supplies may fail, as it may not arrive in time.
