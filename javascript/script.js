@@ -637,6 +637,7 @@ function switchBookPage (book) {
                 $(".book-about .review-distribution .bar#1-star meter").val(percentage);
             }
 
+            $(".book-about a.purchase_link").attr("href", result["purchase_link"])
 
             assignGenreNavigationHandlers(); // Genre navigation handlers need to be reassigned as there will be new ones added
         },
