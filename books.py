@@ -91,12 +91,13 @@ def get_about_data(book_title, user_id):
     output_dict = {
         "title": res[1],
         "cover_image": res[2],
-        "synopsis": res[3],
+        "synopsis": "</p><p>".join(("<p>" + res[3] + "</p>").split("\n")),  # Split at line breaks into paragraph blocks
+        # Can just be inserted without any processing as it includes spacing because of p elements
         "purchase_link": res[4],
         "release_date": res[5].strftime("%d/%m/%Y"),
         "isbn": res[6],
         "author": author,
-        "author_about": res[10],
+        "author_about": "</p><p>".join(("<p>" + res[10] + "</p>").split("\n")),
         "author_number_followers": res[11],
         "num_want_read": res[12],
         "num_reading": res[13],
@@ -156,7 +157,7 @@ def get_about_data(book_title, user_id):
                 "plot_rating": res[0][1],
                 "character_rating": res[0][2],
                 "summary": res[0][3],
-                "rating_body": res[0][4]
+                "rating_body": "</p><p>".join(("<p>" + res[0][4] + "</p>").split("\n"))
             }
 
 
@@ -181,7 +182,7 @@ def get_about_data(book_title, user_id):
             "plot_rating": i[1],
             "character_rating": i[2],
             "summary": i[3],
-            "rating_body": i[4],
+            "rating_body": "</p><p>".join(("<p>" + i[4] + "</p>").split("\n")),
             "date_added": i[5].strftime("%d/%m/%Y"),
             "username": i[6],
         })
