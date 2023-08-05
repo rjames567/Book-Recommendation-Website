@@ -60,7 +60,7 @@ def get_about_data(book_title, user_id):
                     WHERE reading_list_names.list_name="Have Read"
                             AND reading_lists.book_id=books.book_id) AS num_read
         FROM books
-        INNER JOIN authors ON authors.author_id=books.book_id
+        INNER JOIN authors ON authors.author_id=books.author_id
         WHERE books.title="{book_title}";
     """.format(book_title=book_title))
 
