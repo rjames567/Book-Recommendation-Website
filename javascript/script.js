@@ -731,7 +731,17 @@ function switchBookPage (book) {
 function assignReviewDeleteButtonHandler () {
     $(".book-about .existing-review button.delete-review").click(function () {
         $(".book-about .user-review .leave-review").removeClass("hidden");
-        $(".book-about .user-review .existing-review").addClass("hidden");
+        $(".book-about .user-review .existing-review").addClass("hidden"); // Do this before making the request, so it
+        // can continue in the background for appeared responsiveness.
+        $.ajax({
+            type: "POST",
+            url: "/cgi-bin/books/delete_review",
+            data: JSON.stringify({
+                "session_id": sessionID,
+                "book_name": $(this).closest(".book-about .right").find(".title").html() // For whatever reason, the
+                // further specification to .title cannot be done in the closest, so find is used instead.
+            }) // The user can only have one review of the book
+        }); // The response does not matter
     });
 }
 
