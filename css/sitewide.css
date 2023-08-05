@@ -966,17 +966,18 @@ main .container {
 /* -------------------------------------------------------------------------- */
 /* Book Pages - Purchase Button                                               */
 /* -------------------------------------------------------------------------- */
-.book-about button.purchase_link {
+.book-about a.purchase_link {
   font-size: 15px; /* Slightly smaller than the h3 for the author's name */
-  padding: 10px 15px;
+  padding: 10px 0;
   margin-top: 15px;
   width: 160px;
   border: none;
   background-color: var(--blue);
   color: white;
+  text-align: center;
 }
 
-.book-about button.purchase_link:hover {
+.book-about a.purchase_link:hover {
   background-color: var(--light-blue);
 }
 
