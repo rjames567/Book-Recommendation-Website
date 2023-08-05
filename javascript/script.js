@@ -666,6 +666,39 @@ function switchBookPage (book) {
                 $(".book-about .user-reviews .review.template").clone().removeClass("template").appendTo(".book-about .user-reviews");
             }
 
+            let currentUserReview = result["current_user_review"];
+            if (currentUserReview != null) {
+                $(".book-about .user-review .leave-review").addClass("hidden");
+                $(".book-about .user-review .existing-review").removeClass("hidden");
+                if (currentUserReview["overall_rating"] == null) {
+                    $(".book-about .user-review .existing-review .overall-rating").addClass("hidden");
+                } else {
+                    changeElemStars(
+                        $(".book-about .user-review .existing-review .overall-rating i"),
+                        currentUserReview["overall_rating"]
+                    );
+                }
+                if (currentUserReview["plot-rating"] == null) {
+                    $(".book-about .user-review .existing-review .plot-rating").addClass("hidden");
+                } else {
+                    changeElemStars(
+                        $(".book-about .user-review .existing-review .plot-rating i"),
+                        currentUserReview["plot-rating"]
+                    );
+                }
+                if (currentUserReview["character-rating"] == null) {
+                    $(".book-about .user-review .existing-review .character-rating").addClass("hidden");
+                } else {
+                    changeElemStars(
+                        $(".book-about .user-review .existing-review .character-rating i"),
+                        currentUserReview["character-rating"]
+                    );
+                }
+
+                $(".book-about .user-review .existing-review .rating-summary").html(currentUserReview["summary"]);
+                $(".book-about .user-review .existing-review .review-body").html(currentUserReview["rating_body"]);
+            }
+
             assignGenreNavigationHandlers(); // Genre navigation handlers need to be reassigned as there will be new ones
             // added
         },
