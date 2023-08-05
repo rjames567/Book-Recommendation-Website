@@ -60,6 +60,19 @@ function switchPageContent (elem, linkName) {
     changePageURI(linkName);
 }
 
+function reloadCurrentPage () {
+    let target_arr = getLinkNameByURI().split("/");
+    let target = target_arr[0];
+    if (target == "Genre") { // Target is in title case
+        switchGenrePage(target_arr[1]);
+    } else if (target == "Book") {
+        switchBookPage(decodeURI(target_arr[1])); //  Needs to be decoded; as on the refresh, any spaces have character
+        // codes in, so would be replaced. This avoids double encoding the URL.
+    } else { // Manually check the others as they url switching is unnecessary
+        switchPageContent(null, getLinkNameByURI());
+    }
+}
+
 function changePageContent (file, async, elem=null, linkName=null) {
     // Elem and linkName must BOTH be specified, or BOTH must not be specified.
     // Async specifies whether the request is synchronous (false) or asynchronous (true)
@@ -213,6 +226,7 @@ $(".account-popups .window#sign-up form").on("submit", function (event) {
                     changeAccountButtons(); // Change before it can be seen to
                     // appear smoother
                     hideAllSignPopups();
+                    reloadCurrentPage();
                 } else {
                     signUpAlert(result["message"]);
                 }
@@ -262,7 +276,7 @@ $(".account-popups .window#sign-in form").on("submit", function (event) {
                 changeAccountButtons(); // Change before it can be seen to
                 // appear smoother
                 hideAllSignPopups();
-
+                reloadCurrentPage();
             } else {
                 signUpAlert(result["message"]);
             }
@@ -690,16 +704,7 @@ function changeElemStars (icons, averageRating) {
 // window onload handlers
 // -----------------------------------------------------------------------------
 $(document).ready(function () {
-    let target_arr = getLinkNameByURI().split("/");
-    let target = target_arr[0];
-    if (target == "Genre") { // Target is in title case
-        switchGenrePage(target_arr[1]);
-    } else if (target == "Book") {
-        switchBookPage(decodeURI(target_arr[1])); //  Needs to be decoded; as on the refresh, any spaces have character
-        // codes in, so would be replaced. This avoids double encoding the URL.
-    } else { // Manually check the others as they url switching is unnecessary
-        switchPageContent(null, getLinkNameByURI());
-    }
+    reloadCurrentPage();
 })
 
 // FIXME Fix spaces in url and change to dashes
