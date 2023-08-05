@@ -402,7 +402,7 @@ function assignReadingListNavigationHandlers () {
                     $(".container .entries .book.template .author").html(books[i]["author"]);
                     $(".container .entries .book.template .date-added").html(books[i]["date_added"]);
                     $(".container .entries .book.template .synopsis").html(books[i]["synopsis"]);
-                    $(".container .entries .book.template .about-review .average-review").html(averageRating);
+                    $(".container .entries .book.template .about-review .average-review").html(averageRating.toFixed(1));
                     $(".container .entries .book.template .about-review span.num-review").html(books[i]["num_reviews"]);
                     $(".container .entries .book.template .cover img").attr("src", books[i]["cover"]);
 
