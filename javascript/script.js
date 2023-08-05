@@ -579,6 +579,7 @@ function switchBookPage (book) {
             }
 
             $(".book-about .book-stats .num-reading").html(result["num_reading"]);
+            $(".book-about .book-stats .num-want-read").html(result["num_want_read"]);
 
             $(".book-about .author").html(result["author"]);
             $(".book-about .author-about .num-followers").html(result["author_number_followers"]);
