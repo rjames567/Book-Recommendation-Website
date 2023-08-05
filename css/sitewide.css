@@ -1006,3 +1006,25 @@ main .container {
 .book-about .list-name button:hover {
   background-color: var(--light-red);
 }
+
+/* -------------------------------------------------------------------------- */
+/* Book Pages - Delete Review                                                 */
+/* -------------------------------------------------------------------------- */
+.book-about .existing-review button.delete-review {
+  color: white;
+  background-color: var(--red);
+  margin-right: 30px;
+  font-size: 20px;
+  height: 40px;
+  width: 40px;
+  border: none;
+}
+
+.book-about .existing-review button.delete-review:hover {
+  background-color: var(--light-red);
+}
+
+.book-about .existing-review .delete-container {
+  display: flex; /* Float right would make it come outside of the div. This does not. */
+  justify-content: flex-end;
+}
