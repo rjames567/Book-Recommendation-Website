@@ -577,8 +577,11 @@ function switchBookPage (book) {
                 $(".book-about .genres li.template").clone().removeClass("template").appendTo(".book-about .genres ol");
             }
 
+            $(".book-about .book-stats .num-reading").html(result["num_reading"]);
+
             $(".book-about .author").html(result["author"]);
             $(".book-about .author-about .num-followers").html(result["author_number_followers"]);
+            $(".book-about .author-about .about").html(result["author_about"]);
 
             $(".book-about .average-review").html(result["average_rating"]);
 
