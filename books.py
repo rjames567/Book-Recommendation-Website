@@ -144,20 +144,23 @@ def get_about_data(book_title, user_id):
                 SELECT overall_rating,
                     plot_rating,
                     character_rating,
-                    IFNULL(summary, "") AS summary,
-                    IFNULL(rating_body, "") AS body
+                    summary,
+                    rating_body
                 FROM reviews
                 WHERE user_id={user_id};
             """.format(user_id=user_id))
         if len(res) == 0:
             output_dict["current_user_review"] = None
         else:
+            body = res[0][4]
+            if body is not None:
+                body = "</p><p>".join(("<p>" + body + "</p>").split("\n"))
             output_dict["current_user_review"] = {
                 "overall_rating": res[0][0],
                 "plot_rating": res[0][1],
                 "character_rating": res[0][2],
                 "summary": res[0][3],
-                "rating_body": "</p><p>".join(("<p>" + res[0][4] + "</p>").split("\n"))
+                "rating_body": body
             }
 
 
@@ -165,8 +168,8 @@ def get_about_data(book_title, user_id):
         SELECT reviews.overall_rating,
             reviews.plot_rating,
             reviews.character_rating,
-            IFNULL(reviews.summary, "") AS summary,
-            IFNULL(reviews.rating_body, "") AS body,
+            reviews.summary,
+            reviews.rating_body,
             reviews.date_added,
             users.username
         FROM reviews
@@ -177,12 +180,15 @@ def get_about_data(book_title, user_id):
 
     review_arr = []
     for i in res:
+        body = i[4]
+        if body is not None:
+            body = "</p><p>".join(("<p>" + body + "</p>").split("\n"))
         review_arr.append({
             "overall_rating": i[0],
             "plot_rating": i[1],
             "character_rating": i[2],
             "summary": i[3],
-            "rating_body": "</p><p>".join(("<p>" + i[4] + "</p>").split("\n")),
+            "rating_body": body,
             "date_added": i[5].strftime("%d/%m/%Y"),
             "username": i[6],
         })
