@@ -673,6 +673,7 @@ function switchBookPage (book) {
                 if (currentUserReview["overall_rating"] == null) {
                     $(".book-about .user-review .existing-review .overall-rating").addClass("hidden");
                 } else {
+                    $(".book-about .user-review .existing-review .overall-rating").removeClass("hidden");
                     changeElemStars(
                         $(".book-about .user-review .existing-review .overall-rating i"),
                         currentUserReview["overall_rating"]
@@ -681,6 +682,7 @@ function switchBookPage (book) {
                 if (currentUserReview["plot-rating"] == null) {
                     $(".book-about .user-review .existing-review .plot-rating").addClass("hidden");
                 } else {
+                    $(".book-about .user-review .existing-review .plot-rating").removeClass("hidden");
                     changeElemStars(
                         $(".book-about .user-review .existing-review .plot-rating i"),
                         currentUserReview["plot-rating"]
@@ -689,6 +691,7 @@ function switchBookPage (book) {
                 if (currentUserReview["character-rating"] == null) {
                     $(".book-about .user-review .existing-review .character-rating").addClass("hidden");
                 } else {
+                    $(".book-about .user-review .existing-review .character-rating").removeClass("hidden");
                     changeElemStars(
                         $(".book-about .user-review .existing-review .character-rating i"),
                         currentUserReview["character-rating"]
@@ -698,11 +701,13 @@ function switchBookPage (book) {
                 if (currentUserReview["summary"] == null) {
                     $(".book-about .user-review .existing-review .rating-summary").addClass("hidden");
                 } else {
+                    $(".book-about .user-review .existing-review .rating-summary").removeClass("hidden");
                     $(".book-about .user-review .existing-review .rating-summary").html(currentUserReview["summary"]);
                 }
                 if (currentUserReview["rating_body"] == null) {
                     $(".book-about .user-review .existing-review .review-body").addClass("hidden");
                 } else {
+                    $(".book-about .user-review .existing-review .review-body").removeClass("hidden");
                     $(".book-about .user-review .existing-review .review-body").html(currentUserReview["rating_body"]);
                 }
             }
