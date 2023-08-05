@@ -570,6 +570,14 @@ function switchBookPage (book) {
             $(".book-about .synopsis").html(result["synopsis"]);
             $(".book-about img.cover").attr("src", result["cover_image"]);
             $(".book-about .isbn").html(result["isbn"]);
+            $(".book-about .publish-date").html(result["release_date"]);
+            $(".book-about .average-review").html(result["average_rating"]);
+
+            let genres = result["genres"]
+            for (let i = 0; i < Object.keys(genres).length; i++) {
+                $(".book-about .genres li.template a").html(genres[i]);
+                $(".book-about .genres li.template").clone().removeClass("template").appendTo(".book-about .genres ol");
+            }
 
             assignGenreNavigationHandlers(); // Genre navigation handlers need to be reassigned as there will be new ones added
         },
