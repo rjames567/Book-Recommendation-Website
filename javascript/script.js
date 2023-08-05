@@ -586,6 +586,8 @@ function switchBookPage (book) {
             $(".book-about .author-about .about").html(result["author_about"]);
 
             $(".book-about .average-review").html(result["average_rating"]);
+            changeElemStars($(".book-about .top-container .rating i"), result["average_rating"]);
+            changeElemStars($(".book-about .reviews .average-review-container i"), result["average_rating"]);
             let numRatings = result["num_ratings"]
             $(".book-about .num-review").html(numRatings);
             $(".book-about .review-distribution .bar#5-star .number").html(result["num_5_stars"]);
