@@ -695,8 +695,16 @@ function switchBookPage (book) {
                     );
                 }
 
-                $(".book-about .user-review .existing-review .rating-summary").html(currentUserReview["summary"]);
-                $(".book-about .user-review .existing-review .review-body").html(currentUserReview["rating_body"]);
+                if (currentUserReview["summary"] == null) {
+                    $(".book-about .user-review .existing-review .rating-summary").addClass("hidden");
+                } else {
+                    $(".book-about .user-review .existing-review .rating-summary").html(currentUserReview["summary"]);
+                }
+                if (currentUserReview["rating_body"] == null) {
+                    $(".book-about .user-review .existing-review .review-body").addClass("hidden");
+                } else {
+                    $(".book-about .user-review .existing-review .review-body").html(currentUserReview["rating_body"]);
+                }
             }
 
             assignGenreNavigationHandlers(); // Genre navigation handlers need to be reassigned as there will be new ones
