@@ -566,6 +566,7 @@ function switchBookPage (book) {
             // population of the template the request supplies may fail, as it may not arrive in time.
 
             $(".book-about .title").html(result["title"]);
+            $(".book-about .author").html(result["author"]);
 
             assignGenreNavigationHandlers(); // Genre navigation handlers need to be reassigned as there will be new ones added
         },
