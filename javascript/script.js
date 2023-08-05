@@ -578,9 +578,27 @@ function switchBookPage (book) {
                 $(".book-about .genres li.template").clone().removeClass("template").appendTo(".book-about .genres ol");
             }
 
-            $(".book-about .book-stats .num-reading").html(result["num_reading"]);
-            $(".book-about .book-stats .num-want-read").html(result["num_want_read"]);
-            $(".book-about .book-stats .num-read").html(result["num_read"]);
+            let numWantRead = result["num_want_read"];
+            if (numWantRead == 1) {
+                $(".book-about .book-stats .num-want-read .person-qualifier").html("person");
+            } else {
+                $(".book-about .book-stats .num-want-read .person-qualifier").html("people");
+            }
+            let numReading = result["num_reading"];
+            if (numReading == 1) {
+                $(".book-about .book-stats .num-reading .person-qualifier").html("person");
+            } else {
+                $(".book-about .book-stats .num-reading .person-qualifier").html("people");
+            }
+            let numRead = result["num_read"];
+            if (numRead == 1) {
+                $(".book-about .book-stats .num-read .person-qualifier").html("person has");
+            } else {
+                $(".book-about .book-stats .num-read .person-qualifier").html("people have");
+            }
+            $(".book-about .book-stats .num-want-read .value").html(numWantRead);
+            $(".book-about .book-stats .num-reading .value").html(numReading);
+            $(".book-about .book-stats .num-read .value").html(numRead);
 
             $(".book-about .author").html(result["author"]);
             $(".book-about .author-about .num-followers").html(result["author_number_followers"]);
