@@ -7,6 +7,7 @@ import urllib.parse
 # -----------------------------------------------------------------------------
 # Project imports
 # -----------------------------------------------------------------------------
+import books
 import configuration
 import environ_manipulation
 import genres
@@ -297,7 +298,7 @@ class MyBooksHandler(Handler):
         button_text = response_dict["button_name"]
         write_log("          Button name: " + button_text, self._log)
         if button_text == "Mark as Read":  # Can only be triggered by one of these options being clicked, so target_list
-            # will ne defined regardless.
+            # will be defined regardless.
             target_list = "Have Read"
         elif button_text == "Start Reading":
             target_list = "Currently Reading"
@@ -366,7 +367,7 @@ class MyBooksHandler(Handler):
 
 
 # -----------------------------------------------------------------------------
-# Genres
+# Genres Handler
 # -----------------------------------------------------------------------------
 class GenreHandler(Handler):
     def __init__(self, log=None):
@@ -398,6 +399,52 @@ class GenreHandler(Handler):
             status = "404 Not Found"
             write_log("          Status: " + status, self._log)
             return ErrorHandler("404 Not Found").error_response()  # Return the content for a 404 error
+
+
+# -----------------------------------------------------------------------------
+# Book Handler
+# -----------------------------------------------------------------------------
+class BookHandler(Handler):
+    def __init__(self, log=None):
+        super().__init__(log)
+        self._routes = {
+            "about_data": self.get_book_data
+        }
+
+    def get_book_data(self):
+        try:
+            get_params = self.retrieve_get_parameters()
+            session_id = get_params["session_id"]
+            book_name = get_params["book_name"]
+            write_log("          Book name: " + book_name, self._log)
+            write_log("          Session ID: " + session_id, self._log)
+            if session_id != "null":
+                user_id = login.session.get_user_id(session_id)
+            else:
+                user_id = None
+            write_log("          User ID: " + str(user_id), self._log)
+            try:
+                result = books.get_about_data(book_name, user_id)
+                status = "200 OK"
+                write_log("          Success", self._log)
+
+                response = json.dumps(result)
+                write_log("          Response: " + response, self._log)
+                write_log("          Status: " + status, self._log)
+
+                response_headers = [
+                    ("Content-Type", "application/json"),
+                    ("Content-Length", str(len(response)))
+                ]
+
+                return response, status, response_headers
+
+            except books.BookNotFoundError:
+                status = "404 Not Found"
+                write_log("          Status: " + status, self._log)
+                return ErrorHandler("404 Not Found").error_response()  # Return the content for a 404 error
+        except Exception as e:
+            write_log(e, self._log)
 
 # -----------------------------------------------------------------------------
 # Error Handler
@@ -444,7 +491,8 @@ else:
 routes = {
     "account": AccountHandler(log),
     "my_books": MyBooksHandler(log),
-    "genres": GenreHandler(log)
+    "genres": GenreHandler(log),
+    "books": BookHandler(log)
     # Objects are persistent, so will the response should be faster and more memory efficient.
 }
 
