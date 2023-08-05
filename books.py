@@ -93,7 +93,7 @@ def get_about_data(book_title, user_id):
         "cover_image": res[2],
         "synopsis": res[3],
         "purchase_link": res[4],
-        "release_date": res[5],
+        "release_date": res[5].strftime("%d/%m/%Y"),
         "isbn": res[6],
         "author": author,
         "author_about": res[10],
@@ -182,7 +182,7 @@ def get_about_data(book_title, user_id):
             "character_rating": i[2],
             "summary": i[3],
             "rating_body": i[4],
-            "date_added": i[5],
+            "date_added": i[5].strftime("%d/%m/%Y"),
             "username": i[6],
         })
 
