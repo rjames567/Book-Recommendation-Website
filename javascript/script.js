@@ -565,6 +565,8 @@ function switchBookPage (book) {
             changePageContent("/html/book.html", false); // Must be synchronous, otherwise subsequent
             // population of the template the request supplies may fail, as it may not arrive in time.
 
+            $(".book-about .title").html(result["title"]);
+
             assignGenreNavigationHandlers(); // Genre navigation handlers need to be reassigned as there will be new ones added
         },
         error: function (jqXHR) {
