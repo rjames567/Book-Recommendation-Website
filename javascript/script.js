@@ -605,6 +605,38 @@ function switchBookPage (book) {
             $(".book-about .author-about .about").html(result["author_about"]);
 
             $(".book-about .average-review").html(result["average_rating"]);
+            let numRatings = result["num_ratings"]
+            $(".book-about .num-review").html(numRatings);
+            $(".book-about .review-distribution .bar#5-star .number").html(result["num_5_stars"]);
+            $(".book-about .review-distribution .bar#4-star .number").html(result["num_4_stars"]);
+            $(".book-about .review-distribution .bar#3-star .number").html(result["num_3_stars"]);
+            $(".book-about .review-distribution .bar#2-star .number").html(result["num_2_stars"]);
+            $(".book-about .review-distribution .bar#1-star .number").html(result["num_1_star"]);
+            if (numRatings == 0) { // Avoid 0 division error
+                $(".book-about .review-distribution .bar#5-star .percentage").html(0);
+                $(".book-about .review-distribution .bar#4-star .percentage").html(0);
+                $(".book-about .review-distribution .bar#3-star .percentage").html(0);
+                $(".book-about .review-distribution .bar#2-star .percentage").html(0);
+                $(".book-about .review-distribution .bar#1-star .percentage").html(0);
+
+            } else {
+                let percentage = ((result["num_5_stars"] / numRatings) * 100)
+                $(".book-about .review-distribution .bar#5-star .percentage").html(percentage.toFixed(2));
+                $(".book-about .review-distribution .bar#5-star meter").val(percentage);
+                percentage = ((result["num_4_stars"] / numRatings) * 100)
+                $(".book-about .review-distribution .bar#4-star .percentage").html(percentage.toFixed(2));
+                $(".book-about .review-distribution .bar#4-star meter").val(percentage);
+                percentage = ((result["num_3_stars"] / numRatings) * 100)
+                $(".book-about .review-distribution .bar#3-star .percentage").html(percentage.toFixed(2));
+                $(".book-about .review-distribution .bar#3-star meter").val(percentage);
+                percentage = ((result["num_2_stars"] / numRatings) * 100)
+                $(".book-about .review-distribution .bar#2-star .percentage").html(percentage.toFixed(2));
+                $(".book-about .review-distribution .bar#2-star meter").val(percentage);
+                percentage = ((result["num_1_star"] / numRatings) * 100)
+                $(".book-about .review-distribution .bar#1-star .percentage").html(percentage.toFixed(2));
+                $(".book-about .review-distribution .bar#1-star meter").val(percentage);
+            }
+
 
             assignGenreNavigationHandlers(); // Genre navigation handlers need to be reassigned as there will be new ones added
         },
