@@ -136,7 +136,29 @@ def get_about_data(book_title, user_id):
     output_dict["num_1_star"] = res[6]
 
     if user_id is None:
+        output_dict["current_user_review"] = None
         user_id = -1  # This will match all entries, as it is never equal to an ID, as they are natural numbers.
+    else:
+        res = connection.query("""
+                SELECT overall_rating,
+                    plot_rating,
+                    character_rating,
+                    IFNULL(summary, "") AS summary,
+                    IFNULL(rating_body, "") AS body
+                FROM reviews
+                WHERE user_id={user_id};
+            """.format(user_id=user_id))
+        if len(res) == 0:
+            output_dict["current_user_review"] = None
+        else:
+            output_dict["current_user_review"] = {
+                "overall_rating": res[0][0],
+                "plot_rating": res[0][1],
+                "character_rating": res[0][2],
+                "summary": res[0][3],
+                "rating_body": res[0][4]
+            }
+
 
     res = connection.query("""
         SELECT reviews.overall_rating,
@@ -166,6 +188,4 @@ def get_about_data(book_title, user_id):
 
     output_dict["reviews"] = review_arr
 
-    # TODO check if user has an existing review
-    # TODO get users existing review
     return output_dict
