@@ -556,6 +556,7 @@ function assignBookNavigationHandlers (summary=false) {
 }
 
 function switchBookPage (book) {
+    book = book.replace("&amp;", "&"); // Replace the HTML ampersand with a unicode one.
     let request_url = addGetParameter("/cgi-bin/books/about_data", "book_name", book);
     request_url = addGetParameter(request_url, "session_id", sessionID);
     $.ajax({
@@ -613,3 +614,5 @@ $(document).ready(function () {
         switchPageContent(null, getLinkNameByURI());
     }
 })
+
+// FIXME Fix spaces in url and change to dashes
