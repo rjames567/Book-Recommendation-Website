@@ -566,18 +566,21 @@ function switchBookPage (book) {
             // population of the template the request supplies may fail, as it may not arrive in time.
 
             $(".book-about .title").html(result["title"]);
-            $(".book-about .author").html(result["author"]);
             $(".book-about .synopsis").html(result["synopsis"]);
             $(".book-about img.cover").attr("src", result["cover_image"]);
             $(".book-about .isbn").html(result["isbn"]);
             $(".book-about .publish-date").html(result["release_date"]);
-            $(".book-about .average-review").html(result["average_rating"]);
 
             let genres = result["genres"]
             for (let i = 0; i < Object.keys(genres).length; i++) {
                 $(".book-about .genres li.template a").html(genres[i]);
                 $(".book-about .genres li.template").clone().removeClass("template").appendTo(".book-about .genres ol");
             }
+
+            $(".book-about .author").html(result["author"]);
+            $(".book-about .author-about .num-followers").html(result["author_number_followers"]);
+
+            $(".book-about .average-review").html(result["average_rating"]);
 
             assignGenreNavigationHandlers(); // Genre navigation handlers need to be reassigned as there will be new ones added
         },
