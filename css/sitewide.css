@@ -930,7 +930,7 @@ main .container {
 }
 
 /* -------------------------------------------------------------------------- */
-/* Book Pages - Review Distribution                                           */
+/* Book Pages - Reviews                                                       */
 /* -------------------------------------------------------------------------- */
 .book-about .reviews .user-reviews .review {
   display: flex;
@@ -965,6 +965,8 @@ main .container {
 .book-about .reviews .user-reviews .review .review-main .review-body p:last-child {
   margin-bottom: 0; /* Prevent the margin on the p tag effecting the spacing to the next review */
 }
+
+/* TODO Remove gap between review without body or summary */
 
 /* -------------------------------------------------------------------------- */
 /* Book Pages - Purchase Button                                               */
