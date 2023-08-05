@@ -37,11 +37,8 @@ function getLinkNameByURI () { // Convert URI to navigation link text.
 
 // JavaScript for Web Developers    ISBN: 978-1-119-36644-7
 function addGetParameter (url, name, value) {
-    console.log(url)
     url += (url.indexOf("?") == -1 ? "?" : "&");
-    console.log(url)
     url += `${encodeURIComponent(name)}=${encodeURIComponent(value)}`;
-    console.log(url)
     return url;
 }
 
