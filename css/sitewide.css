@@ -873,18 +873,18 @@ main .container {
 /* -------------------------------------------------------------------------- */
 /* Book Pages - Book Review Summary                                           */
 /* -------------------------------------------------------------------------- */
-.book-about .reviews .average-review {
+.book-about .reviews .average-review-container {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
 }
 
-.book-about .reviews .average-review i {
+.book-about .reviews .average-review-container i {
   color: var(--yellow);
-  font-size: 40px;
+  font-size: 35px;
 }
 
-.book-about .reviews .average-review p {
+.book-about .reviews .average-review-container p {
   font-size: 25px;
   margin: 0;
 }
