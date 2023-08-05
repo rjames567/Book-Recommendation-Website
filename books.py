@@ -15,6 +15,7 @@ connection = mysql_handler.Connection(
     host=config.get("mysql host")
 )
 
+
 # ------------------------------------------------------------------------------
 # Exceptions
 # ------------------------------------------------------------------------------
@@ -22,6 +23,7 @@ class BookNotFoundError(Exception):
     """
     Exception for when a genre is not found.
     """
+
     def __init__(self, book_title):
         message = f"Book '{book_title}' was not found"
         super().__init__(message)
@@ -47,16 +49,16 @@ def get_about_data(book_title, user_id):
                     WHERE author_followers.author_id=books.author_id) AS author_num_followers,
             (SELECT COUNT(reading_lists.book_id) FROM reading_lists
                     INNER JOIN reading_list_names ON reading_lists.list_id=reading_list_names.list_id
-                    WHERE reading_list_names.list_name="Have Read"
-                            AND reading_lists.book_id=books.book_id) AS num_read,
+                    WHERE reading_list_names.list_name="Want to Read"
+                            AND reading_lists.book_id=books.book_id) AS num_want_read,
             (SELECT COUNT(reading_lists.book_id) FROM reading_lists
                     INNER JOIN reading_list_names ON reading_lists.list_id=reading_list_names.list_id
                     WHERE reading_list_names.list_name="Currently Reading"
                             AND reading_lists.book_id=books.book_id) AS num_reading,
             (SELECT COUNT(reading_lists.book_id) FROM reading_lists
                     INNER JOIN reading_list_names ON reading_lists.list_id=reading_list_names.list_id
-                    WHERE reading_list_names.list_name="Want to Read"
-                            AND reading_lists.book_id=books.book_id) AS num_want_read
+                    WHERE reading_list_names.list_name="Have Read"
+                            AND reading_lists.book_id=books.book_id) AS num_read
         FROM books
         INNER JOIN authors ON authors.author_id=books.book_id
         WHERE books.title="{book_title}";
@@ -64,6 +66,8 @@ def get_about_data(book_title, user_id):
 
     if len(res) == 0:
         raise BookNotFoundError(book_title)  # If the query result has 0 entries, no book was found with the target name
+    else:
+        res = res[0]
 
     book_id = res[0]  # Avoids joins for subsequent queries
     first_name = res[7]
@@ -97,7 +101,38 @@ def get_about_data(book_title, user_id):
         "num_want_read": res[12],
         "num_reading": res[13],
         "num_read": res[14],
-        "genres": genres
+        "genres": genres,
     }
+
+    res = connection.query("""
+            SELECT IFNULL(ROUND(AVG(overall_rating), 2), 0) AS average_rating,
+            COUNT(overall_rating) AS num_ratings,
+            (SELECT COUNT(overall_rating) from reviews
+                WHERE overall_rating=5
+                    AND book_id={book_id}) AS num_5_stars,
+            (SELECT COUNT(overall_rating) from reviews
+                WHERE overall_rating=4
+                    AND book_id={book_id}) AS num_4_stars,
+            (SELECT COUNT(overall_rating) from reviews
+                WHERE overall_rating=3
+                    AND book_id={book_id}) AS num_3_stars,
+            (SELECT COUNT(overall_rating) from reviews
+                WHERE overall_rating=2
+                    AND book_id={book_id}) AS num_2_stars,
+            (SELECT COUNT(overall_rating) from reviews
+                WHERE overall_rating=1
+                    AND book_id={book_id}) AS num_1_star
+            FROM reviews
+            WHERE book_id={book_id};
+        """.format(book_id=book_id))[0]  # This always gives one tuple, regardless of whether there are any reviews.
+
+    # Even if there is no reviews, the query has results of 0 for all these.
+    output_dict["average_rating"] = float(res[0])  # The query gives a Decimal type, so cast to float to be useful.
+    output_dict["num_ratings"] = res[1]
+    output_dict["num_5_stars"] = res[2]
+    output_dict["num_4_stars"] = res[3]
+    output_dict["num_3_stars"] = res[4]
+    output_dict["num_2_stars"] = res[5]
+    output_dict["num_1_star"] = res[6]
 
     return output_dict
