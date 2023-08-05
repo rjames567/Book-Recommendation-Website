@@ -709,6 +709,7 @@ main .container {
 .book-about .author-about .about {
   height: 220px;
   overflow: hidden; /* Remove overflow outside div - prevent extra white space*/
+  margin-right: 115px; /* Add space between the about and the follow button */
   -webkit-mask-image: linear-gradient(180deg, #000 60%, transparent); /* Fade to transparent over distance */
 }
 
