@@ -712,6 +712,8 @@ function switchBookPage (book) {
                 }
             }
 
+            assignReviewDeleteButtonHandler();
+
             assignGenreNavigationHandlers(); // Genre navigation handlers need to be reassigned as there will be new ones
             // added
         },
@@ -726,6 +728,12 @@ function switchBookPage (book) {
     });
 }
 
+function assignReviewDeleteButtonHandler () {
+    $(".book-about .existing-review button.delete-review").click(function () {
+        $(".book-about .user-review .leave-review").removeClass("hidden");
+        $(".book-about .user-review .existing-review").addClass("hidden");
+    });
+}
 
 // -----------------------------------------------------------------------------
 // Rating stars
