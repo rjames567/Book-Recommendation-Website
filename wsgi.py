@@ -424,23 +424,20 @@ class BookHandler(Handler):
             user_id = None
         write_log("          User ID: " + str(user_id), self._log)
         try:
-            try:
-                result = books.get_about_data(book_id, user_id)
-                status = "200 OK"
-                write_log("          Success", self._log)
+            result = books.get_about_data(book_id, user_id)
+            status = "200 OK"
+            write_log("          Success", self._log)
 
-                response = json.dumps(result)
-                write_log("          Response: " + response, self._log)
-                write_log("          Status: " + status, self._log)
+            response = json.dumps(result)
+            write_log("          Response: " + response, self._log)
+            write_log("          Status: " + status, self._log)
 
-                response_headers = [
-                    ("Content-Type", "application/json"),
-                    ("Content-Length", str(len(response)))
-                ]
+            response_headers = [
+                ("Content-Type", "application/json"),
+                ("Content-Length", str(len(response)))
+            ]
 
-                return response, status, response_headers
-            except Exception as e:
-                write_log(e, self._log)
+            return response, status, response_headers
 
         except books.BookNotFoundError:
             status = "404 Not Found"
