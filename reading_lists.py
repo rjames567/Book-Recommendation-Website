@@ -41,13 +41,16 @@ class ProtectedListDeletionError(Exception):
 def get_names(user_id):
     res = connection.query(
         """
-        SELECT list_name from reading_list_names
+        SELECT list_id, list_name from reading_list_names
         WHERE user_id={};
         """.format(user_id)
     )  # List of single element tuples
     output_queue = data_structures.Queue()
     for i in res:
-        output_queue.push(i[0])  # i is a single element tuple
+        output_queue.push({
+            "id": i[0],
+            "name": i[1]
+        })
 
     return output_queue
 
