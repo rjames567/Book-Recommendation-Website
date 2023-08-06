@@ -185,9 +185,9 @@ def add_entry(user_id, list_id, book_id):
     ))
 
 
-def move_entry(user_id, start_list_name, end_list_name, book_title):
-    remove_entry(user_id, start_list_name, book_title)
-    add_entry(user_id, end_list_name, book_title)  # This changes the date added, but this is not an issue as
+def move_entry(user_id, start_list_id, end_list_id, book_id):
+    remove_entry(user_id, start_list_id, book_id)
+    add_entry(user_id, end_list_id, book_id)  # This changes the date added, but this is not an issue as
     # as once moved, it would be a new addition to the list, so the date should change.
 
 
