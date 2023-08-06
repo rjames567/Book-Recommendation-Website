@@ -450,7 +450,7 @@ function assignListDeleteHandlers (listName) {
             url: "/cgi-bin/my_books/remove_list",
             data: JSON.stringify({
                 "session_id": sessionID,
-                "list_name": listName
+                "list_id": $(".container .navigation li a.active").parent().data("id") // ID is attached to li element
             }),
             success: loadMyBooks, // Get the new list names, and move back to the first list and get content
             error: function (jqXHR) {
