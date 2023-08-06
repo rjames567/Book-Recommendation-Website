@@ -693,9 +693,12 @@ main .container {
   margin-top: 5px; /* Remove the large space between the author name and number of followers */
 }
 
-.book-about .author-about button {
+.book-about .author-about .buttons {
   margin: 0 30px 0 auto; /* Indented from the right as it looks out of place otherwise */
   font-size: 15px; /* Slightly smaller than the h3 for the author's name */
+}
+
+.book-about .author-about button {
   padding: 10px 15px;
   border: none;
   background-color: var(--blue);
