@@ -408,7 +408,8 @@ class BookHandler(Handler):
     def __init__(self, log=None):
         super().__init__(log)
         self._routes = {
-            "about_data": self.get_book_data
+            "about_data": self.get_book_data,
+            "delete_review": self.delete_review
         }
 
     def get_book_data(self):
@@ -442,6 +443,30 @@ class BookHandler(Handler):
             status = "404 Not Found"
             write_log("          Status: " + status, self._log)
             return ErrorHandler("404 Not Found").error_response()  # Return the content for a 404 error
+
+    def delete_review(self):
+        json_response = self.retrieve_post_parameters()
+        params = json.loads(json_response)
+        session_id = params["session_id"]
+        book_name = params["book_name"]
+        write_log("          Book name: " + book_name, self._log)
+        write_log("          Session ID: " + session_id, self._log)
+        user_id = login.session.get_user_id(session_id)
+        write_log("          User ID: " + str(user_id), self._log)
+
+        books.delete_review(book_name, user_id)
+
+        response = "true"  # A response is needed to use this result, but does not impact the client at all.
+
+        status = "200 OK"
+
+        response_headers = [
+            ("Content-Type", "text/plain"),
+            ("Content-Length", str(len(response)))
+        ]
+
+        return response, status, response_headers
+
 
 # -----------------------------------------------------------------------------
 # Error Handler
