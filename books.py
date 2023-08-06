@@ -196,3 +196,19 @@ def get_about_data(book_title, user_id):
     output_dict["reviews"] = review_arr
 
     return output_dict
+
+
+# ------------------------------------------------------------------------------
+# Reviews
+# ------------------------------------------------------------------------------
+def delete_review(book_title, user_id):
+    book_id = connection.query("""
+        SELECT book_id FROM books
+        WHERE title="{book_title}";
+    """.format(book_title=book_title))[0][0]
+
+    connection.query("""
+        DELETE FROM reviews
+        WHERE user_id={user_id}
+            AND book_id={book_id};
+    """.format(user_id=user_id, book_id=book_id))
