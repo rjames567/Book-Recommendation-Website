@@ -174,24 +174,10 @@ def remove_entry(user_id, list_id, book_id):
     ))
 
 
-def add_entry(user_id, list_name, book_title):
-    book_id = connection.query("""
-        SELECT book_id FROM books
-        WHERE title="{book_title}";
-        """.format(book_title=book_title))[0][0]
-
-    list_id = connection.query("""
-        SELECT list_id FROM reading_list_names
-        WHERE user_id={user_id}
-            AND list_name="{list_name}";
-        """.format(
-        user_id=user_id,
-        list_name=list_name
-    ))[0][0]
-
+def add_entry(user_id, list_id, book_id):
     connection.query("""
     INSERT INTO reading_lists (user_id, book_id, list_id) VALUES 
-    ({user_id}, {book_id}, {list_id})
+    ({user_id}, {book_id}, {list_id});
     """.format(
         user_id=user_id,
         book_id=book_id,
