@@ -221,23 +221,18 @@ class MyBooksHandler(Handler):
         response_dict = self.retrieve_get_parameters()
 
         session_id = response_dict["session_id"]
-        user_id = login.session.get_user_id(session_id)
         write_log("          Session id: " + session_id, self._log)
+        user_id = login.session.get_user_id(session_id)
+        write_log("          User id: " + str(user_id), self._log)
 
-        list_name = response_dict["list_name"]
-        write_log("          List name: " + list_name, self._log)
-
-        entries = reading_lists.get_values(list_name, user_id)
+        list_id = response_dict["list_id"]
+        write_log("          List ID: " + str(list_id), self._log)
 
         result = dict()
 
+        entries, result["button"], result["move_target_id"] = reading_lists.get_values(list_id, user_id)
+
         result["books"] = [entries.pop() for i in range(entries.size)]
-        if list_name == "Currently Reading":
-            result["button"] = "Mark as Read"
-        elif list_name == "Want to Read":
-            result["button"] = "Start Reading"
-        else:
-            result["button"] = None
 
         if not entries.size:
             result["meta"] = "You have no books in this list"
