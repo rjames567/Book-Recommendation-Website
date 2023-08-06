@@ -24,18 +24,17 @@ class BookNotFoundError(Exception):
     Exception for when a genre is not found.
     """
 
-    def __init__(self, book_title):
-        message = f"Book '{book_title}' was not found"
+    def __init__(self, book_id):
+        message = f"Book with ID '{book_id}' was not found."
         super().__init__(message)
 
 
 # ------------------------------------------------------------------------------
 # About data
 # ------------------------------------------------------------------------------
-def get_about_data(book_title, user_id):
+def get_about_data(book_id, user_id):
     res = connection.query("""
-        SELECT books.book_id,
-            books.title,
+        SELECT books.title,
             books.cover_image,
             books.synopsis,
             books.purchase_link,
@@ -62,18 +61,17 @@ def get_about_data(book_title, user_id):
             authors.author_id
         FROM books
         INNER JOIN authors ON authors.author_id=books.author_id
-        WHERE books.title="{book_title}";
-    """.format(book_title=book_title))
+        WHERE books.book_id={book_id};
+    """.format(book_id=book_id))
 
     if len(res) == 0:
-        raise BookNotFoundError(book_title)  # If the query result has 0 entries, no book was found with the target name
+        raise BookNotFoundError(book_id)  # If the query result has 0 entries, no book was found with the target name
     else:
         res = res[0]
 
-    book_id = res[0]  # Avoids joins for subsequent queries
-    first_name = res[7]
-    surname = res[8]
-    alias = res[9]
+    first_name = res[6]
+    surname = res[7]
+    alias = res[8]
     if (alias is not None and
             (first_name is not None and surname is not None)):
         author = f"{alias} ({first_name} {surname})"
@@ -90,21 +88,21 @@ def get_about_data(book_title, user_id):
     """.format(book_id=book_id))]  # The query returns a tuple, so this converts the list of tuples to a flat list
 
     output_dict = {
-        "title": res[1],
-        "cover_image": res[2],
-        "synopsis": "</p><p>".join(("<p>" + res[3] + "</p>").split("\n")),  # Split at line breaks into paragraph blocks
+        "title": res[0],
+        "cover_image": res[1],
+        "synopsis": "</p><p>".join(("<p>" + res[2] + "</p>").split("\n")),  # Split at line breaks into paragraph blocks
         # Can just be inserted without any processing as it includes spacing because of p elements
-        "purchase_link": res[4],
-        "release_date": res[5].strftime("%d/%m/%Y"),
-        "isbn": res[6],
+        "purchase_link": res[3],
+        "release_date": res[4].strftime("%d/%m/%Y"),
+        "isbn": res[5],
         "author": author,
-        "author_about": "</p><p>".join(("<p>" + res[10] + "</p>").split("\n")),
-        "author_number_followers": res[11],
-        "num_want_read": res[12],
-        "num_reading": res[13],
-        "num_read": res[14],
+        "author_about": "</p><p>".join(("<p>" + res[9] + "</p>").split("\n")),
+        "author_number_followers": res[10],
+        "num_want_read": res[11],
+        "num_reading": res[12],
+        "num_read": res[13],
         "genres": genres,
-        "author_id": res[15]
+        "author_id": res[14]
     }
 
     res = connection.query("""
@@ -176,7 +174,7 @@ def get_about_data(book_title, user_id):
             users.username
         FROM reviews
         INNER JOIN users ON users.user_id=reviews.user_id
-        WHERE users.user_id!={user_id};
+        WHERE reviews.user_id!={user_id};
     """.format(user_id=user_id))  # Inserting None will insert a string “None” so will not match any IDs.
     # Does not include the current user's review. If it is None it includes all users.
 
