@@ -280,26 +280,20 @@ class MyBooksHandler(Handler):
         json_response = self.retrieve_post_parameters()
         response_dict = json.loads(json_response)
         session_id = response_dict["session_id"]
-        list_name = response_dict["list_name"]
-        book_title = response_dict["book_title"].replace("&amp;", "&")
+        list_id = response_dict["list_id"]
+        book_id = response_dict["book_id"]
 
         write_log("          Session id: " + session_id, self._log)
         user_id = login.session.get_user_id(session_id)
         write_log("          User id: " + str(user_id), self._log)
 
-        write_log("          List name: " + list_name, self._log)
-        write_log("          Book title: " + book_title, self._log)
+        write_log("          List ID: " + str(list_id), self._log)
+        write_log("          Book ID: " + str(book_id), self._log)
 
-        button_text = response_dict["button_name"]
-        write_log("          Button name: " + button_text, self._log)
-        if button_text == "Mark as Read":  # Can only be triggered by one of these options being clicked, so target_list
-            # will be defined regardless.
-            target_list = "Have Read"
-        elif button_text == "Start Reading":
-            target_list = "Currently Reading"
-        write_log("          Target list name: " + target_list, self._log)
+        target_list_id = response_dict["target_list_id"]
+        write_log("          Target list ID: " + str(target_list_id), self._log)
 
-        reading_lists.move_entry(user_id, list_name, target_list, book_title)
+        reading_lists.move_entry(user_id, list_id, target_list_id, book_id)
 
         response = "true"  # A response is needed to use this result, but does not impact the client at all.
 
