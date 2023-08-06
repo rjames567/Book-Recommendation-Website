@@ -187,7 +187,7 @@ def remove_list(user_id, list_id):
     connection.query("""
         DELETE FROM reading_lists
         WHERE list_id={list_id}
-            AND user_id={user_id}};
+            AND user_id={user_id};
     """.format(list_id=list_id, user_id=user_id))
     # Only the specific users list will be deleted, as it targets the single list
     # Delete the entries
