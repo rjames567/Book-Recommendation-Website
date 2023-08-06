@@ -468,8 +468,8 @@ function assignDeleteHandlers (listName) {
             type: "POST",
             url: "/cgi-bin/my_books/remove_list_entry",
             data: JSON.stringify({
-                "list_name": listName,
-                "book_title": $(book).find(".title").html(),
+                "list_id": $(".container .navigation li a.active").parent().data("id"),
+                "book_id": $(book).data("id"),
                 "session_id": sessionID
             }),
             success: function (result) {
