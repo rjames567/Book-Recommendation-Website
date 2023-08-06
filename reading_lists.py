@@ -139,14 +139,26 @@ def get_values(list_id, user_id):
         SELECT list_name FROM reading_list_names
         WHERE list_id={};
     """.format(list_id))[0][0]  # See which list the button would move too.
+
     if list_name == "Currently Reading":
         button = "Mark as Read"
+        move_target = connection.query("""
+            SELECT list_id FROM reading_list_names
+            WHERE list_name="Have Read"
+                AND user_id={};
+        """.format(user_id))[0][0]
     elif list_name == "Want to Read":
         button = "Start Reading"
+        move_target = connection.query("""
+            SELECT list_id FROM reading_list_names
+            WHERE list_name="Currently Reading"
+                AND user_id={};
+        """.format(user_id))[0][0]
     else:
         button = None
+        move_target = None
 
-    return output_queue, button
+    return output_queue, button, move_target
 
 
 def remove_entry(user_id, list_name, book_title):
