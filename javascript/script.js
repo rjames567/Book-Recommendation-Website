@@ -551,19 +551,18 @@ function assignBookNavigationHandlers (summary=false) {
     // If the link is an entire div, with an image, title etc, it needs to navigate down the DOM to find the title
     $(".book-button").off("click");
     $(".book-button").click(function () {
-        let title;
+        let book_id;
         if (summary) {
-            title = $(this).find(".title").html();
+            book_id = $(this).closest(".book-summary").data("id");
         } else {
-            title = $(this).html();
+            book_id = $(this).closest(".book").data("id");
         }
-        switchBookPage(title);
+        switchBookPage(book_id);
     });
 }
 
-function switchBookPage (book) {
-    book = book.replace("&amp;", "&"); // Replace the HTML ampersand with a unicode one.
-    let request_url = addGetParameter("/cgi-bin/books/about_data", "book_name", book);
+function switchBookPage (book_id) {
+    let request_url = addGetParameter("/cgi-bin/books/about_data", "book_id", book_id);
     request_url = addGetParameter(request_url, "session_id", sessionID);
     $.ajax({
         type: "GET",
@@ -727,7 +726,7 @@ function switchBookPage (book) {
             // FIXME Fix not changing active link on AJAX fail
         },
         complete: function () {
-            changePageURI("book/" + book); // Update page URL to point to the new genre and allow for refreshing
+            changePageURI("book/" + book_id); // Update page URL to point to the new genre and allow for refreshing
             // Last as it is least likely to be seen, so appears smoother
         }
     });
