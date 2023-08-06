@@ -42,7 +42,7 @@ def get_about_data(genre_name):
         res = res[0]
 
     books = connection.query("""
-        SELECT books.title, books.cover_image, authors.first_name, authors.surname, authors.alias FROM books
+        SELECT books.book_id, books.title, books.cover_image, authors.first_name, authors.surname, authors.alias FROM books
         INNER JOIN authors ON books.author_id=authors.author_id
         INNER JOIN book_genres ON books.book_id=book_genres.book_id
         INNER JOIN genres ON genres.genre_id=book_genres.genre_id
@@ -51,7 +51,7 @@ def get_about_data(genre_name):
 
     book_dict = dict()
     for i, k in enumerate(books):
-        title, cover, first_name, surname, alias = k
+        book_id, title, cover, first_name, surname, alias = k
         if (alias is not None and
                 (first_name is not None and surname is not None)):
             author = f"{alias} ({first_name} {surname})"
@@ -62,6 +62,7 @@ def get_about_data(genre_name):
             author = f"{first_name} {surname}"
 
         book_dict[i] = {
+            "id": book_id,
             "title": title,
             "author": author,
             "cover": cover
