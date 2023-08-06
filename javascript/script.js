@@ -714,7 +714,7 @@ function switchBookPage (book) {
             }
 
             assignReviewDeleteButtonHandler();
-
+            assignAuthorFollowHandlers();
             assignGenreNavigationHandlers(); // Genre navigation handlers need to be reassigned as there will be new ones
             // added
         },
@@ -746,6 +746,37 @@ function assignReviewDeleteButtonHandler () {
     });
 }
 
+function assignAuthorFollowHandlers () {
+    $(".book-about .author-about .follow-author").click(function () {
+        $.ajax({
+            type: "POST",
+            url: "/cgi-bin/authors/follow_author",
+            data: JSON.stringify({
+                "session_id": sessionID,
+                "author_name": $(this).closest(".name").find(".author").html()
+            }),
+            complete: function () {
+                $(".book-about .author-about .follow-author").addClass("hidden");
+                $(".book-about .author-about .unfollow-author").removeClass("hidden");
+            }
+        });
+    });
+    $(".book-about .author-about .unfollow-author").click(function () {
+        $.ajax({
+            type: "POST",
+            url: "/cgi-bin/authors/unfollow_author",
+            data: JSON.stringify({
+                "session_id": sessionID,
+                "author_name": $(this).closest(".name").find(".author").html()
+            }),
+            complete: function () {
+                $(".book-about .author-about .unfollow-author").addClass("hidden");
+                $(".book-about .author-about .follow-author").removeClass("hidden");
+            }
+        });
+    });
+}
+
 // -----------------------------------------------------------------------------
 // Rating stars
 // -----------------------------------------------------------------------------
@@ -773,3 +804,6 @@ $(document).ready(function () {
 })
 
 // FIXME Fix spaces in url and change to dashes
+// TODO add follow author handler
+// TODO add unfollow author handler
+// TODO display meta if reading list is empty
