@@ -322,12 +322,13 @@ function loadMyBooks () {
         type: "GET",
         url: addGetParameter("/cgi-bin/my_books/get_lists", "session_id", sessionID),
         success: function (result) {
-            var firstElem;
-            $(".navigation ul li:not('.template') a").remove();
+            // $(".navigation ul li:not('.template') a").remove();
             let length = Object.keys(result).length;
-            for (let i = 0, temp, firstElem; i < length; i++) {
-                $(".navigation ul li.template a").html(result[i]);
-                $(".navigation ul li.template").clone().removeClass("template").appendTo(".navigation ul");
+            for (let i = 0; i < length; i++) {
+                let item = $(".navigation ul li.template").clone().removeClass("template");
+                $(item).find("a").html(result[i]["name"]);
+                $(item).appendTo(".navigation ul");
+                $(item).data("id", result[i]["id"])
             }
             assignReadingListNavigationHandlers();
             $(".navigation ul li").children().eq(1).trigger("click");
