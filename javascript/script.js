@@ -524,10 +524,12 @@ function switchGenrePage (genre) {
             $(".about").html(result["about"]);
             let books = result["books"];
             for (let i = 0; i < Object.keys(books).length; i++) {
-                $(".book-summary.template .title").html(books[i]["title"]);
-                $(".book-summary.template .author").html(books[i]["author"]);
-                $(".book-summary.template img").attr("src", books[i]["cover"]);
-                $(".book-summary.template").clone().removeClass("template").appendTo(".genre-book-items");
+                let item = $(".book-summary.template").clone().removeClass("template");
+                $(item).find(".title").html(books[i]["title"]);
+                $(item).find(".author").html(books[i]["author"]);
+                $(item).find("img").attr("src", books[i]["cover"]);
+                $(item).appendTo(".genre-book-items");
+                $(item).data("id", books[i]["id"]);
             }
             assignBookNavigationHandlers(true); // Assign navigation for the book summaries.
         },
