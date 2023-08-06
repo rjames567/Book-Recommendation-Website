@@ -58,9 +58,8 @@ def get_names(user_id):
 # ------------------------------------------------------------------------------
 # List values
 # ------------------------------------------------------------------------------
-def get_values(name, user_id):
-    res = connection.query(
-        """
+def get_values(list_id, user_id):
+    x = """
         SELECT books.book_id,
             books.cover_image,
             books.title,
@@ -89,15 +88,21 @@ def get_values(name, user_id):
             ON books.author_id=authors.author_id
             INNER JOIN reading_list_names
             ON reading_list_names.list_id=reading_lists.list_id
-            WHERE reading_lists.user_id={user_id}
-            AND reading_list_names.list_name="{list_name}"
+            WHERE reading_lists.list_id={list_id}
+                AND reading_lists.user_id={user_id}
             ORDER BY reading_lists.date_added DESC, books.title ASC;
         """.format(
             match_strength=_genre_required_match,
-            user_id=user_id,
-            list_name=name
+            list_id=list_id,
+            user_id=user_id  # This is not strictly necessary, but helps protect against people being able to view other
+            # people's list contents by guessing the list id.
         )
+    print(x)
+    res = connection.query(
+        x
     )
+
+    print(res)
 
     output_queue = data_structures.Queue()
     for i in res:
@@ -126,11 +131,22 @@ def get_values(name, user_id):
                 "date_added": i[7].strftime("%d/%m/%Y"),
                 "genres": i[8].split(","),
                 "average_rating": i[9],
-                "num_reviews": i[10],
+                "num_reviews": i[10]
             }
         )
 
-    return output_queue
+    list_name = connection.query("""
+        SELECT list_name FROM reading_list_names
+        WHERE list_id={};
+    """.format(list_id))[0][0]  # See which list the button would move too.
+    if list_name == "Currently Reading":
+        button = "Mark as Read"
+    elif list_name == "Want to Read":
+        button = "Start Reading"
+    else:
+        button = None
+
+    return output_queue, button
 
 
 def remove_entry(user_id, list_name, book_title):
