@@ -58,7 +58,8 @@ def get_names(user_id):
 def get_values(name, user_id):
     res = connection.query(
         """
-        SELECT books.cover_image,
+        SELECT books.book_id,
+            books.cover_image,
             books.title,
             books.synopsis,
             authors.first_name,
@@ -97,9 +98,9 @@ def get_values(name, user_id):
 
     output_queue = data_structures.Queue()
     for i in res:
-        first_name = i[3]
-        surname = i[4]
-        alias = i[5]
+        first_name = i[4]
+        surname = i[5]
+        alias = i[6]
         if (alias is not None and
                 (first_name is not None and surname is not None)):
             author = f"{alias} ({first_name} {surname})"
@@ -109,19 +110,20 @@ def get_values(name, user_id):
         else:
             author = f"{first_name} {surname}"
 
-        synopsis = "</p><p>".join(("<p>" + i[2] + "</p>").split("\n"))
+        synopsis = "</p><p>".join(("<p>" + i[3] + "</p>").split("\n"))
         # Change new lines to new paragraphs
 
         output_queue.push(
             {
-                "cover": i[0],
-                "title": i[1],
+                "id": i[0],
+                "cover": i[1],
+                "title": i[2],
                 "synopsis": synopsis,
                 "author": author,
-                "date_added": i[6].strftime("%d/%m/%Y"),
-                "genres": i[7].split(","),
-                "average_rating": i[8],
-                "num_reviews": i[9]
+                "date_added": i[7].strftime("%d/%m/%Y"),
+                "genres": i[8].split(","),
+                "average_rating": i[9],
+                "num_reviews": i[10],
             }
         )
 
