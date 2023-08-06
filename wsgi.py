@@ -415,8 +415,8 @@ class BookHandler(Handler):
     def get_book_data(self):
         get_params = self.retrieve_get_parameters()
         session_id = get_params["session_id"]
-        book_name = get_params["book_name"]
-        write_log("          Book name: " + book_name, self._log)
+        book_id = get_params["book_id"]
+        write_log("          Book ID: " + book_id, self._log)
         write_log("          Session ID: " + session_id, self._log)
         if session_id != "null":
             user_id = login.session.get_user_id(session_id)
@@ -424,20 +424,23 @@ class BookHandler(Handler):
             user_id = None
         write_log("          User ID: " + str(user_id), self._log)
         try:
-            result = books.get_about_data(book_name, user_id)
-            status = "200 OK"
-            write_log("          Success", self._log)
+            try:
+                result = books.get_about_data(book_id, user_id)
+                status = "200 OK"
+                write_log("          Success", self._log)
 
-            response = json.dumps(result)
-            write_log("          Response: " + response, self._log)
-            write_log("          Status: " + status, self._log)
+                response = json.dumps(result)
+                write_log("          Response: " + response, self._log)
+                write_log("          Status: " + status, self._log)
 
-            response_headers = [
-                ("Content-Type", "application/json"),
-                ("Content-Length", str(len(response)))
-            ]
+                response_headers = [
+                    ("Content-Type", "application/json"),
+                    ("Content-Length", str(len(response)))
+                ]
 
-            return response, status, response_headers
+                return response, status, response_headers
+            except Exception as e:
+                write_log(e, self._log)
 
         except books.BookNotFoundError:
             status = "404 Not Found"
