@@ -161,21 +161,7 @@ def get_values(list_id, user_id):
     return output_queue, button, move_target
 
 
-def remove_entry(user_id, list_name, book_title):
-    list_id = connection.query("""
-    SELECT list_id FROM reading_list_names
-    WHERE user_id={user_id}
-        AND list_name="{list_name}";
-    """.format(
-        user_id=user_id,
-        list_name=list_name
-    ))[0][0]  # Will only be one iteem, so first element of only tuple is selected.
-
-    book_id = connection.query("""
-    SELECT book_id FROM books
-    WHERE title="{book_title}";
-    """.format(book_title=book_title))[0][0]
-
+def remove_entry(user_id, list_id, book_id):
     connection.query("""
     DELETE FROM reading_lists
     WHERE user_id={user_id}
