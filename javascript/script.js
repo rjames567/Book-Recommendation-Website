@@ -491,7 +491,7 @@ function assignMovementHandlers (listName, id) {
             type: "POST",
             url: "/cgi-bin/my_books/move_list_entry",
             data: JSON.stringify({
-                "list_id": $(".container .navigation li a.active").parent().data("id")),
+                "list_id": $(".container .navigation li a.active").parent().data("id"),
                 "book_id": $(book).data("id"),
                 "target_list_id": $(this).data("target_id"),
                 "session_id": sessionID
