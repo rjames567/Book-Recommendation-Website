@@ -310,6 +310,7 @@ $("header a#sign-out-button").click(function () {
     changeAccountButtons(); // Success does not matter - just improves database
     // maintainability, any non-cleared sessions will be deleted through a
     // maintenance script
+    reloadCurrentPage(); // This will be slower, so is done last. This removes any user-specific page content.
 });
 
 // -----------------------------------------------------------------------------
