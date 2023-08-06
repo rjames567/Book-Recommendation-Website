@@ -399,24 +399,26 @@ function assignReadingListNavigationHandlers () {
                 let books = result["books"];
                 for (let i = 0; i < books.length; i++) {
                     let averageRating = books[i]["average_rating"];
-                    $(".container .entries .book.template .title").html(books[i]["title"]);
-                    $(".container .entries .book.template .author").html(books[i]["author"]);
-                    $(".container .entries .book.template .date-added").html(books[i]["date_added"]);
-                    $(".container .entries .book.template .synopsis").html(books[i]["synopsis"]);
-                    $(".container .entries .book.template .about-review .average-review").html(averageRating.toFixed(1));
-                    $(".container .entries .book.template .about-review span.num-review").html(books[i]["num_reviews"]);
-                    $(".container .entries .book.template .cover img").attr("src", books[i]["cover"]);
+                    let template = $(".container .entries .book.template").clone().removeClass("template");
+                    $(template).find(".title").html(books[i]["title"]);
+                    $(template).find(".author").html(books[i]["author"]);
+                    $(template).find(".date-added").html(books[i]["date_added"]);
+                    $(template).find(".synopsis").html(books[i]["synopsis"]);
+                    $(template).find(".about-review .average-review").html(averageRating.toFixed(1));
+                    $(template).find(".about-review span.num-review").html(books[i]["num_reviews"]);
+                    $(template).find(".cover img").attr("src", books[i]["cover"]);
 
-                    changeElemStars($(".container .entries .book.template .rating-container i"), averageRating);
+                    changeElemStars($(template).find(".rating-container i"), averageRating);
 
-                    $(".container .entries .book.template ol li:not('.template')").remove();
-                    // Remove any genres from previous entry.
+                    let genres = $(template).find("ol");
                     for (let k in books[i]["genres"]) {
-                        $(".container .entries .book.template ol li.template").find("a").html(books[i]["genres"][k]);
-                        $(".container .entries .book.template ol li.template").clone().removeClass("template").appendTo(".container .entries .book.template ol");
+                        let item = $(genres).find("li.template").clone().removeClass("template");
+                        $(item).find("a").html(books[i]["genres"][k]);
+                        $(item).appendTo(genres);
                     }
 
-                    $(".container .entries .book.template").clone().removeClass("template").insertBefore(".edit-lists");
+                    $(template).insertBefore(".edit-lists");
+                    $(template).data("id", books[i]["id"]);
 
                     let newURI = ("#" + listName).toTitleCase().split(" ").join("");
                     // Convert Name to title case, then remove ALL spaces
