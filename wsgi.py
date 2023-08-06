@@ -144,7 +144,7 @@ class AccountHandler(Handler):
         response = "true"  # Response is not needed – it is for completeness only. The client does not wait or respond.
 
         response_headers = [
-            ("Content-Type", "application/json"),
+            ("Content-Type", "text/plain"),
             ("Content-Length", str(len(response)))
         ]
 
@@ -359,7 +359,7 @@ class MyBooksHandler(Handler):
         status = "200 OK"
 
         response_headers = [
-            ("Content-Type", "application/json"),
+            ("Content-Type", "text/plain"),
             ("Content-Length", str(len(response)))
         ]
 
@@ -466,7 +466,6 @@ class BookHandler(Handler):
         ]
 
         return response, status, response_headers
-
 
 # -----------------------------------------------------------------------------
 # Error Handler
