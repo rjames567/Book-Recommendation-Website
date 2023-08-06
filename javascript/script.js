@@ -322,7 +322,7 @@ function loadMyBooks () {
         type: "GET",
         url: addGetParameter("/cgi-bin/my_books/get_lists", "session_id", sessionID),
         success: function (result) {
-            // $(".navigation ul li:not('.template') a").remove();
+            $(".navigation ul li:not('.template') a").remove();
             let length = Object.keys(result).length;
             for (let i = 0; i < length; i++) {
                 let item = $(".navigation ul li.template").clone().removeClass("template");
@@ -373,9 +373,10 @@ function assignReadingListNavigationHandlers () {
         $(this).addClass("active");
         let listName = $(this).html();
 
-        var requestURL = "/cgi-bin/my_books/get_list_entries";
+        console.log($(this).closest("li").data("id"));
+        let requestURL = "/cgi-bin/my_books/get_list_entries";
         requestURL = addGetParameter(requestURL, "session_id", sessionID)
-        requestURL = addGetParameter(requestURL, "list_name", listName)
+        requestURL = addGetParameter(requestURL, "list_id", $(this).closest("li").data("id"))
         $.ajax({
             type: "GET",
             url: requestURL,
