@@ -58,7 +58,8 @@ def get_about_data(book_title, user_id):
             (SELECT COUNT(reading_lists.book_id) FROM reading_lists
                     INNER JOIN reading_list_names ON reading_lists.list_id=reading_list_names.list_id
                     WHERE reading_list_names.list_name="Have Read"
-                            AND reading_lists.book_id=books.book_id) AS num_read
+                            AND reading_lists.book_id=books.book_id) AS num_read,
+            authors.author_id
         FROM books
         INNER JOIN authors ON authors.author_id=books.author_id
         WHERE books.title="{book_title}";
@@ -103,6 +104,7 @@ def get_about_data(book_title, user_id):
         "num_reading": res[13],
         "num_read": res[14],
         "genres": genres,
+        "author_id": res[15]
     }
 
     res = connection.query("""
