@@ -314,14 +314,14 @@ class MyBooksHandler(Handler):
         json_response = self.retrieve_post_parameters()
         response_dict = json.loads(json_response)
         session_id = response_dict["session_id"]
-        list_name = response_dict["list_name"]
+        list_id = response_dict["list_id"]
 
         write_log("          Session id: " + session_id, self._log)
         user_id = login.session.get_user_id(session_id)
         write_log("          User id: " + str(user_id), self._log)
-        write_log("          List name: " + list_name, self._log)
+        write_log("          List ID: " + str(list_id), self._log)
 
-        reading_lists.remove_list(user_id, list_name)
+        reading_lists.remove_list(user_id, list_id)
 
         response = "true"  # A response is needed to use this result, but does not impact the client at all.
 
