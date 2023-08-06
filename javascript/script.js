@@ -432,7 +432,7 @@ function assignReadingListNavigationHandlers () {
                 // Handlers are not kept by the clone for whatever reason.
                 assignBookNavigationHandlers();
                 assignDeleteHandlers(listName); // Assign delete handlers to remove entries
-                assignMovementHandlers(listName);
+                assignMovementHandlers(listName, result["move_target_id"]);
                 assignListDeleteHandlers(listName); // Slower, but avoids the difficulty and possible cost of finding the list Name again.
             },
             error: function (jqXHR) {
@@ -482,17 +482,18 @@ function assignDeleteHandlers (listName) {
     });
 }
 
-function assignMovementHandlers (listName) {
+function assignMovementHandlers (listName, id) {
     $(".container .entries .book button.read").off("click");
+    $(".container .entries .book button.read").data("target_id", id);
     $(".container .entries .book button.read").click(function () {
         let book = $(this).closest("div.book");
         $.ajax({
             type: "POST",
             url: "/cgi-bin/my_books/move_list_entry",
             data: JSON.stringify({
-                "list_name": listName,
-                "book_title": $(book).find(".title").html(),
-                "button_name": $(book).find(".reading-list-manipulation").html(),
+                "list_id": $(".container .navigation li a.active").parent().data("id")),
+                "book_id": $(book).data("id"),
+                "target_list_id": $(this).data("target_id"),
                 "session_id": sessionID
             }),
             success: function (result) {
