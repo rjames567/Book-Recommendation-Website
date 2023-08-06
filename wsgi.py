@@ -251,30 +251,34 @@ class MyBooksHandler(Handler):
         return response, status, response_headers
 
     def remove_list_entry(self):
-        json_response = self.retrieve_post_parameters()
-        response_dict = json.loads(json_response)
-        session_id = response_dict["session_id"]
-        list_name = response_dict["list_name"]
-        book_title = response_dict["book_title"].replace("&amp;", "&")  # Replace ampersand code with character
+        try:
+            json_response = self.retrieve_post_parameters()
+            response_dict = json.loads(json_response)
+            session_id = response_dict["session_id"]
+            list_id = response_dict["list_id"]
+            book_id = response_dict["book_id"]  # Replace ampersand code with character
 
-        write_log("          Session id: " + session_id, self._log)
-        user_id = login.session.get_user_id(session_id)
-        write_log("          User id: " + str(user_id), self._log)
+            write_log("          Session id: " + session_id, self._log)
+            user_id = login.session.get_user_id(session_id)
+            write_log("          User id: " + str(user_id), self._log)
 
-        write_log("          List name: " + list_name, self._log)
-        write_log("          Book title: " + book_title, self._log)
+            write_log("          List ID: " + str(list_id), self._log)
+            write_log("          Book ID: " + str(book_id), self._log)
 
-        reading_lists.remove_entry(user_id, list_name, book_title)
-        response = "true"  # A response is needed to use this result, but does not impact the client at all.
+            reading_lists.remove_entry(user_id, list_id, book_id)
+            response = "true"  # A response is needed to use this result, but does not impact the client at all.
 
-        status = "200 OK"
+            status = "200 OK"
 
-        response_headers = [
-            ("Content-Type", "text/plain"),
-            ("Content-Length", str(len(response)))
-        ]
+            response_headers = [
+                ("Content-Type", "text/plain"),
+                ("Content-Length", str(len(response)))
+            ]
 
-        return response, status, response_headers
+            return response, status, response_headers
+
+        except Exception as e:
+            write_log(e, self._log)
 
     def move_list_entry(self):
         json_response = self.retrieve_post_parameters()
