@@ -755,21 +755,26 @@ function assignReviewDeleteButtonHandler () {
 
 function assignAuthorFollowHandlers () {
     $(".book-about .author-about .follow-author").click(function () {
-        $.ajax({
-            type: "POST",
-            url: "/cgi-bin/authors/follow_author",
-            data: JSON.stringify({
-                "session_id": sessionID,
-                "author_id": $(".book-about .author").data("id")
-            }),
-            success: function () {
-                $(".book-about .author-about .follow-author").addClass("hidden");
-                $(".book-about .author-about .unfollow-author").removeClass("hidden");
-            }
-        });
+        // Can only follow a user if an account is known, so prompts if not signed in.
+        if (sessionID) {
+            $.ajax({
+                type: "POST",
+                url: "/cgi-bin/authors/follow_author",
+                data: JSON.stringify({
+                    "session_id": sessionID,
+                    "author_id": $(".book-about .author").data("id")
+                }),
+                success: function () {
+                    $(".book-about .author-about .follow-author").addClass("hidden");
+                    $(".book-about .author-about .unfollow-author").removeClass("hidden");
+                }
+            });
+        } else {
+            showSignInPopup();
+        }
     });
     $(".book-about .author-about .unfollow-author").click(function () {
-        $.ajax({
+        $.ajax({ // This cannot be shown if not signed in, so does not check
             type: "POST",
             url: "/cgi-bin/authors/unfollow_author",
             data: JSON.stringify({
