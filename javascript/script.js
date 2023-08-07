@@ -403,7 +403,9 @@ function assignReadingListNavigationHandlers () {
                     let averageRating = books[i]["average_rating"];
                     let template = $(".container .entries .book.template").clone().removeClass("template");
                     $(template).find(".title").html(books[i]["title"]);
-                    $(template).find(".author").html(books[i]["author"]);
+                    let author = $(template).find(".author");
+                    $(author).html(books[i]["author"]);
+                    $(author).data("id", books[i]["author_id"]);
                     $(template).find(".date-added").html(books[i]["date_added"]);
                     $(template).find(".synopsis").html(books[i]["synopsis"]);
                     $(template).find(".about-review .average-review").html(averageRating.toFixed(1));
