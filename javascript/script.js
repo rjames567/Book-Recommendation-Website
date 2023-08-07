@@ -555,18 +555,18 @@ function assignBookNavigationHandlers (summary=false) {
     // If the link is an entire div, with an image, title etc, it needs to navigate down the DOM to find the title
     $(".book-button").off("click");
     $(".book-button").click(function () {
-        let book_id;
+        let bookID;
         if (summary) {
-            book_id = $(this).closest(".book-summary").data("id");
+            bookID = $(this).closest(".book-summary").data("id");
         } else {
-            book_id = $(this).closest(".book").data("id");
+            bookID = $(this).closest(".book").data("id");
         }
-        switchBookPage(book_id);
+        switchBookPage(bookID);
     });
 }
 
-function switchBookPage (book_id) {
-    let request_url = addGetParameter("/cgi-bin/books/about_data", "book_id", book_id);
+function switchBookPage (bookID) {
+    let request_url = addGetParameter("/cgi-bin/books/about_data", "book_id", bookID);
     request_url = addGetParameter(request_url, "session_id", sessionID);
     $.ajax({
         type: "GET",
@@ -576,7 +576,7 @@ function switchBookPage (book_id) {
             // population of the template the request supplies may fail, as it may not arrive in time.
 
             let url = addGetParameter("/cgi-bin/my_books/get_lists_book_target", "session_id", sessionID);
-            url = addGetParameter(url, "book_id", book_id);
+            url = addGetParameter(url, "book_id", bookID);
             $.ajax({
                 type: "GET",
                 url: url,
@@ -598,7 +598,7 @@ function switchBookPage (book_id) {
                     console.log(result["success"] + "    " + result["message"]);
                 },
                 complete: function () {
-                    assignChangeReadingListHandler(book_id); // Needs to be here as this request is asynchronous
+                    assignChangeReadingListHandler(bookID); // Needs to be here as this request is asynchronous
                     // Needs to be under complete, as it needs to run even on failure.
                 }
             });
@@ -769,7 +769,7 @@ function switchBookPage (book_id) {
             // FIXME Fix not changing active link on AJAX fail
         },
         complete: function () {
-            changePageURI("book/" + book_id); // Update page URL to point to the new genre and allow for refreshing
+            changePageURI("book/" + bookID); // Update page URL to point to the new genre and allow for refreshing
             // Last as it is least likely to be seen, so appears smoother
         }
     });
@@ -792,7 +792,7 @@ function assignReviewDeleteButtonHandler () {
     });
 }
 
-function assignChangeReadingListHandler (book_id) {
+function assignChangeReadingListHandler (bookID) {
     $(".book-about button.add-list").click(function () {
         if (sessionID) {
             $(".reading-list-selection").removeClass("hidden");
@@ -809,7 +809,7 @@ function assignChangeReadingListHandler (book_id) {
             data: JSON.stringify({
                 "list_id": list_id,
                 "session_id": sessionID,
-                "book_id": book_id
+                "book_id": bookID
             }),
             complete: function () {
                 hideReadingListPopup();
