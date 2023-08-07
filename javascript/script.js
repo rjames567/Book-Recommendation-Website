@@ -808,7 +808,4 @@ $(document).ready(function () {
     reloadCurrentPage();
 })
 
-// FIXME Fix spaces in url and change to dashes
-// TODO add follow author handler
-// TODO add unfollow author handler
 // TODO display meta if reading list is empty
