@@ -981,7 +981,7 @@ function switchAuthorPage (authorID) {
             for (let i = 0; i < Object.keys(books).length; i++) {
                 let summary = $(".book-summary.template").clone().removeClass("template");
                 $(summary).find(".title").html(books[i]["title"]);
-                $(summary).find(".author").html(books[i]["author"]);
+                $(summary).find(".author").html(result["name"]);
                 $(summary).find("img").attr("src", books[i]["cover"]);
                 $(summary).appendTo(".author-book-items");
                 $(summary).data("id", books[i]["id"]);
