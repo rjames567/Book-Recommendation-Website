@@ -204,10 +204,11 @@ def get_about_data(book_id, user_id):
         SELECT author_id FROM author_followers
         WHERE author_id={author_id}
             AND user_id={user_id};
-    """.format(author_id=author_id, user_id=user_id))))  # Finds all entries with the same user and author id as
-    # required, which will either be 1 or 0. If it is 0, the user is not following the author, so the author_following
-    # value should be false. If it is 1, they are, so it should be true. Len gets the number of results (1 or 0), and
-    # bool converts this to the corresponding boolean value, which is whether the user is following the author.
+    """.format(author_id=output_dict["author_id"], user_id=user_id))))  # Finds all entries with the same user and
+    # author id as required, which will either be 1 or 0. If it is 0, the user is not following the author, so the
+    # author_following value should be false. If it is 1, they are, so it should be true. Len gets the number of results
+    # (1 or 0), and bool converts this to the corresponding boolean value, which is whether the user is following the
+    # author.
 
     return output_dict
 
