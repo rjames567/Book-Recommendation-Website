@@ -607,6 +607,14 @@ function switchBookPage (book_id) {
             $(author).html(result["author"]);
             $(author).data("id", result["author_id"])
 
+            if (result["author_following"]) {
+                $(".book-about .author-about .follow-author").addClass("hidden");
+                $(".book-about .author-about .unfollow-author").removeClass("hidden");
+            } else {
+                $(".book-about .author-about .unfollow-author").addClass("hidden");
+                $(".book-about .author-about .follow-author").removeClass("hidden");
+            }
+
             $(".book-about .author-about .num-followers").html(result["author_number_followers"]); // Keep in here
             // rather than use the other function to help reduce the amount requests the client sends, and reduce
             // server load, and send the number as a response to the follow/unfollow request
