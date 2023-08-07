@@ -788,7 +788,7 @@ function assignReviewDeleteButtonHandler () {
                 "session_id": sessionID,
                 "review_id": $(existingReview).data("id")
             }), // The user can only have one review of the book
-            complete: reloadCurrentPage; // Avoids the stars not updating. // TODO Make this better and more efficient
+            complete: reloadCurrentPage // Avoids the stars not updating. // TODO Make this better and more efficient
         }); // The response does not matter
     });
 }
