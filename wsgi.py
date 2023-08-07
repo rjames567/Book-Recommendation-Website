@@ -511,6 +511,7 @@ if debugging:
 else:
     log = None
 
+# https://www.sitepoint.com/python-web-applications-the-basics-of-wsgi/
 routes = {
     "account": AccountHandler(log),
     "my_books": MyBooksHandler(log),
