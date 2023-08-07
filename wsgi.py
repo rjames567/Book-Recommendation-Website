@@ -448,7 +448,8 @@ class BookHandler(Handler):
         super().__init__(log)
         self._routes = {
             "about_data": self.get_book_data,
-            "delete_review": self.delete_review
+            "delete_review": self.delete_review,
+            "add_review": self.leave_review
         }
 
     def get_book_data(self):
@@ -494,6 +495,38 @@ class BookHandler(Handler):
         write_log("          User ID: " + str(user_id), self._log)
 
         books.delete_review(review_id, user_id)
+
+        response = "true"  # A response is needed to use this result, but does not impact the client at all.
+
+        status = "200 OK"
+
+        response_headers = [
+            ("Content-Type", "text/plain"),
+            ("Content-Length", str(len(response)))
+        ]
+
+        return response, status, response_headers
+
+    def leave_review(self):
+        json_response = self.retrieve_post_parameters()
+        params = json.loads(json_response)
+        session_id = params["session_id"]
+        write_log("          Session ID: " + session_id, self._log)
+        user_id = login.session.get_user_id(session_id)
+        write_log("          User ID: " + str(user_id), self._log)
+        book_id = params["book_id"]
+        write_log("          Book ID: " + str(book_id), self._log)
+
+
+        books.leave_review(
+            user_id,
+            book_id,
+            params["overall_rating"],
+            params["plot_rating"],
+            params["character_rating"],
+            params["summary"],
+            params["thoughts"]
+        )
 
         response = "true"  # A response is needed to use this result, but does not impact the client at all.
 
@@ -620,3 +653,5 @@ routes = {
 }
 
 app = Middleware(routes, log)
+
+# FIXME Fix errors with sessionIDs of null.
