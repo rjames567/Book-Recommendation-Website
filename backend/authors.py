@@ -97,7 +97,7 @@ def get_about_data(author_id):
     for i in books:
         book_arr.append({
             "title": i[0],
-            "cover_image": i[1]
+            "cover": i[1]
         })  # Author name can be done implicitly from other sent data - reduce amount of data sent for speed
 
     output_dict["books"] = book_arr
