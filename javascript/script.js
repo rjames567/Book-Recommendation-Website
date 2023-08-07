@@ -760,9 +760,9 @@ function assignAuthorFollowHandlers () {
             url: "/cgi-bin/authors/follow_author",
             data: JSON.stringify({
                 "session_id": sessionID,
-                "author_id": $(this).closest(".name").find(".author").html()
+                "author_id": $(".book-about .author").data("id")
             }),
-            complete: function () {
+            success: function () {
                 $(".book-about .author-about .follow-author").addClass("hidden");
                 $(".book-about .author-about .unfollow-author").removeClass("hidden");
             }
@@ -774,9 +774,9 @@ function assignAuthorFollowHandlers () {
             url: "/cgi-bin/authors/unfollow_author",
             data: JSON.stringify({
                 "session_id": sessionID,
-                "author_id": $(this).closest(".name").find(".author").html()
+                "author_id": $(".book-about .author").data("id")
             }),
-            complete: function () {
+            success: function () {
                 $(".book-about .author-about .unfollow-author").addClass("hidden");
                 $(".book-about .author-about .follow-author").removeClass("hidden");
             }
