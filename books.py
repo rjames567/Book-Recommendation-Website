@@ -227,16 +227,22 @@ def delete_review(review_id, user_id):
     """.format(user_id=user_id, review_id=review_id))
 
 def leave_review(user_id, book_id, overall_rating, plot_rating, character_rating, summary, thoughts):
-    thoughts = re.sub("\n+", "\n", thoughts)  # Remove repeated new lines from string.
+    params = locals()
+    params = {i: "null" if k is None else k for i, k in zip(params.keys(), params.values())}
+    #  Convert all None parameters to null for insertion into query.
+    if thoughts is not None:
+        params["thoughts"] = '"' + re.sub("\n+", "\n", params["thoughts"]) + '"'
+        params["summary"] = '"' + params["summary"] + '"' # There is a check to ensure that 'thoughts' cannot be given
+        # without 'summary'.
     connection.query("""
         INSERT INTO reviews (user_id, book_id, overall_rating, plot_rating, character_rating, summary, rating_body) VALUES
-        ({user_id}, {book_id}, {overall_rating}, {plot_rating}, {character_rating}, "{summary}", "{rating_body}");
+        ({user_id}, {book_id}, {overall_rating}, {plot_rating}, {character_rating}, {summary}, {rating_body});
     """.format(
-        user_id=user_id,
-        book_id=book_id,
-        overall_rating=overall_rating,
-        plot_rating=plot_rating,
-        character_rating=character_rating,
-        summary=summary,
-        rating_body=thoughts
+        user_id=params["user_id"],
+        book_id=params["book_id"],
+        overall_rating=params["overall_rating"],
+        plot_rating=params["plot_rating"],
+        character_rating=params["character_rating"],
+        summary=params["summary"],
+        rating_body=params["thoughts"]
     ))
