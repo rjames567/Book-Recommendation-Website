@@ -542,14 +542,15 @@ class BookHandler(Handler):
 
 
 # -----------------------------------------------------------------------------
-# Book Handler
+# Author Handler
 # -----------------------------------------------------------------------------
 class AuthorHandler(Handler):
     def __init__(self, log=None):
         super().__init__(log)
         self._routes = {
             "follow_author": self.follow_author,
-            "unfollow_author": self.unfollow_author
+            "unfollow_author": self.unfollow_author,
+            "about_data": self.get_author_data
         }
 
     def follow_author(self):
@@ -599,6 +600,31 @@ class AuthorHandler(Handler):
         ]
 
         return response, status, response_headers
+
+    def get_author_data(self):
+        get_params = self.retrieve_get_parameters()
+        author_id = get_params["author_id"]
+        write_log("          Author ID: " + str(author_id), self._log)
+        try:
+            result = authors.get_about_data(author_id)
+            status = "200 OK"
+            write_log("          Success", self._log)
+
+            response = json.dumps(result)
+            write_log("          Response: " + response, self._log)
+            write_log("          Status: " + status, self._log)
+
+            response_headers = [
+                ("Content-Type", "application/json"),
+                ("Content-Length", str(len(response)))
+            ]
+
+            return response, status, response_headers
+
+        except authors.AuthorNotFoundError:
+            status = "404 Not Found"
+            write_log("          Status: " + status, self._log)
+            return ErrorHandler("404 Not Found").error_response()  # Return the content for a 404 error
 
 
 # -----------------------------------------------------------------------------
