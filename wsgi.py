@@ -7,6 +7,7 @@ import urllib.parse
 # -----------------------------------------------------------------------------
 # Project imports
 # -----------------------------------------------------------------------------
+import authors
 import books
 import configuration
 import environ_manipulation
@@ -467,6 +468,32 @@ class BookHandler(Handler):
 class AuthorHandler(Handler):
     def __init__(self, log=None):
         super().__init__(log)
+        self._routes = {
+            "follow_author": self.follow_author
+        }
+
+    def follow_author(self):
+        json_response = self.retrieve_post_parameters()
+        params = json.loads(json_response)
+        session_id = params["session_id"]
+        author_id = params["author_id"]
+        write_log("          Author ID: " + str(author_id), self._log)
+        write_log("          Session ID: " + session_id, self._log)
+        user_id = login.session.get_user_id(session_id)
+        write_log("          User ID: " + str(user_id), self._log)
+
+        authors.follow_author(user_id, author_id)
+
+        response = "true"  # A response is needed to use this result, but does not impact the client at all.
+
+        status = "200 OK"
+
+        response_headers = [
+            ("Content-Type", "text/plain"),
+            ("Content-Length", str(len(response)))
+        ]
+
+        return response, status, response_headers
 
 
 # -----------------------------------------------------------------------------
