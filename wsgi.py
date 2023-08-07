@@ -485,7 +485,8 @@ class AuthorHandler(Handler):
 
         authors.follow_author(user_id, author_id)
 
-        response = "true"  # A response is needed to use this result, but does not impact the client at all.
+        response = str(authors.get_number_followers(author_id))  # Sends the new number of followers as the response.
+        # Cast the integer result to string so it can be sent as text.
 
         status = "200 OK"
 
@@ -508,7 +509,8 @@ class AuthorHandler(Handler):
 
         authors.unfollow_author(user_id, author_id)
 
-        response = "true"  # A response is needed to use this result, but does not impact the client at all.
+        response = str(authors.get_number_followers(author_id)) # Sends the new amount followers as the response.
+        # Cast the integer result to string, so it can be sent as text.
 
         status = "200 OK"
 
