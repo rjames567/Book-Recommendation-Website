@@ -28,7 +28,7 @@ _genre_required_match = config.get("books genre_match_threshold")
 def get_names(user_id):
     res = connection.query(
         """
-        SELECT list_id, list_name from reading_list_names
+        SELECT list_id, list_name FROM reading_list_names
         WHERE user_id={};
         """.format(user_id)
     )  # List of single element tuples
@@ -40,6 +40,31 @@ def get_names(user_id):
         })
 
     return output_queue
+
+
+def get_names_check_book_in(user_id, book_id):
+    res = connection.query(
+        """
+        SELECT list_id, list_name FROM reading_list_names
+        WHERE user_id={};
+        """.format(user_id)
+    )
+
+    lists = dict()
+    for i, k in enumerate(res):
+        list_id, list_name = k
+        in_list = bool(len(connection.query("""
+            SELECT book_id FROM reading_lists
+            WHERE list_id={list_id}
+                AND book_id={book_id};
+        """.format(list_id=list_id, book_id=book_id))))
+        lists[i] = {
+            "id": list_id,
+            "list_name": list_name,
+            "has_book": in_list
+        }
+
+    return lists
 
 
 # ------------------------------------------------------------------------------
