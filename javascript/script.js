@@ -971,7 +971,7 @@ function changeElemStars (icons, averageRating) {
 function switchAuthorPage (authorID) {
     $.ajax({
         type: "GET",
-        url: addGetParameter("/cgi-bin/genres/about_data", "author_id", authorID),
+        url: addGetParameter("/cgi-bin/authors/about_data", "author_id", authorID),
         success: function (result) {
             changePageContent("/html/author.html", false);  // Must be synchronous, otherwise subsequent
             // population of the template the request supplies may fail, as it may not arrive in time.
