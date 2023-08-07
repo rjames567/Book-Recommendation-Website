@@ -99,6 +99,7 @@ function changePageContent (file, async, elem=null, linkName=null) {
             $(window).scrollTop(0); // Move user to the top of the window
             assignGenreNavigationHandlers(); // Needs to be in this function as it needs to reassign it based upon the page
             // content.
+            assignAuthorNavigationHandlers();
             assignBookNavigationHandlers(); // Needs to be in this function as it needs to reassign it based upon the page
             // content.
         },
@@ -434,6 +435,7 @@ function assignReadingListNavigationHandlers () {
                 assignGenreNavigationHandlers(); // Assign handlers for the genre buttons once they have loaded
                 // Handlers are not kept by the clone for whatever reason.
                 assignBookNavigationHandlers();
+                assignAuthorNavigationHandlers();
                 assignDeleteHandlers(listName); // Assign delete handlers to remove entries
                 assignMovementHandlers(listName, result["move_target_id"]);
                 assignListDeleteHandlers(listName); // Slower, but avoids the difficulty and possible cost of finding the list Name again.
@@ -764,6 +766,7 @@ function switchBookPage (bookID) {
             assignAuthorFollowHandlers();
             assignGenreNavigationHandlers(); // Genre navigation handlers need to be reassigned as there will be new ones
             // added
+            assignAuthorNavigationHandlers();
             assignReviewSubmissionHandlers(bookID);
         },
         error: function (jqXHR) {
@@ -986,6 +989,13 @@ function switchAuthorPage (authorID) {
             changePageURI("author/" + authorID); // Update page URL to point to the new genre and allow for refreshing
             // Last as it is least likely to be seen, so appears smoother
         }
+    });
+}
+
+function assignAuthorNavigationHandlers () {
+    $(".author-button").off("click");
+    $(".author-button").click(function (event) {
+        switchAuthorPage($(this).data("id"));
     });
 }
 
