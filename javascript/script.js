@@ -603,7 +603,10 @@ function switchBookPage (book_id) {
             $(".book-about .book-stats .num-reading .value").html(numReading);
             $(".book-about .book-stats .num-read .value").html(numRead);
 
-            $(".book-about .author").html(result["author"]);
+            let author = $(".book-about .author");
+            $(author).html(result["author"]);
+            $(author).data("id", result["author_id"])
+
             $(".book-about .author-about .num-followers").html(result["author_number_followers"]);
             $(".book-about .author-about .about").html(result["author_about"]);
 
@@ -757,7 +760,7 @@ function assignAuthorFollowHandlers () {
             url: "/cgi-bin/authors/follow_author",
             data: JSON.stringify({
                 "session_id": sessionID,
-                "author_name": $(this).closest(".name").find(".author").html()
+                "author_id": $(this).closest(".name").find(".author").html()
             }),
             complete: function () {
                 $(".book-about .author-about .follow-author").addClass("hidden");
@@ -771,7 +774,7 @@ function assignAuthorFollowHandlers () {
             url: "/cgi-bin/authors/unfollow_author",
             data: JSON.stringify({
                 "session_id": sessionID,
-                "author_name": $(this).closest(".name").find(".author").html()
+                "author_id": $(this).closest(".name").find(".author").html()
             }),
             complete: function () {
                 $(".book-about .author-about .unfollow-author").addClass("hidden");
