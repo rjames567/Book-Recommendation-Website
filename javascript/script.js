@@ -641,83 +641,79 @@ function switchBookPage (book_id) {
 
             let reviews = result["reviews"];
             for (let i = 0; i < Object.keys(reviews).length; i++) {
-                $(".book-about .user-reviews .review.template .username").html(reviews[i]["username"]);
-                $(".book-about .user-reviews .review.template .date").html(reviews[i]["date_added"]);
+                let template = $(".book-about .user-reviews .review.template").clone().removeClass("template");
+                $(template).data("id", reviews[i]["id"]);
+                $(template).find(".username").html(reviews[i]["username"]);
+                $(template).find(".date").html(reviews[i]["date_added"]);
                 if (reviews[i]["summary"] == null) {
-                    $(".book-about .user-reviews .review.template .summary").addClass("hidden");
+                    $(template).find(".summary").addClass("hidden");
                 } else {
-                    $(".book-about .user-reviews .review.template .summary").removeClass("hidden");
-                    $(".book-about .user-reviews .review.template .summary").html(reviews[i]["summary"]);
+                    $(template).find(".summary").removeClass("hidden");
+                    $(template).find(".summary").html(reviews[i]["summary"]);
                 }
                 if (reviews[i]["rating_body"] == null) {
-                    $(".book-about .user-reviews .review.template .review-body").addClass("hidden");
+                    $(template).find(".review-body").addClass("hidden");
                 } else {
-                    $(".book-about .user-reviews .review.template .review-body").removeClass("hidden");
-                    $(".book-about .user-reviews .review.template .review-body").html(reviews[i]["rating_body"]);
+                    $(template).find(".review-body").removeClass("hidden");
+                    $(template).find(".review-body").html(reviews[i]["rating_body"]);
                 }
 
-                changeElemStars($(".book-about .user-reviews .review .overall-rating i"), reviews[i]["overall_rating"]);
+                changeElemStars($(template).find(".overall-rating i"), reviews[i]["overall_rating"]);
                 if (reviews[i]["plot_rating"] == null) {
-                    $(".book-about .user-reviews .review .plot-rating").addClass("hidden");
+                    $(template).find(".plot-rating").addClass("hidden");
                 } else {
-                    $(".book-about .user-reviews .review .plot-rating").removeClass("hidden");
-                    changeElemStars($(".book-about .user-reviews .review .plot-rating i"), reviews[i]["plot_rating"]);
+                    $(template).find(".plot-rating").removeClass("hidden");
+                    changeElemStars($(template).find(".plot-rating i"), reviews[i]["plot_rating"]);
                 }
                 if (reviews[i]["character_rating"] == null) {
-                    $(".book-about .user-reviews .review .character-rating").addClass("hidden");
+                    $(template).find(".character-rating").addClass("hidden");
                 } else {
-                    $(".book-about .user-reviews .review .character-rating").removeClass("hidden");
-                    changeElemStars(
-                        $(".book-about .user-reviews .review .character-rating i"),
-                        reviews[i]["character_rating"]
-                    );
+                    $(template).find(".character-rating").removeClass("hidden");
+                    changeElemStars($(template).find("character-rating i"), reviews[i]["character_rating"]);
                 }
-                $(".book-about .user-reviews .review.template").clone().removeClass("template").appendTo(".book-about .user-reviews");
+                $(template).appendTo(".book-about .user-reviews");
             }
 
             let currentUserReview = result["current_user_review"];
             if (currentUserReview != null) {
+                let existingReview = $(".book-about .user-review .existing-review").removeClass("hidden");
                 $(".book-about .user-review .leave-review").addClass("hidden");
-                $(".book-about .user-review .existing-review").removeClass("hidden");
                 if (currentUserReview["overall_rating"] == null) {
-                    $(".book-about .user-review .existing-review .overall-rating").addClass("hidden");
+                    $(existingReview).find(".overall-rating").addClass("hidden");
                 } else {
-                    $(".book-about .user-review .existing-review .overall-rating").removeClass("hidden");
+                    $(existingReview).find(".overall-rating").removeClass("hidden");
                     changeElemStars(
-                        $(".book-about .user-review .existing-review .overall-rating i"),
+                        $(existingReview).find(".overall-rating i"),
                         currentUserReview["overall_rating"]
                     );
                 }
                 if (currentUserReview["plot-rating"] == null) {
-                    $(".book-about .user-review .existing-review .plot-rating").addClass("hidden");
+                    $(existingReview).find(".plot-rating").addClass("hidden");
                 } else {
-                    $(".book-about .user-review .existing-review .plot-rating").removeClass("hidden");
-                    changeElemStars(
-                        $(".book-about .user-review .existing-review .plot-rating i"),
-                        currentUserReview["plot-rating"]
-                    );
+                    $(existingReview).find(".plot-rating").removeClass("hidden");
+                    changeElemStars($(existingReview).find(".plot-rating i"), currentUserReview["plot-rating"]);
                 }
                 if (currentUserReview["character-rating"] == null) {
-                    $(".book-about .user-review .existing-review .character-rating").addClass("hidden");
+                    $(existingReview).find(".character-rating").addClass("hidden");
                 } else {
-                    $(".book-about .user-review .existing-review .character-rating").removeClass("hidden");
+                    $(existingReview).find(".character-rating").removeClass("hidden");
                     changeElemStars(
-                        $(".book-about .user-review .existing-review .character-rating i"),
+                        $(existingReview).find(".character-rating i"),
                         currentUserReview["character-rating"]
                     );
                 }
 
                 if (currentUserReview["summary"] == null) {
-                    $(".book-about .user-review .existing-review .rating-summary").addClass("hidden");
+                    $(existingReview).find(".rating-summary").addClass("hidden");
                 } else {
-                    $(".book-about .user-review .existing-review .rating-summary").removeClass("hidden");
-                    $(".book-about .user-review .existing-review .rating-summary").html(currentUserReview["summary"]);
+                    $(existingReview).find(".rating-summary").removeClass("hidden");
+                    $(existingReview).find(".rating-summary").html(currentUserReview["summary"]);
                 }
                 if (currentUserReview["rating_body"] == null) {
-                    $(".book-about .user-review .existing-review .review-body").addClass("hidden");
+                    $(existingReview).find(".review-body").addClass("hidden");
                 } else {
-                    $(".book-about .user-review .existing-review .review-body").removeClass("hidden");
-                    $(".book-about .user-review .existing-review .review-body").html(currentUserReview["rating_body"]);
+                    $(existingReview).find(".review-body").removeClass("hidden");
+                    $(existingReview).find(".review-body").html(currentUserReview["rating_body"]);
                 }
             }
 
