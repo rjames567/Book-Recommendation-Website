@@ -764,9 +764,7 @@ main .container {
 }
 
 /* https://stackoverflow.com/a/73854551 */
-.book-about .user-review .overall-rating-entry button,
-.book-about .user-review .plot-rating-entry button,
-.book-about .user-review .character-rating-entry button {
+.book-about .user-review .rating-entry-container button {
   border: none;
   margin: 0;
   padding: 0;
@@ -785,6 +783,10 @@ main .container {
 .book-about .user-review .plot-rating-entry button:hover ~ button,
 .book-about .user-review .character-rating-entry button:hover ~ button {
   color: var(--light-grey);
+}
+
+.book-about .user-review button.highlight {
+  color: var(--yellow);
 }
 
 /* -------------------------------------------------------------------------- */

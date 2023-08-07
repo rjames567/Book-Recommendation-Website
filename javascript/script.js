@@ -762,6 +762,7 @@ function switchBookPage (book_id) {
             assignAuthorFollowHandlers();
             assignGenreNavigationHandlers(); // Genre navigation handlers need to be reassigned as there will be new ones
             // added
+            assignReviewStarHandlers();
         },
         error: function (jqXHR) {
             $("main").html(jqXHR.responseText); // Fills in the main body with 404 error message
@@ -773,6 +774,7 @@ function switchBookPage (book_id) {
         }
     });
 }
+
 function assignReviewDeleteButtonHandler () {
     $(".book-about .existing-review button.delete-review").click(function () {
         $(".book-about .user-review .leave-review").removeClass("hidden");
@@ -861,6 +863,21 @@ function assignAuthorFollowHandlers () {
                 $(".book-about .author-about .num-followers").html(result); // Update number of followers
             }
         });
+    });
+}
+
+function assignReviewStarHandlers () {
+    $(".leave-review .rating-entry-container").data("rating", null); // Ensure that the rating is null if it is not
+    // changed.
+    $(".leave-review .rating-entry-container button").click(function (event) {
+        event.preventDefault(); // Prevent button submitting form
+        let buttons = $(this).closest(".rating-entry-container").find("button");
+        $(buttons).removeClass("highlight");
+        let reviewNum = $(this).index() + 1; // This is indexed from 0, so needs to be incremented by 1.
+        for (let i = 0; i < reviewNum; i++) {
+            $(buttons).eq(i).addClass("highlight"); // eq gets the nth object from the selector
+        }
+        $(this).closest(".rating-entry-container").data("rating", reviewNum); // Change the stored review.
     });
 }
 
