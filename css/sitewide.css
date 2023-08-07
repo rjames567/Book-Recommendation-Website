@@ -1104,3 +1104,15 @@ main .container {
 .reading-list-selection button:not(.inactive):hover i.hover {
   display: inline-block;
 }
+
+/* -------------------------------------------------------------------------- */
+/* Book Pages                                                                */
+/* -------------------------------------------------------------------------- */
+.author-book-items {
+  text-align: center; /* Align summaries to the center */
+  padding-bottom: 15px; /* Add spacing to bottom of page (top is included by summaries. Margin does not work */
+}
+
+.author-book-items .book-summary {
+  margin-top: 15px;
+}
