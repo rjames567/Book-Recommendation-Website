@@ -883,27 +883,60 @@ function assignReviewSubmissionHandlers (bookID) {
         event.preventDefault();
         // 'Assertion failed: Input argeument is not an HTMLInputElement' error is coming from LastPass.
         if (sessionID) {
-            $.ajax({
-                type: "POST",
-                url: "/cgi-bin/my_books/leave_review",
-                data: JSON.stringify({
-                    "session_id": sessionID,
-                    "book_id": bookID,
-                    "overall_rating": $(".leave-review .overall-rating-entry .rating-entry-container").data("rating"),
-                    "plot_rating": $(".leave-review .plot-rating-entry .rating-entry-container").data("rating"),
-                    "character_rating": $(".leave-review .character-rating-entry .rating-entry-container").data("rating"),
-                    "summary": $(".leave-review input[name=summary]").val(),
-                    "thoughts": $(".leave-review textarea").val()
-                }),
-                success: function () {
-                    reloadCurrentPage() // Just reloads the page
-                    // TODO make this a more efficient and faster method
-                }
-            } else {
-                showSignInPopup();
+            let overallRating = $(".leave-review .overall-rating-entry .rating-entry-container").data("rating");
+            let summary = $(".leave-review input[name=summary]").val();
+            let thoughts = $(".leave-review textarea").val();
+            if (summary == "") {
+                summary = null; // It must be null for the server it is left empty
             }
-        });
+            if (overallRating == null) {
+                reviewSubmissionAlert("Overall rating cannot be blank.")
+            } else if ((summary == null) && thoughts) {
+                reviewSubmissionAlert("A summary must be present if you have given your thoughts and feelings.")
+            } else {
+                $.ajax({
+                    type: "POST",
+                    url: "/cgi-bin/my_books/leave_review",
+                    data: JSON.stringify({
+                        "session_id": sessionID,
+                        "book_id": bookID,
+                        "overall_rating": overallRating,
+                        "plot_rating": $(".leave-review .plot-rating-entry .rating-entry-container").data("rating"),
+                        "character_rating": $(".leave-review .character-rating-entry .rating-entry-container").data("rating"),
+                        "summary": summary,
+                        "thoughts": thoughts
+                    }),
+                    success: function () {
+                        reloadCurrentPage(); // Just reloads the page
+                        // TODO make this a more efficient and faster method
+                    },
+                    error: function () {
+                        reviewSubmissionAlert("Something went wrong.")
+                    }
+                });
+            }
+        } else {
+            showSignInPopup(); // FIXME fix contents of the entries being removed when not signed in.
+        }
     });
+}
+
+function reviewSubmissionAlert (message) {
+    let alert = $(".leave-review .alert");
+    $(alert).html(message);
+    $(alert).show();
+    timeout = setTimeout(function () {
+        $(alert).fadeOut(500); // Fade out in 1/2 seconds
+    }, 8000); // Hide alert after 8 seconds
+}
+
+function signUpAlert (message) {
+    var elem = $(".account-popups p.alert");
+    elem.html(message);
+    elem.show(); // This order so there is not a delay - minimal so not vital
+    timeout = setTimeout(function () {
+        elem.fadeOut(500); // Fade out in 1/2 seconds
+    }, 8000); // Hide alert after 8 seconds
 }
 
 // -----------------------------------------------------------------------------

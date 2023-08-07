@@ -996,6 +996,7 @@ main .container {
 /* Book Pages - Review submission alert                                       */
 /* -------------------------------------------------------------------------- */
 .book-about .leave-review .alert {
+  display: hidden;
   color: var(--red);
   margin-bottom: 10px;
 }
