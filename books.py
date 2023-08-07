@@ -1,3 +1,6 @@
+
+import re
+
 # ------------------------------------------------------------------------------
 # Project imports
 # ------------------------------------------------------------------------------
@@ -222,3 +225,18 @@ def delete_review(review_id, user_id):
         WHERE user_id={user_id}
             AND review_id={review_id};
     """.format(user_id=user_id, review_id=review_id))
+
+def leave_review(user_id, book_id, overall_rating, plot_rating, character_rating, summary, thoughts):
+    thoughts = re.sub("\n+", "\n", thoughts)  # Remove repeated new lines from string.
+    connection.query("""
+        INSERT INTO reviews (user_id, book_id, overall_rating, plot_rating, character_rating, summary, rating_body) VALUES
+        ({user_id}, {book_id}, {overall_rating}, {plot_rating}, {character_rating}, "{summary}", "{rating_body}");
+    """.format(
+        user_id=user_id,
+        book_id=book_id,
+        overall_rating=overall_rating,
+        plot_rating=plot_rating,
+        character_rating=character_rating,
+        summary=summary,
+        rating_body=thoughts
+    ))
