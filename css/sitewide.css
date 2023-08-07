@@ -1032,3 +1032,68 @@ main .container {
   display: flex; /* Float right would make it come outside of the div. This does not. */
   justify-content: flex-end;
 }
+
+/* -------------------------------------------------------------------------- */
+/* Book Pages - Select List popup                                             */
+/* -------------------------------------------------------------------------- */
+/* https://www.w3schools.com/howto/howto_css_modals.asp */
+.reading-list-selection {
+  display: flex;
+  align-content: center;
+  justify-content: center; /* Align the popup with the center of the display */
+  flex-wrap: wrap;
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  min-width: 100%; /* Full width */
+  min-height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.reading-list-selection .content {
+  background-color: white;
+  padding: 20px;
+  max-width: 80%; /* It will expand to 80% of display before word wrap */
+}
+
+.reading-list-selection ul {
+  padding: 10px 30px;
+  margin: 0;
+}
+
+.reading-list-selection button {
+  display: flex;
+  align-items: center; /* Align Icon with center of any word wrap */
+  border: none;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  background-color: white;
+}
+
+.reading-list-selection li:last-child button {
+  margin-bottom: 0;
+}
+
+.reading-list-selection button:hover .list-name { /* Extra specification prevents it changing icons */
+  text-shadow: 1px 0 black; /* Bold affect without changing text size */
+}
+
+.reading-list-selection button i { /* Change icons through CSS only. Avoids assining/checking values in JS for return */
+  padding-right: 10px;
+  display: inline-block;
+}
+
+.reading-list-selection button i.hover {
+  display: none;
+}
+
+.reading-list-selection button:hover i:not(.hover) {
+  display: none;
+}
+
+.reading-list-selection button:hover i.hover {
+  display: inline-block;
+}
