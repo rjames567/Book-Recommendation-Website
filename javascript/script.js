@@ -896,7 +896,7 @@ function assignReviewSubmissionHandlers (bookID) {
             } else {
                 $.ajax({
                     type: "POST",
-                    url: "/cgi-bin/my_books/leave_review",
+                    url: "/cgi-bin/books/add_review",
                     data: JSON.stringify({
                         "session_id": sessionID,
                         "book_id": bookID,
