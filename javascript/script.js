@@ -575,6 +575,28 @@ function switchBookPage (book_id) {
             changePageContent("/html/book.html", false); // Must be synchronous, otherwise subsequent
             // population of the template the request supplies may fail, as it may not arrive in time.
 
+            let url = addGetParameter("/cgi-bin/my_books/get_lists_book_target", "session_id", sessionID);
+            url = addGetParameter(url, "book_id", book_id);
+            $.ajax({
+                type: "GET",
+                url: url,
+                success: function (result) {
+                    for (let i = 0; i < Object.keys(result).length; i++) {
+                        let item = $(".reading-list-selection ul li.template").clone().removeClass("template");
+                        $(item).find("list-name").html(result[i]["list_name"]);
+                        if (result[i]["has_book"]) {
+                            $(item).find("i.status").addClass("fa fa-check-circle");
+                        } else {
+                            $(item).find("i.status").addClass("fa fa-circle");
+                        }
+                        $(item).appendTo(".reading-list-selection ul");
+                    }
+                },
+                error: function (result, jqXHR) {
+                    console.log(result["success"] + "    " + result["message"]);
+                }
+            });
+
             $(".book-about .title").html(result["title"]);
             $(".book-about .synopsis").html(result["synopsis"]);
             $(".book-about img.cover").attr("src", result["cover_image"]);
