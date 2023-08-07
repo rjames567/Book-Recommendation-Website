@@ -182,8 +182,6 @@ def get_about_data(book_id, user_id):
                book_id=book_id))  # Inserting None will insert a string “None” so will not match any IDs.
     # Does not include the current user's review. If it is None it includes all users.
 
-    print(res)
-
     review_arr = []
     for i in res:
         body = i[5]
@@ -201,6 +199,15 @@ def get_about_data(book_id, user_id):
         })
 
     output_dict["reviews"] = review_arr
+
+    output_dict["author_following"] = bool(len(connection.query("""
+        SELECT author_id FROM author_followers
+        WHERE author_id={author_id}
+            AND user_id={user_id};
+    """.format(author_id=author_id, user_id=user_id))))  # Finds all entries with the same user and author id as
+    # required, which will either be 1 or 0. If it is 0, the user is not following the author, so the author_following
+    # value should be false. If it is 1, they are, so it should be true. Len gets the number of results (1 or 0), and
+    # bool converts this to the corresponding boolean value, which is whether the user is following the author.
 
     return output_dict
 
