@@ -595,6 +595,10 @@ function switchBookPage (book_id) {
                 },
                 error: function (result, jqXHR) {
                     console.log(result["success"] + "    " + result["message"]);
+                },
+                complete: function () {
+                    assignChangeReadingListHandler(book_id); // Needs to be here as this request is asynchronous
+                    // Needs to be under complete, as it needs to run even on failure.
                 }
             });
 
@@ -757,7 +761,6 @@ function switchBookPage (book_id) {
             assignAuthorFollowHandlers();
             assignGenreNavigationHandlers(); // Genre navigation handlers need to be reassigned as there will be new ones
             // added
-            assignChangeReadingListHandler(book_id);
         },
         error: function (jqXHR) {
             $("main").html(jqXHR.responseText); // Fills in the main body with 404 error message
@@ -794,7 +797,7 @@ function assignChangeReadingListHandler (book_id) {
             showSignInPopup();
         }
     });
-    $(".reading-list-selection button").click(function () {
+    $(".reading-list-selection ul li button").click(function () {
         let list_id = $(this).closest("li").data("id");
         $.ajax({
             type: "POST",
