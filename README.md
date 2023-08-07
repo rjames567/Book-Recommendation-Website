@@ -37,3 +37,10 @@ Create the database with name OpenBook. Remember the credentials used for the us
 > GRANT ALL PRIVILEGES ON OpenBook.* TO "_username_"@"_database ip_";\
 > FLUSH PRIVILEGES;\
 > QUIT;
+
+### Web server
+Make the directory readable
+> chmod a+r /path/to/project/
+
+Make the fastcgi file executable
+> chmod a+X /path/to/project/backend/flup.server.fcgi
