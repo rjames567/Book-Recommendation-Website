@@ -728,19 +728,19 @@ function switchBookPage (bookID) {
                         currentUserReview["overall_rating"]
                     );
                 }
-                if (currentUserReview["plot-rating"] == null) {
+                if (currentUserReview["plot_rating"] == null) {
                     $(existingReview).find(".plot-rating").addClass("hidden");
                 } else {
                     $(existingReview).find(".plot-rating").removeClass("hidden");
-                    changeElemStars($(existingReview).find(".plot-rating i"), currentUserReview["plot-rating"]);
+                    changeElemStars($(existingReview).find(".plot-rating i"), currentUserReview["plot_rating"]);
                 }
-                if (currentUserReview["character-rating"] == null) {
+                if (currentUserReview["character_rating"] == null) {
                     $(existingReview).find(".character-rating").addClass("hidden");
                 } else {
                     $(existingReview).find(".character-rating").removeClass("hidden");
                     changeElemStars(
                         $(existingReview).find(".character-rating i"),
-                        currentUserReview["character-rating"]
+                        currentUserReview["character_rating"]
                     );
                 }
 
@@ -889,6 +889,9 @@ function assignReviewSubmissionHandlers (bookID) {
             let thoughts = $(".leave-review textarea").val();
             if (summary == "") {
                 summary = null; // It must be null for the server it is left empty
+            }
+            if (thoughts == "") {
+                thoughts = null;
             }
             if (overallRating == null) {
                 reviewSubmissionAlert("Overall rating cannot be blank.")
