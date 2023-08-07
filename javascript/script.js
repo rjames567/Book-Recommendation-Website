@@ -676,6 +676,7 @@ function switchBookPage (book_id) {
             let currentUserReview = result["current_user_review"];
             if (currentUserReview != null) {
                 let existingReview = $(".book-about .user-review .existing-review").removeClass("hidden");
+                $(existingReview).data("id", currentUserReview["review_id"]);
                 $(".book-about .user-review .leave-review").addClass("hidden");
                 if (currentUserReview["overall_rating"] == null) {
                     $(existingReview).find(".overall-rating").addClass("hidden");
@@ -737,13 +738,13 @@ function assignReviewDeleteButtonHandler () {
         $(".book-about .user-review .leave-review").removeClass("hidden");
         $(".book-about .user-review .existing-review").addClass("hidden"); // Do this before making the request, so it
         // can continue in the background for appeared responsiveness.
+        console.log(window.location.pathname.split("/")[1])
         $.ajax({
             type: "POST",
             url: "/cgi-bin/books/delete_review",
             data: JSON.stringify({
                 "session_id": sessionID,
-                "book_name": $(this).closest(".book-about .right").find(".title").html() // For whatever reason, the
-                // further specification to .title cannot be done in the closest, so find is used instead.
+                "book_id": window.location.pathname.split("/")[1]
             }) // The user can only have one review of the book
         }); // The response does not matter
     });
