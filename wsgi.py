@@ -510,6 +510,7 @@ class BookHandler(Handler):
     def leave_review(self):
         json_response = self.retrieve_post_parameters()
         params = json.loads(json_response)
+        write_log(params, self._log)
         session_id = params["session_id"]
         write_log("          Session ID: " + session_id, self._log)
         user_id = login.session.get_user_id(session_id)
