@@ -85,7 +85,7 @@ def get_about_data(author_id):
 
     output_dict = {
         "name": author,
-        "about": about
+        "about": "</p><p>".join(("<p>" + about + "</p>").split("\n")),
     }
 
     books = connection.query("""
