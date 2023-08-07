@@ -24,7 +24,7 @@ connection = mysql_handler.Connection(
 # ------------------------------------------------------------------------------
 class BookNotFoundError(Exception):
     """
-    Exception for when a genre is not found.
+    Exception for when a book is not found.
     """
 
     def __init__(self, book_id):
