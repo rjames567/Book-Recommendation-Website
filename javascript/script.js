@@ -765,7 +765,11 @@ function assignReviewDeleteButtonHandler () {
 
 function assignChangeReadingListHandler () {
     $(".book-about button.add-list").click(function () {
-        $(".reading-list-selection").removeClass("hidden");
+        if (sessionID) {
+            $(".reading-list-selection").removeClass("hidden");
+        } else {
+            showSignInPopup();
+        }
     });
 }
 
