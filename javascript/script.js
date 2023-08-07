@@ -769,6 +769,16 @@ function assignChangeReadingListHandler () {
     });
 }
 
+function hideReadingListPopup () {
+    $(".reading-list-selection").addClass("hidden");
+}
+
+$(window).click(function (event) {
+    if ($(".reading-list-selection")[0] == event.target) {
+        hideReadingListPopup();
+    }
+});
+
 function assignAuthorFollowHandlers () {
     $(".book-about .author-about .follow-author").click(function () {
         // Can only follow a user if an account is known, so prompts if not signed in.
