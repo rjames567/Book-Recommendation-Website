@@ -195,6 +195,7 @@ class MyBooksHandler(Handler):
             "get_lists": self.get_list_names,
             "get_list_entries": self.get_list_entries,
             "remove_list_entry": self.remove_list_entry,
+            "add_list_entry": self.add_list_entry,
             "move_list_entry": self.move_list_entry,
             "remove_list": self.remove_list,
             "create_list": self.create_list,
@@ -253,34 +254,30 @@ class MyBooksHandler(Handler):
         return response, status, response_headers
 
     def remove_list_entry(self):
-        try:
-            json_response = self.retrieve_post_parameters()
-            response_dict = json.loads(json_response)
-            session_id = response_dict["session_id"]
-            list_id = response_dict["list_id"]
-            book_id = response_dict["book_id"]  # Replace ampersand code with character
+        json_response = self.retrieve_post_parameters()
+        response_dict = json.loads(json_response)
+        session_id = response_dict["session_id"]
+        list_id = response_dict["list_id"]
+        book_id = response_dict["book_id"]  # Replace ampersand code with character
 
-            write_log("          Session id: " + session_id, self._log)
-            user_id = login.session.get_user_id(session_id)
-            write_log("          User id: " + str(user_id), self._log)
+        write_log("          Session id: " + session_id, self._log)
+        user_id = login.session.get_user_id(session_id)
+        write_log("          User id: " + str(user_id), self._log)
 
-            write_log("          List ID: " + str(list_id), self._log)
-            write_log("          Book ID: " + str(book_id), self._log)
+        write_log("          List ID: " + str(list_id), self._log)
+        write_log("          Book ID: " + str(book_id), self._log)
 
-            reading_lists.remove_entry(user_id, list_id, book_id)
-            response = "true"  # A response is needed to use this result, but does not impact the client at all.
+        reading_lists.remove_entry(user_id, list_id, book_id)
+        response = "true"  # A response is needed to use this result, but does not impact the client at all.
 
-            status = "200 OK"
+        status = "200 OK"
 
-            response_headers = [
-                ("Content-Type", "text/plain"),
-                ("Content-Length", str(len(response)))
-            ]
+        response_headers = [
+            ("Content-Type", "text/plain"),
+            ("Content-Length", str(len(response)))
+        ]
 
-            return response, status, response_headers
-
-        except Exception as e:
-            write_log(e, self._log)
+        return response, status, response_headers
 
     def move_list_entry(self):
         json_response = self.retrieve_post_parameters()
@@ -377,6 +374,30 @@ class MyBooksHandler(Handler):
 
         response_headers = [
             ("Content-Type", "application/json"),
+            ("Content-Length", str(len(response)))
+        ]
+
+        return response, status, response_headers
+
+    def add_list_entry(self):
+        params = self.retrieve_post_parameters()
+        session_id = params["session_id"]
+        write_log("          Session id: " + session_id, self._log)
+        user_id = login.session.get_user_id(session_id)
+        write_log("          User id: " + str(user_id), self._log)
+        book_id = params["book_id"]
+        write_log("          Book id: " + str(book_id), self._log)
+        list_id = params["list_id"]
+        write_log("          List id: " + str(list_id), self._log)
+
+        reading_lists.add_entry(user_id, list_id, book_id)
+
+        response = "true"  # Response does not matter to the client
+
+        status = "200 OK"
+
+        response_headers = [
+            ("Content-Type", "text/plain"),
             ("Content-Length", str(len(response)))
         ]
 
