@@ -937,15 +937,6 @@ function reviewSubmissionAlert (message) {
     }, 8000); // Hide alert after 8 seconds
 }
 
-function signUpAlert (message) {
-    var elem = $(".account-popups p.alert");
-    elem.html(message);
-    elem.show(); // This order so there is not a delay - minimal so not vital
-    timeout = setTimeout(function () {
-        elem.fadeOut(500); // Fade out in 1/2 seconds
-    }, 8000); // Hide alert after 8 seconds
-}
-
 // -----------------------------------------------------------------------------
 // Rating stars
 // -----------------------------------------------------------------------------
