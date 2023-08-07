@@ -887,7 +887,6 @@ function assignReviewSubmissionHandlers (bookID) {
     });
     $(".leave-review form").on("submit", function (event) {
         event.preventDefault();
-        console.log(bookID);
         // 'Assertion failed: Input argeument is not an HTMLInputElement' error is coming from LastPass.
         if (sessionID) {
             let overallRating = $(".leave-review .overall-rating-entry .rating-entry-container").data("rating");
@@ -977,9 +976,10 @@ function switchAuthorPage (authorID) {
                 $(summary).find(".title").html(books[i]["title"]);
                 $(summary).find(".author").html(result["name"]);
                 $(summary).find("img").attr("src", books[i]["cover"]);
-                $(summary).appendTo(".author-book-items");
                 $(summary).data("id", books[i]["id"]);
+                $(summary).appendTo(".author-book-items");
             }
+            assignBookNavigationHandlers(true);
         },
         error: function (jqXHR) {
             $("main").html(jqXHR.responseText); // Fills in the main body with 404 error message
