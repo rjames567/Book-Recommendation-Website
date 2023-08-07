@@ -441,13 +441,13 @@ class BookHandler(Handler):
         json_response = self.retrieve_post_parameters()
         params = json.loads(json_response)
         session_id = params["session_id"]
-        book_name = params["book_name"]
-        write_log("          Book name: " + book_name, self._log)
+        review_id = params["review_id"]
+        write_log("          Review ID: " + str(review_id), self._log)
         write_log("          Session ID: " + session_id, self._log)
         user_id = login.session.get_user_id(session_id)
         write_log("          User ID: " + str(user_id), self._log)
 
-        books.delete_review(book_name, user_id)
+        books.delete_review(review_id, user_id)
 
         response = "true"  # A response is needed to use this result, but does not impact the client at all.
 
