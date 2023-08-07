@@ -882,21 +882,25 @@ function assignReviewSubmissionHandlers (bookID) {
     $(".leave-review form").on("submit", function (event) {
         event.preventDefault();
         // 'Assertion failed: Input argeument is not an HTMLInputElement' error is coming from LastPass.
-        $.ajax({
-            type: "POST",
-            url: "/cgi-bin/my_books/leave_review",
-            data: JSON.stringify({
-                "session_id": sessionID,
-                "book_id": bookID,
-                "overall_rating": $(".leave-review .overall-rating-entry .rating-entry-container").data("rating"),
-                "plot_rating": $(".leave-review .plot-rating-entry .rating-entry-container").data("rating"),
-                "character_rating": $(".leave-review .character-rating-entry .rating-entry-container").data("rating"),
-                "summary": $(".leave-review input[name=summary]").val(),
-                "thoughts": $(".leave-review textarea").val()
-            }),
-            success: function () {
-                reloadCurrentPage() // Just reloads the page
-                // TODO make this a more efficient and faster method
+        if (sessionID) {
+            $.ajax({
+                type: "POST",
+                url: "/cgi-bin/my_books/leave_review",
+                data: JSON.stringify({
+                    "session_id": sessionID,
+                    "book_id": bookID,
+                    "overall_rating": $(".leave-review .overall-rating-entry .rating-entry-container").data("rating"),
+                    "plot_rating": $(".leave-review .plot-rating-entry .rating-entry-container").data("rating"),
+                    "character_rating": $(".leave-review .character-rating-entry .rating-entry-container").data("rating"),
+                    "summary": $(".leave-review input[name=summary]").val(),
+                    "thoughts": $(".leave-review textarea").val()
+                }),
+                success: function () {
+                    reloadCurrentPage() // Just reloads the page
+                    // TODO make this a more efficient and faster method
+                }
+            } else {
+                showSignInPopup();
             }
         });
     });
