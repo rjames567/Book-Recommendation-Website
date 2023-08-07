@@ -19,7 +19,7 @@ import reading_lists
 # -----------------------------------------------------------------------------
 # Project constants
 # -----------------------------------------------------------------------------
-config = configuration.Configuration("project_config.conf")
+config = configuration.Configuration("./project_config.conf")
 debugging = config.get("debugging")  # Toggle whether logs are shown
 
 

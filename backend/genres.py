@@ -7,7 +7,7 @@ import configuration
 # ------------------------------------------------------------------------------
 # Instantiating import classes
 # ------------------------------------------------------------------------------
-config = configuration.Configuration("project_config.conf")
+config = configuration.Configuration("./project_config.conf")
 connection = mysql_handler.Connection(
     user=config.get("mysql username"),
     password=config.get("mysql password"),

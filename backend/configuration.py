@@ -2,6 +2,7 @@
 # Standard Python library imports
 # ------------------------------------------------------------------------------
 import re
+import os
 
 
 # ------------------------------------------------------------------------------
@@ -72,7 +73,7 @@ class Configuration:
 
         Does not have a return value
         """
-        self._filename = filename
+        self._filepath = os.path.join(os.path.split(os.path.dirname(__file__))[0], filename)
         self.load()
 
     def _cast_to_type(self, datatype, value, line_num):
@@ -130,7 +131,7 @@ class Configuration:
 
         Does not have a return value
         """
-        with open(self._filename, "r") as f:
+        with open(self._filepath, "r") as f:
             contents = f.readlines()
 
         hierarchy = {}
@@ -188,9 +189,9 @@ class Configuration:
                 if query_arr[1] in res.keys():
                     res = res[query_arr[1]]
                 else:
-                    raise ConfigVariableNotFound(query_string, self._filename)
+                    raise ConfigVariableNotFound(query_string, self._filepath)
         else:
-            raise ConfigVariableNotFound(query_string, self._filename)
+            raise ConfigVariableNotFound(query_string, self._filepath)
         return res
 
 # Similar to YAML - but with more datatypes - binary strings
