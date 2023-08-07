@@ -993,8 +993,8 @@ function switchAuthorPage (authorID) {
 }
 
 function assignAuthorNavigationHandlers () {
-    $(".author-button").off("click");
-    $(".author-button").click(function (event) {
+    $("a.author").off("click");
+    $("a.author").click(function (event) {
         switchAuthorPage($(this).data("id"));
     });
 }
@@ -1008,3 +1008,4 @@ $(document).ready(function () {
 
 // TODO display meta if reading list is empty
 // FIXME Update book statistics on addition of book to list.
+// TODO make author link buttons neater
