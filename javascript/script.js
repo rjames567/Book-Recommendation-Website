@@ -734,6 +734,7 @@ function switchBookPage (book_id) {
             assignAuthorFollowHandlers();
             assignGenreNavigationHandlers(); // Genre navigation handlers need to be reassigned as there will be new ones
             // added
+            assignChangeReadingListHandler();
         },
         error: function (jqXHR) {
             $("main").html(jqXHR.responseText); // Fills in the main body with 404 error message
@@ -759,6 +760,12 @@ function assignReviewDeleteButtonHandler () {
                 "review_id": $(existingReview).data("id")
             }) // The user can only have one review of the book
         }); // The response does not matter
+    });
+}
+
+function assignChangeReadingListHandler () {
+    $(".book-about button.add-list").click(function () {
+        $(".reading-list-selection").removeClass("hidden");
     });
 }
 

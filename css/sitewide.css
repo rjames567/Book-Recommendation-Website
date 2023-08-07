@@ -993,11 +993,7 @@ main .container {
 /* -------------------------------------------------------------------------- */
 /* Book Pages - Reading List Button                                           */
 /* -------------------------------------------------------------------------- */
-.book-about .list-name {
-  width: fit-content;
-}
-
-.book-about .list-name button {
+.book-about button.add-list {
   font-size: 15px; /* Slightly smaller than the h3 for the author's name */
   padding: 10px 15px; /* Keep padding on sides for long names to change the wrapping */
   width: 160px;
@@ -1007,7 +1003,7 @@ main .container {
   color: white;
 }
 
-.book-about .list-name button:hover {
+.book-about button.add-list:hover {
   background-color: var(--light-red);
 }
 
