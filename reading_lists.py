@@ -54,6 +54,7 @@ def get_values(list_id, user_id):
             authors.first_name,
             authors.surname,
             authors.alias,
+            authors.author_id,
             reading_lists.date_added,
             (SELECT GROUP_CONCAT(genres.name)
                 FROM book_genres
@@ -115,10 +116,11 @@ def get_values(list_id, user_id):
                 "title": i[2],
                 "synopsis": synopsis,
                 "author": author,
-                "date_added": i[7].strftime("%d/%m/%Y"),
-                "genres": i[8].split(","),
-                "average_rating": i[9],
-                "num_reviews": i[10]
+                "author_id": i[7],
+                "date_added": i[8].strftime("%d/%m/%Y"),
+                "genres": i[9].split(","),
+                "average_rating": i[10],
+                "num_reviews": i[11]
             }
         )
 
