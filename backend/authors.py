@@ -89,15 +89,16 @@ def get_about_data(author_id):
     }
 
     books = connection.query("""
-        SELECT title, cover_image FROM books
+        SELECT book_id, title, cover_image FROM books
         WHERE author_id={};
     """.format(author_id))
 
     book_arr = []
     for i in books:
         book_arr.append({
-            "title": i[0],
-            "cover": i[1]
+            "id": i[0],
+            "title": i[1],
+            "cover": i[2]
         })  # Author name can be done implicitly from other sent data - reduce amount of data sent for speed
 
     output_dict["books"] = book_arr
