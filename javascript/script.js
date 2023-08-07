@@ -739,7 +739,6 @@ function assignReviewDeleteButtonHandler () {
         let existingReview = $(".book-about .user-review .existing-review");
         $(existingReview).addClass("hidden"); // Do this before making the request, so it
         // can continue in the background for appeared responsiveness.
-        console.log($(existingReview).data("id"));
         $.ajax({
             type: "POST",
             url: "/cgi-bin/books/delete_review",
