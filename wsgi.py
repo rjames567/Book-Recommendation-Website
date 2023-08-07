@@ -197,7 +197,8 @@ class MyBooksHandler(Handler):
             "remove_list_entry": self.remove_list_entry,
             "move_list_entry": self.move_list_entry,
             "remove_list": self.remove_list,
-            "create_list": self.create_list
+            "create_list": self.create_list,
+            "get_lists_book_target": self.get_list_names_include_book
         }
 
     def get_list_names(self):
@@ -354,6 +355,28 @@ class MyBooksHandler(Handler):
 
         response_headers = [
             ("Content-Type", "text/plain"),
+            ("Content-Length", str(len(response)))
+        ]
+
+        return response, status, response_headers
+
+    def get_list_names_include_book(self):
+        params = self.retrieve_get_parameters()
+        session_id = params["session_id"]
+        write_log("          Session id: " + session_id, self._log)
+        user_id = login.session.get_user_id(session_id)
+        write_log("          User id: " + str(user_id), self._log)
+        book_id = params["book_id"]
+        write_log("          Book id: " + str(book_id), self._log)
+
+        result = reading_lists.get_names_check_book_in(user_id, book_id)
+
+        response = json.dumps(result)
+
+        status = "200 OK"
+
+        response_headers = [
+            ("Content-Type", "application/json"),
             ("Content-Length", str(len(response)))
         ]
 
