@@ -757,7 +757,7 @@ function switchBookPage (book_id) {
             assignAuthorFollowHandlers();
             assignGenreNavigationHandlers(); // Genre navigation handlers need to be reassigned as there will be new ones
             // added
-            assignChangeReadingListHandler();
+            assignChangeReadingListHandler(book_id);
         },
         error: function (jqXHR) {
             $("main").html(jqXHR.responseText); // Fills in the main body with 404 error message
@@ -786,13 +786,28 @@ function assignReviewDeleteButtonHandler () {
     });
 }
 
-function assignChangeReadingListHandler () {
+function assignChangeReadingListHandler (book_id) {
     $(".book-about button.add-list").click(function () {
         if (sessionID) {
             $(".reading-list-selection").removeClass("hidden");
         } else {
             showSignInPopup();
         }
+    });
+    $(".reading-list-selection button").click(function () {
+        let list_id = $(this).closest("li").data("id");
+        $.ajax({
+            type: "POST",
+            url: "/cgi-bin/my_books/add_list_entry",
+            data: JSON.stringify({
+                "list_id": list_id,
+                "session_id": sessionID,
+                "book_id": book_id
+            }),
+            complete: function () {
+                hideReadingListPopup();
+            }
+        });
     });
 }
 
