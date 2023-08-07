@@ -583,12 +583,13 @@ function switchBookPage (book_id) {
                 success: function (result) {
                     for (let i = 0; i < Object.keys(result).length; i++) {
                         let item = $(".reading-list-selection ul li.template").clone().removeClass("template");
-                        $(item).find("list-name").html(result[i]["list_name"]);
+                        $(item).find(".list-name").html(result[i]["list_name"]);
                         if (result[i]["has_book"]) {
                             $(item).find("i.status").addClass("fa fa-check-circle");
                         } else {
                             $(item).find("i.status").addClass("fa fa-circle");
                         }
+                        $(item).data("id", result[i]["id"]);
                         $(item).appendTo(".reading-list-selection ul");
                     }
                 },
