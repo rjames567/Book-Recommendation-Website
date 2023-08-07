@@ -373,7 +373,6 @@ function assignReadingListNavigationHandlers () {
         $(this).addClass("active");
         let listName = $(this).html();
 
-        console.log($(this).closest("li").data("id"));
         let requestURL = "/cgi-bin/my_books/get_list_entries";
         requestURL = addGetParameter(requestURL, "session_id", sessionID)
         requestURL = addGetParameter(requestURL, "list_id", $(this).closest("li").data("id"))
