@@ -607,7 +607,9 @@ function switchBookPage (book_id) {
             $(author).html(result["author"]);
             $(author).data("id", result["author_id"])
 
-            $(".book-about .author-about .num-followers").html(result["author_number_followers"]);
+            $(".book-about .author-about .num-followers").html(result["author_number_followers"]); // Keep in here
+            // rather than use the other function to help reduce the amount requests the client sends, and reduce
+            // server load, and send the number as a response to the follow/unfollow request
             $(".book-about .author-about .about").html(result["author_about"]);
 
             $(".book-about .average-review").html(result["average_rating"]);
@@ -735,7 +737,6 @@ function switchBookPage (book_id) {
         }
     });
 }
-
 function assignReviewDeleteButtonHandler () {
     $(".book-about .existing-review button.delete-review").click(function () {
         $(".book-about .user-review .leave-review").removeClass("hidden");
@@ -764,9 +765,10 @@ function assignAuthorFollowHandlers () {
                     "session_id": sessionID,
                     "author_id": $(".book-about .author").data("id")
                 }),
-                success: function () {
+                success: function (result) {
                     $(".book-about .author-about .follow-author").addClass("hidden");
                     $(".book-about .author-about .unfollow-author").removeClass("hidden");
+                    $(".book-about .author-about .num-followers").html(result); // Update number of followers
                 }
             });
         } else {
@@ -781,9 +783,10 @@ function assignAuthorFollowHandlers () {
                 "session_id": sessionID,
                 "author_id": $(".book-about .author").data("id")
             }),
-            success: function () {
+            success: function (result) {
                 $(".book-about .author-about .unfollow-author").addClass("hidden");
                 $(".book-about .author-about .follow-author").removeClass("hidden");
+                $(".book-about .author-about .num-followers").html(result); // Update number of followers
             }
         });
     });
