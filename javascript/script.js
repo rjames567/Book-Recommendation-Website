@@ -891,3 +891,4 @@ $(document).ready(function () {
 })
 
 // TODO display meta if reading list is empty
+// FIXME Update book statistics on addition of book to list.
