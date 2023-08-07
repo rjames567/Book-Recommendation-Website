@@ -85,6 +85,7 @@ a.highlight {
   background-position-x: 50%;
   background-repeat: no-repeat;
   transition: background-size 0.3s ease-in-out;
+  width: fit-content; /* Ensure underline is not larger than necessary */
 }
 
 a.highlight:hover {
