@@ -381,6 +381,7 @@ class MyBooksHandler(Handler):
 
     def add_list_entry(self):
         params = self.retrieve_post_parameters()
+        params = json.loads(params)
         session_id = params["session_id"]
         write_log("          Session id: " + session_id, self._log)
         user_id = login.session.get_user_id(session_id)

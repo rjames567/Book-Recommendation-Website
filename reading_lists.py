@@ -71,7 +71,7 @@ def get_names_check_book_in(user_id, book_id):
 # List values
 # ------------------------------------------------------------------------------
 def get_values(list_id, user_id):
-    x = """
+    res = connection.query("""
         SELECT books.book_id,
             books.cover_image,
             books.title,
@@ -89,11 +89,11 @@ def get_values(list_id, user_id):
                     AND book_genres.match_strength>{match_strength}
                 GROUP by books.title) AS genres,
             (SELECT CAST(IFNULL(AVG(reviews.overall_rating), 0) as FLOAT)  # Prevent any null values - replace with 0s.
-            	FROM reviews
-            	WHERE reviews.book_id=books.book_id) AS average_rating,
+                FROM reviews
+                WHERE reviews.book_id=books.book_id) AS average_rating,
             (SELECT COUNT(reviews.overall_rating)
-            	FROM reviews
-            	WHERE reviews.book_id=books.book_id) AS num_ratings
+                FROM reviews
+                WHERE reviews.book_id=books.book_id) AS num_ratings
             FROM reading_lists
             INNER JOIN books
             ON books.book_id=reading_lists.book_id
@@ -110,12 +110,7 @@ def get_values(list_id, user_id):
             user_id=user_id  # This is not strictly necessary, but helps protect against people being able to view other
             # people's list contents by guessing the list id.
         )
-    print(x)
-    res = connection.query(
-        x
     )
-
-    print(res)
 
     output_queue = data_structures.Queue()
     for i in res:

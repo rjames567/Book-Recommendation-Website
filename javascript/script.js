@@ -798,6 +798,7 @@ function assignChangeReadingListHandler (book_id) {
         }
     });
     $(".reading-list-selection ul li button").click(function () {
+        // TODO add protection against duplicating in currently reading, have read, and want read lists
         let list_id = $(this).closest("li").data("id");
         $.ajax({
             type: "POST",
