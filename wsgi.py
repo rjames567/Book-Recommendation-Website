@@ -460,6 +460,15 @@ class BookHandler(Handler):
 
         return response, status, response_headers
 
+
+# -----------------------------------------------------------------------------
+# Book Handler
+# -----------------------------------------------------------------------------
+class AuthorHandler(Handler):
+    def __init__(self, log=None):
+        super().__init__(log)
+
+
 # -----------------------------------------------------------------------------
 # Error Handler
 # -----------------------------------------------------------------------------
@@ -506,7 +515,8 @@ routes = {
     "account": AccountHandler(log),
     "my_books": MyBooksHandler(log),
     "genres": GenreHandler(log),
-    "books": BookHandler(log)
+    "books": BookHandler(log),
+    "authors": AuthorHandler(log)
     # Objects are persistent, so will the response should be faster and more memory efficient.
 }
 
