@@ -65,8 +65,10 @@ function reloadCurrentPage () {
     let target = target_arr[0];
     if (target == "Genre") { // Target is in title case
         switchGenrePage(target_arr[1]);
+    } else if (target == "Author") {
+        switchAuthorPage(target_arr[1]);
     } else if (target == "Book") {
-        switchBookPage(decodeURI(target_arr[1])); //  Needs to be decoded; as on the refresh, any spaces have character
+        switchBookPage(target_arr[1]); //  Needs to be decoded; as on the refresh, any spaces have character
         // codes in, so would be replaced. This avoids double encoding the URL.
     } else { // Manually check the others as they url switching is unnecessary
         switchPageContent(null, getLinkNameByURI());
@@ -961,6 +963,39 @@ function changeElemStars (icons, averageRating) {
     for (let i = numFull; i < 5; i++) {
         $(icons[i]).removeClass().addClass("fa fa-star-o");
     }
+}
+
+// -----------------------------------------------------------------------------
+// Authors
+// -----------------------------------------------------------------------------
+function switchAuthorPage (authorID) {
+    $.ajax({
+        type: "GET",
+        url: addGetParameter("/cgi-bin/genres/about_data", "author_id", authorID),
+        success: function (result) {
+            changePageContent("/html/author.html", false);  // Must be synchronous, otherwise subsequent
+            // population of the template the request supplies may fail, as it may not arrive in time.
+            $(".author-name").html(result["name"]);
+            $(".about").html(result["about"]);
+            let books = result["books"];
+            for (let i = 0; i < Object.keys(books).length; i++) {
+                let summary = $(".book-summary.template").clone().removeClass("template");
+                $(summary).find(".title").html(books[i]["title"]);
+                $(summary).find(".author").html(books[i]["author"]);
+                $(summary).find("img").attr("src", books[i]["cover"]);
+                $(summary).appendTo(".author-book-items");
+                $(summary).data("id", books[i]["id"]);
+            }
+        },
+        error: function (jqXHR) {
+            $("main").html(jqXHR.responseText); // Fills in the main body with 404 error message
+            // FIXME Fix not changing active link on AJAX fail
+        },
+        complete: function () {
+            changePageURI("author/" + authorID); // Update page URL to point to the new genre and allow for refreshing
+            // Last as it is least likely to be seen, so appears smoother
+        }
+    });
 }
 
 // -----------------------------------------------------------------------------
