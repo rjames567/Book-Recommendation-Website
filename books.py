@@ -141,7 +141,8 @@ def get_about_data(book_id, user_id):
         user_id = -1  # This will match all entries, as it is never equal to an ID, as they are natural numbers.
     else:
         res = connection.query("""
-                SELECT overall_rating,
+                SELECT review_id, 
+                    overall_rating,
                     plot_rating,
                     character_rating,
                     summary,
@@ -152,20 +153,21 @@ def get_about_data(book_id, user_id):
         if len(res) == 0:
             output_dict["current_user_review"] = None
         else:
-            body = res[0][4]
+            body = res[0][5]
             if body is not None:
                 body = "</p><p>".join(("<p>" + body + "</p>").split("\n"))
             output_dict["current_user_review"] = {
-                "overall_rating": res[0][0],
-                "plot_rating": res[0][1],
-                "character_rating": res[0][2],
-                "summary": res[0][3],
+                "review_id": res[0][0],
+                "overall_rating": res[0][1],
+                "plot_rating": res[0][2],
+                "character_rating": res[0][3],
+                "summary": res[0][4],
                 "rating_body": body
             }
 
-
     res = connection.query("""
-        SELECT reviews.overall_rating,
+        SELECT reviews.review_id,
+            reviews.overall_rating,
             reviews.plot_rating,
             reviews.character_rating,
             reviews.summary,
@@ -174,23 +176,28 @@ def get_about_data(book_id, user_id):
             users.username
         FROM reviews
         INNER JOIN users ON users.user_id=reviews.user_id
-        WHERE reviews.user_id!={user_id};
-    """.format(user_id=user_id))  # Inserting None will insert a string “None” so will not match any IDs.
+        WHERE reviews.user_id!={user_id}
+            AND reviews.book_id={book_id};
+    """.format(user_id=user_id,
+               book_id=book_id))  # Inserting None will insert a string “None” so will not match any IDs.
     # Does not include the current user's review. If it is None it includes all users.
+
+    print(res)
 
     review_arr = []
     for i in res:
-        body = i[4]
+        body = i[5]
         if body is not None:
             body = "</p><p>".join(("<p>" + body + "</p>").split("\n"))
         review_arr.append({
-            "overall_rating": i[0],
-            "plot_rating": i[1],
-            "character_rating": i[2],
-            "summary": i[3],
+            "id": i[0],
+            "overall_rating": i[1],
+            "plot_rating": i[2],
+            "character_rating": i[3],
+            "summary": i[4],
             "rating_body": body,
-            "date_added": i[5].strftime("%d/%m/%Y"),
-            "username": i[6],
+            "date_added": i[6].strftime("%d/%m/%Y"),
+            "username": i[7],
         })
 
     output_dict["reviews"] = review_arr
