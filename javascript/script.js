@@ -762,7 +762,7 @@ function switchBookPage (bookID) {
             assignAuthorFollowHandlers();
             assignGenreNavigationHandlers(); // Genre navigation handlers need to be reassigned as there will be new ones
             // added
-            assignReviewSubmissionHandlers();
+            assignReviewSubmissionHandlers(bookID);
         },
         error: function (jqXHR) {
             $("main").html(jqXHR.responseText); // Fills in the main body with 404 error message
@@ -881,6 +881,7 @@ function assignReviewSubmissionHandlers (bookID) {
     });
     $(".leave-review form").on("submit", function (event) {
         event.preventDefault();
+        console.log(bookID);
         // 'Assertion failed: Input argeument is not an HTMLInputElement' error is coming from LastPass.
         if (sessionID) {
             let overallRating = $(".leave-review .overall-rating-entry .rating-entry-container").data("rating");
