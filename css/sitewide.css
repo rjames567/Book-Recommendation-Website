@@ -1073,7 +1073,7 @@ main .container {
   margin-bottom: 0;
 }
 
-.reading-list-selection button:hover .list-name { /* Extra specification prevents it changing icons */
+.reading-list-selection button:not(.inactive):hover .list-name { /* Extra specification prevents it changing icons */
   text-shadow: 1px 0 black; /* Bold affect without changing text size */
 }
 
@@ -1086,10 +1086,10 @@ main .container {
   display: none;
 }
 
-.reading-list-selection button:hover i:not(.hover) {
+.reading-list-selection button:not(.inactive):hover i:not(.hover) {
   display: none;
 }
 
-.reading-list-selection button:hover i.hover {
+.reading-list-selection button:not(.inactive):hover i.hover {
   display: inline-block;
 }

@@ -585,6 +585,7 @@ function switchBookPage (book_id) {
                         let item = $(".reading-list-selection ul li.template").clone().removeClass("template");
                         $(item).find(".list-name").html(result[i]["list_name"]);
                         if (result[i]["has_book"]) {
+                            $(item).find("button").addClass("inactive");
                             $(item).find("i.status").addClass("fa fa-check-circle");
                         } else {
                             $(item).find("i.status").addClass("fa fa-circle");
@@ -797,7 +798,7 @@ function assignChangeReadingListHandler (book_id) {
             showSignInPopup();
         }
     });
-    $(".reading-list-selection ul li button").click(function () {
+    $(".reading-list-selection ul li button:not('.inactive')").click(function () {
         // TODO add protection against duplicating in currently reading, have read, and want read lists
         let list_id = $(this).closest("li").data("id");
         $.ajax({
