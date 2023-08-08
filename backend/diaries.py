@@ -45,3 +45,16 @@ def add_entry(user_id, book_id, overall_rating, character_rating, plot_rating, s
         thoughts=params["thoughts"],
         pages_read=params["pages_read"]
     ))
+
+
+# ------------------------------------------------------------------------------
+# Delete diary entry
+# ------------------------------------------------------------------------------
+def delete_entry(user_id, entry_id):
+    # The user id is just a way of helping preventing a random deletion of a list. The corresponding user_id must be
+    # known
+    connection.query("""
+        DELETE from diary_entries
+        WHERE user_id={user_id}
+            AND entry_id={entry_id};
+    """.format(user_id=user_id, entry_id=entry_id))
