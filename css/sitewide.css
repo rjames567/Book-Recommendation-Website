@@ -1106,7 +1106,7 @@ main .container {
 }
 
 /* -------------------------------------------------------------------------- */
-/* Book Pages                                                                */
+/* Book Pages                                                                 */
 /* -------------------------------------------------------------------------- */
 .author-book-items {
   text-align: center; /* Align summaries to the center */
@@ -1116,3 +1116,29 @@ main .container {
 .author-book-items .book-summary {
   margin-top: 15px;
 }
+
+/* -------------------------------------------------------------------------- */
+/* Diary - New entry button                                                   */
+/* -------------------------------------------------------------------------- */
+.entry-management {
+  margin: 10px 0;
+  text-align: center; /* Align button with center of screen */
+}
+
+button.new-entry {
+  border: none;
+  background: var(--blue);
+  padding: 12px 20px;
+  color: white;
+  font-size: 16px
+}
+
+button.new-entry:hover {
+  background-color: var(--light-blue);
+}
+
+button.new-entry i {
+  padding-right: 14px;
+}
+
+/* FIXME Fix my books entries not filling the width of the screen */
