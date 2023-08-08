@@ -137,7 +137,7 @@ def get_values(list_id, user_id):
                 "synopsis": synopsis,
                 "author": author,
                 "author_id": i[7],
-                "date_added": i[8].strftime("%d/%m/%Y"),
+                "date_added": i[8].strftime("%d-%m-%Y"),
                 "genres": i[9].split(","),
                 "average_rating": i[10],
                 "num_reviews": i[11]
