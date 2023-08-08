@@ -126,6 +126,9 @@ function currentPageFunction (link) {
         case "My Books":
             loadMyBooks();
             break;
+        case "Diary":
+            loadDiary();
+            break;
     }
 }
 
@@ -996,6 +999,61 @@ function assignAuthorNavigationHandlers () {
     $("a.author").off("click");
     $("a.author").click(function (event) {
         switchAuthorPage($(this).data("id"));
+    });
+}
+
+// -----------------------------------------------------------------------------
+// Diary entries
+// -----------------------------------------------------------------------------
+function loadDiary () {
+    $.ajax({
+        type: "GET",
+        url: addGetParameter("/cgi-bin/diary/get_entries", "session_id", sessionID),
+        success: function (result) {
+            for (let i = 0; i < Object.keys(result).length; i++) {
+                let book = result[i];
+                let template = $(".entries .diary-entry.template").clone().removeClass("template");
+                $(template).find(".cover img").attr("src", book["cover_image"]);
+                $(template).find(".title").html(book["title"]);
+                $(template).find(".title").data("id", book["book_id"]);
+                $(template).find(".author").html(book["author_name"]);
+                $(template).find(".author").data("id", book["author_id"]);
+                changeElemStars($(template).find(".rating-container .rating i"), book["average_rating"]);
+                $(template).find(".rating-container .average-review").html(book["average_rating"]);
+                $(template).find(".rating-container .num-review").html(book["number_ratings"]);
+                if (book["overall_rating"] != null) {
+                    changeElemStars($(template).find(".ratings .overall-rating i"), book["overall_rating"]);
+                } else {
+                    $(template).find(".ratings .overall-rating").hide();
+                }
+                if (book["plot_rating"] != null) {
+                    changeElemStars($(template).find(".ratings .plot-rating i"), book["plot_rating"]);
+                } else {
+                    $(template).find(".ratings .plot-rating").hide();
+                }
+                if (book["character_rating"] != null) {
+                    changeElemStars($(template).find(".ratings .character-rating i"), book["character_rating"]);
+                } else {
+                    $(template).find(".ratings .character-rating").hide();
+                }
+                if (book["summary"] != null) {
+                    $(template).find(".ratings .character-rating").html(book["summary"]);
+                } else {
+                    $(template).find(".ratings .character-rating").hide();
+                }
+                if (book["thoughts"] != null) {
+                    $(template).find(".ratings .character-rating").html(book["thoughts"]);
+                } else {
+                    $(template).find(".ratings .character-rating").hide();
+                }
+                $(template).find(".book-info .date-added").html(book["date_added"]);
+                $(template).find(".book-info .num-pages-read").html(book["pages_read"]);
+                $(template).data("id", book["entry_id"])
+            }
+        },
+        error: function (result, jqXHR) {
+            console.log(result["success"] + "    " + result["message"]);
+        }
     });
 }
 
