@@ -130,7 +130,7 @@ CREATE TABLE diary_entries (
     overall_rating INT NOT NULL,
     character_rating INT,
     plot_rating INT,
-    summary TINYTEXT NOT NULL,
+    summary TINYTEXT,
     thoughts TEXT,
     date_added DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     pages_read INT NOT NULL DEFAULT 0,
