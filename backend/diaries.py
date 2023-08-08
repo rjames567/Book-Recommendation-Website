@@ -91,7 +91,7 @@ def get_entries(user_id):
         INNER JOIN authors ON books.author_id=authors.author_id
         WHERE diary_entries.user_id={}
         ORDER BY diary_entries.date_added DESC;
-    """.format(user_id)) # Order by ensures that most recent is at the top.
+    """.format(user_id))  # Order by ensures that most recent is at the top.
 
     output_dict = dict()
     for i, k in enumerate(res):
@@ -113,7 +113,7 @@ def get_entries(user_id):
             "character_rating": k[3],
             "plot_rating": k[4],
             "summary": k[5],
-            "thoughts": k[6],
+            "thoughts": "</p><p>".join(("<p>" + k[6] + "</p>").split("\n")),
             "date_added": k[7],
             "pages_read": k[8],
             "cover_image": k[9],
