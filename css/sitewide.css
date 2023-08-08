@@ -400,20 +400,23 @@ main .container {
   display: none;
 }
 
-.book .content {
+.diary-entry .content, .book .content {
   display: flex;
   padding-bottom: 10px;
 }
 
+.diary-entry .main-content,
 .book .main-content {
   padding: 0 20px;
 }
 
-.book .cover img{
+.diary-entry .cover img,
+.book .cover img {
   padding: 20px 0;
   width: 150px;
 }
 
+.diary-entry .title,
 .book .title {
   display: block;
   font-size: 25px;
@@ -421,6 +424,7 @@ main .container {
   padding-bottom: 5px;
 }
 
+.diary-entry .author,
 .book .author {
   display: block;
   font-size: 20px;
@@ -431,30 +435,36 @@ main .container {
   padding: 0;
 }
 
+.diary-entry .rating,
 .book .rating {
   font-size: 20px;
   color: var(--yellow);
 }
 
+.diary-entry .rating-container,
 .book .rating-container {
   margin-left: auto;
 }
 
+.diary-entry .top-row-container,
 .book .top-row-container {
   display: flex;
   align-items: center;
 }
 
+.diary-entry .book-info,
 .book .book-info {
   display: block;
   font-size: 13px;
   padding-bottom: 5px;
 }
 
+.diary-entry .book-info:last-child,
 .book .book-info:last-child {
   padding-bottom: 0;
 }
 
+.diary-entry .right-content,
 .book .right-content {
   display: flex;
   flex-direction: column;
@@ -468,6 +478,7 @@ main .container {
   -webkit-mask-image: linear-gradient(180deg, #000 70%, transparent); /* Fade to transparent over distance */
 }
 
+.diary-entry .rating-container .about-review,
 .book .about-review {
   padding: 0 10px;
   font-size: 14px;
@@ -477,12 +488,14 @@ main .container {
   height: fit-content;
 }
 
+.diary-entry .right-content button.delete,
 .book .right-content .actions button {
   font-size: 13px;
   padding: 5px 10px;
   border: none;
 }
 
+.diary-entry .right-content button.delete,
 .book button.delete {
   float: right;
   color: white;
@@ -506,6 +519,7 @@ main .container {
   background-color: var(--light-blue);
 }
 
+.diary-entry .right-content button.delete:hover,
 .book button.delete:hover {
   background-color: var(--light-red);
 }
@@ -746,7 +760,7 @@ main .container {
 
 .book-about .user-review .overall-rating-entry .rating-entry-container,
 .book-about .user-review .plot-rating-entry .rating-entry-container,
-.book-about .user-review .character-rating-entry .rating-entry-container{ /* Prevent the cursor changing between the buttons and looking wrong */
+.book-about .user-review .character-rating-entry .rating-entry-container { /* Prevent the cursor changing between the buttons and looking wrong */
   display: inline-block;
   cursor: pointer;
 }
@@ -858,6 +872,7 @@ main .container {
 /* -------------------------------------------------------------------------- */
 /* Book Pages - Existing Review                                               */
 /* -------------------------------------------------------------------------- */
+.diary-entry .ratings i,
 .book-about .overall-rating i,
 .book-about .plot-rating i,
 .book-about .character-rating i {
@@ -865,6 +880,7 @@ main .container {
   font-size: 16px;
 }
 
+.diary-entry .ratings p,
 .book-about .overall-rating p,
 .book-about .plot-rating p,
 .book-about .character-rating p {
@@ -872,6 +888,7 @@ main .container {
   margin-bottom: 0;
 }
 
+.diary-entry .ratings .character-rating,
 .book-about .character-rating {
   margin-bottom: 25px;
 }
@@ -1139,6 +1156,26 @@ button.new-entry:hover {
 
 button.new-entry i {
   padding-right: 14px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Diary - Diary Entries                                                      */
+/* -------------------------------------------------------------------------- */
+.diary-entry .right-content {
+  min-width: 200px;
+}
+
+.diary-entry .content {
+  margin-top: 20px;
+}
+
+.diary-entry .main-content {
+  min-width: calc(100% - 200px - 170px); /* Fix the width so it does not get smaller than the page */
+}
+
+.diary-entry .right-content button {
+  margin: 0 20px 0 auto;
+
 }
 
 /* FIXME Fix my books entries not filling the width of the screen */
