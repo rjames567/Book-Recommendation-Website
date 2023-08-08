@@ -114,7 +114,7 @@ def get_entries(user_id):
             "plot_rating": k[4],
             "summary": k[5],
             "thoughts": "</p><p>".join(("<p>" + k[6] + "</p>").split("\n")),
-            "date_added": k[7],
+            "date_added": k[7].strftime("%d/%m/%Y"),
             "pages_read": k[8],
             "cover_image": k[9],
             "title": k[10],
