@@ -1588,8 +1588,33 @@ class DiaryHandler(Handler):
     def __init__(self, log=None):
         super().__init__(log)
         self._routes = {
-
+            "get_entries": self.get_entries
         }
+
+    def get_entries(self):
+        try:
+            session_id = self.retrieve_get_parameters()["session_id"]  # Only has one parameter, so this is fine.
+            write_log("          Session ID: " + session_id, self._log)
+            user_id = sessions.get_user_id(session_id)
+            write_log("          User ID: " + str(user_id), self._log)
+
+            result = diaries.get_entries(user_id)
+
+            response = json.dumps(result)
+
+            status = "200 OK"
+
+            write_log("          Response: " + response, self._log)
+            write_log("          Status: " + status, self._log)
+
+            response_headers = [
+                ("Content-Type", "application/json"),
+                ("Content-Length", str(len(response)))
+            ]
+
+            return response, status, response_headers
+        except Exception as e:
+            write_log(e, self._log)
 
 # -----------------------------------------------------------------------------
 # Error Handler
