@@ -1016,7 +1016,7 @@ function loadDiary () {
         url: addGetParameter("/cgi-bin/diary/get_entries", "session_id", sessionID),
         success: function (result) {
             let entries = result["entries"];
-            for (let i = 0; i < Object.keys(result).length; i++) {
+            for (let i = 0; i < Object.keys(entries).length; i++) {
                 let book = entries[i];
                 let template = $(".entries .diary-entry.template").clone().removeClass("template");
                 $(template).find(".cover img").attr("src", book["cover_image"]);
@@ -1184,3 +1184,4 @@ $(document).ready(function () {
 // TODO display meta if reading list is empty
 // FIXME Update book statistics on addition of book to list.
 // TODO make author link buttons neater
+// TODO add message if there is not any diary entries
