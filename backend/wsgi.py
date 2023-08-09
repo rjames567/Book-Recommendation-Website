@@ -1588,7 +1588,8 @@ class DiaryHandler(Handler):
     def __init__(self, log=None):
         super().__init__(log)
         self._routes = {
-            "get_entries": self.get_entries
+            "get_entries": self.get_entries,
+            "delete_entry": self.delete_entry
         }
 
     def get_entries(self):
@@ -1612,6 +1613,34 @@ class DiaryHandler(Handler):
         ]
 
         return response, status, response_headers
+
+    def delete_entry(self):
+        json_response = self.retrieve_post_parameters()
+        params = json.loads(json_response)
+        session_id = params["session_id"]
+        entry_id = params["entry_id"]
+        write_log("          Entry ID: " + str(entry_id), self._log)
+        write_log("          Session ID: " + session_id, self._log)
+        user_id = sessions.get_user_id(session_id)
+        write_log("          User ID: " + str(user_id), self._log)
+
+        diaries.delete_entry(user_id, entry_id)
+
+        response = "true"  # The client does not need the response. This is just for completeness, and a value is
+        # required for the return statement.
+
+        status = "200 OK"
+
+        write_log("          Response: " + response, self._log)
+        write_log("          Status: " + status, self._log)
+
+        response_headers = [
+            ("Content-Type", "text/plain"),
+            ("Content-Length", str(len(response)))
+        ]
+
+        return response, status, response_headers
+
 
 # -----------------------------------------------------------------------------
 # Error Handler
