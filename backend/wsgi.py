@@ -811,6 +811,17 @@ class reading_lists:
 
         return output_queue
 
+    def get_currently_reading(user_id):
+        res = connection.query("""
+            SELECT reading_lists.book_id, books.title
+            FROM reading_lists
+            INNER JOIN books ON reading_lists.book_id=books.book_id
+            INNER JOIN reading_list_names ON reading_list_names.list_id=reading_lists.list_id
+            WHERE reading_list_names.list_name="Currently Reading"
+                AND reading_list_names.user_id={};
+        """.format(user_id))
+        return [{"book_id": i[0], "title": i[1]} for i in res]
+
     def get_names_check_book_in(user_id, book_id):
         res = connection.query(
             """
@@ -1598,7 +1609,9 @@ class DiaryHandler(Handler):
         user_id = sessions.get_user_id(session_id)
         write_log("          User ID: " + str(user_id), self._log)
 
-        result = diaries.get_entries(user_id)
+        result = dict()
+        result["entries"] = diaries.get_entries(user_id)
+        result["books"] = reading_lists.get_currently_reading(user_id)
 
         response = json.dumps(result)
 
