@@ -875,10 +875,10 @@ function assignAuthorFollowHandlers () {
     });
 }
 
-function assignReviewSubmissionHandlers (bookID) {
-    $(".leave-review .rating-entry-container").data("rating", null); // Ensure that the rating is null if it is not
+function assignStarRatingEntryButtonHandlers (container) {
+    $(container).data("rating", null); // Ensure that the rating is null if it is not
     // changed.
-    $(".leave-review .rating-entry-container button").click(function (event) {
+    $(container).find("button").click(function (event) {
         event.preventDefault(); // Prevent button submitting form
         let buttons = $(this).closest(".rating-entry-container").find("button");
         $(buttons).removeClass("highlight");
@@ -888,6 +888,10 @@ function assignReviewSubmissionHandlers (bookID) {
         }
         $(this).closest(".rating-entry-container").data("rating", reviewNum); // Change the stored review.
     });
+}
+
+function assignReviewSubmissionHandlers (bookID) {
+    assignStarRatingEntryButtonHandlers($(".leave-review .rating-entry-container"));
     $(".leave-review form").on("submit", function (event) {
         event.preventDefault();
         // 'Assertion failed: Input argeument is not an HTMLInputElement' error is coming from LastPass.
@@ -1052,6 +1056,7 @@ function loadDiary () {
                 $(template).appendTo(".entries");
             }
             assignDeleteDiaryEntryButton(); // This is more important, so is done first for speed.
+            assignDiaryEntrySubmissionHandlers();
             assignBookNavigationHandlers();
             assignAuthorNavigationHandlers();
         },
@@ -1081,6 +1086,9 @@ function assignDeleteDiaryEntryButton () {
     });
 }
 
+function assignDiaryEntrySubmissionHandlers () {
+    assignStarRatingEntryButtonHandlers($(".new-diary-entry .new-entry .rating-entry-container"));
+}
 // -----------------------------------------------------------------------------
 // window onload handlers
 // -----------------------------------------------------------------------------
