@@ -1210,6 +1210,30 @@ button.new-entry i {
   height: 80%;
 }
 
+.new-diary-entry select {
+  display: block;
+  font-size: 18px;
+  font-weight: bold;
+  width: calc(100% - 20px);
+  margin: 5px 10px 10px 10px;
+  padding: 10px;
+  border: none;
+  background-color: white;
+}
+
+.new-diary-entry select:hover {
+  background-color: lightgray;
+}
+
+.new-diary-entry option {
+  color: black;
+  padding: 10px;
+  background-color: white;
+}
+
+/* The hover cannot be styled as it is rendered by the OS. */
+/*  https://stackoverflow.com/questions/10484053/change-select-list-option-background-colour-on-hover */
+
 .new-diary-entry textarea {
   font: inherit;
   display: block;
@@ -1231,7 +1255,6 @@ button.new-entry i {
   display: block;
   border: none;
   font-size: 16px;
-  /*width: calc(100% - 20px); !* Remove page padding from 100%, as it is included for some reason *!*!*/
   width: calc(100% - 20px);
   padding: 5px 0 10px 0;
 }
