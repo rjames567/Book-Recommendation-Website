@@ -1030,8 +1030,9 @@ main .container {
 /* -------------------------------------------------------------------------- */
 /* Book Pages - Review submission alert                                       */
 /* -------------------------------------------------------------------------- */
+.new-diary-entry .alert,
 .book-about .leave-review .alert {
-  display: hidden;
+  display: none;
   color: var(--red);
   margin-bottom: 10px;
 }
