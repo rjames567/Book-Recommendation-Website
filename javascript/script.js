@@ -1069,7 +1069,6 @@ function assginDeleteDiaryEntryButton () {
             url: "cgi-bin/diary/delete_entry",
             data: JSON.stringify({
                 "session_id": sessionID,
-                "book_id": $(entry).find(".book").data("id"),
                 "entry_id": $(entry).data("id")
             }),
             success: function (result) {
