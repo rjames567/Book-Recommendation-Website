@@ -1582,6 +1582,16 @@ class AuthorHandler(Handler):
 
 
 # -----------------------------------------------------------------------------
+# Author Handler
+# -----------------------------------------------------------------------------
+class DiaryHandler(Handler):
+    def __init__(self, log=None):
+        super().__init__(log)
+        self._routes = {
+
+        }
+
+# -----------------------------------------------------------------------------
 # Error Handler
 # -----------------------------------------------------------------------------
 class ErrorHandler(Handler):
@@ -1629,7 +1639,8 @@ routes = {
     "my_books": MyBooksHandler(log),
     "genres": GenreHandler(log),
     "books": BookHandler(log),
-    "authors": AuthorHandler(log)
+    "authors": AuthorHandler(log),
+    "diary": DiaryHandler(log)
     # Objects are persistent, so will the response should be faster and more memory efficient.
 }
 
