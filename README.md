@@ -43,4 +43,4 @@ Make the directory readable
 > chmod a+r /path/to/project/
 
 Make the fastcgi file executable
-> chmod a+X /path/to/project/backend/flup.server.fcgi
+> chmod a+x /path/to/project/backend/flup.server.fcgi
