@@ -1051,7 +1051,7 @@ function loadDiary () {
                 $(template).data("id", book["entry_id"])
                 $(template).appendTo(".entries");
             }
-            assginDeleteDiaryEntryButton(); // This is more important, so is done first for speed.
+            assignDeleteDiaryEntryButton(); // This is more important, so is done first for speed.
             assignBookNavigationHandlers();
             assignAuthorNavigationHandlers();
         },
@@ -1061,7 +1061,7 @@ function loadDiary () {
     });
 }
 
-function assginDeleteDiaryEntryButton () {
+function assignDeleteDiaryEntryButton () {
     $(".diary-entry .delete").click(function () {
         let entry = $(this).closest(".diary-entry");
         $.ajax({
