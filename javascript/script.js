@@ -1093,6 +1093,15 @@ function assignDiaryEntrySubmissionHandlers () {
     assignStarRatingEntryButtonHandlers($(".new-diary-entry .new-entry .rating-entry-container"));
 }
 
+function diaryEntrySubmissionAlert (message) {
+    let alert = $(".new-diary-entry .alert");
+    $(alert).html(message);
+    $(alert).show();
+    timeout = setTimeout(function () {
+        $(alert).fadeOut(500); // Fade out in 1/2 seconds
+    }, 8000); // Hide alert after 8 seconds
+}
+
 function hideDiaryEntryPopup () {
     $(".new-diary-entry").addClass("hidden");
 }
