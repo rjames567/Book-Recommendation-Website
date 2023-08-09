@@ -1049,6 +1049,7 @@ function loadDiary () {
                 $(template).find(".book-info .date-added").html(book["date_added"]);
                 $(template).find(".book-info .num-pages-read").html(book["pages_read"]);
                 $(template).data("id", book["entry_id"])
+                $(template).appendTo(".entries");
             }
         },
         error: function (result, jqXHR) {
