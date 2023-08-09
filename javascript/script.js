@@ -1092,6 +1092,17 @@ function assignDeleteDiaryEntryButton () {
 function assignDiaryEntrySubmissionHandlers () {
     assignStarRatingEntryButtonHandlers($(".new-diary-entry .new-entry .rating-entry-container"));
 }
+
+function hideDiaryEntryPopup () {
+    $(".new-diary-entry").addClass("hidden");
+}
+
+$(window).click(function (event) {
+    if ($(".new-diary-entry")[0] == event.target) {
+        hideDiaryEntryPopup(); // Close
+    }
+});
+
 // -----------------------------------------------------------------------------
 // window onload handlers
 // -----------------------------------------------------------------------------
