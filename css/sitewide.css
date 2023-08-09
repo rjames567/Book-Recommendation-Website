@@ -1175,7 +1175,10 @@ button.new-entry i {
 
 .diary-entry .right-content button {
   margin: 0 20px 0 auto;
+}
 
+.diary-entry .book {
+  padding: 10px 0 5px 0;
 }
 
 /* FIXME Fix my books entries not filling the width of the screen */
