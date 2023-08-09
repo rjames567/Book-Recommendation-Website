@@ -1111,6 +1111,9 @@ function assignDiaryEntrySubmissionHandlers () {
         let overallRating = $(form).find(".overall-rating-entry .rating-entry-container").data("rating");
         let summary = $(form).find("input[name=summary]").val();
         let thoughts = $(form).find("textarea").val();
+        let pagesRead = $(form).find("input[name=pages-read]").val();
+        let bookID = $(form).find("select").val();
+        console.log(bookID);
         if (summary == "") {
             summary = null; // It must be null for the server it is left empty
         }
@@ -1121,17 +1124,21 @@ function assignDiaryEntrySubmissionHandlers () {
             diaryEntrySubmissionAlert("Overall rating cannot be blank.")
         } else if ((summary == null) && thoughts) {
             diaryEntrySubmissionAlert("A summary must be present if you have given your thoughts and feelings.")
+        } else if (pagesRead == "") {
+            diaryEntrySubmissionAlert("Pages read cannot be blank");
+        } else if (bookID == null) {
+            diaryEntrySubmissionAlert("Please select a book");
         } else {
             $.ajax({
                 type: "POST",
                 url: "/cgi-bin/diary/add_entry",
                 data: JSON.stringify({
                     "session_id": sessionID,
-                    "book_id": $(form).find("select").val(),
+                    "book_id": bookID,
                     "overall_rating": overallRating,
                     "plot_rating": $(form).find(".plot-rating-entry .rating-entry-container").data("rating"),
                     "character_rating": $(form).find(".character-rating-entry .rating-entry-container").data("rating"),
-                    "pages_read": $(form).find("input[name=pages-read]").val(),
+                    "pages_read": pagesRead,
                     "summary": summary,
                     "thoughts": thoughts
                 }),
