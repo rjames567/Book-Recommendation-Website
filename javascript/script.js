@@ -1037,14 +1037,14 @@ function loadDiary () {
                     $(template).find(".ratings .character-rating").hide();
                 }
                 if (book["summary"] != null) {
-                    $(template).find(".ratings .character-rating").html(book["summary"]);
+                    $(template).find(".summary").html(book["summary"]);
                 } else {
-                    $(template).find(".ratings .character-rating").hide();
+                    $(template).find(".summary").hide();
                 }
                 if (book["thoughts"] != null) {
-                    $(template).find(".ratings .character-rating").html(book["thoughts"]);
+                    $(template).find(".thoughts").html(book["thoughts"]);
                 } else {
-                    $(template).find(".ratings .character-rating").hide();
+                    $(template).find(".thoughts").hide();
                 }
                 $(template).find(".book-info .date-added").html(book["date_added"]);
                 $(template).find(".book-info .num-pages-read").html(book["pages_read"]);
