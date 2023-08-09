@@ -927,7 +927,8 @@ function assignReviewSubmissionHandlers (bookID) {
                         // TODO make this a more efficient and faster method
                     },
                     error: function () {
-                        reviewSubmissionAlert("Something went wrong.")
+                        reviewSubmissionAlert("Something went wrong.");
+                        console.log(jqXHR.status + " " + jqXHR.responseText);
                     }
                 });
             }
@@ -1060,11 +1061,9 @@ function loadDiary () {
             let books = result["books"];
             for (let i = 0; i < Object.keys(books).length; i++) {
                 let book = books[i];
-                console.log(book["title"]);
-                console.log(book["book_id"]);
                 let template = $(".new-diary-entry select option.template").clone().removeClass("template");
-                $(template).html(book["title"]);
-                $(template).attr("value", books["book_id"]);
+                $(template).text(book["title"]);
+                $(template).val(book["book_id"]);
                 $(template).insertBefore(".new-diary-entry select option.template");
             }
             // $(".new-diary-entry select option.template").remove() // The template needs to be removed before any value
@@ -1105,6 +1104,48 @@ function assignDeleteDiaryEntryButton () {
 
 function assignDiaryEntrySubmissionHandlers () {
     assignStarRatingEntryButtonHandlers($(".new-diary-entry .new-entry .rating-entry-container"));
+    $(".new-diary-entry form.new-entry").on("submit", function () {
+		event.preventDefault(); // Prevent reload and sending of params via get
+        // Do not need to check for a user being logged in - they cannot reach this point without signing in
+        let form = $(".new-diary-entry form.new-entry");
+        let overallRating = $(form).find(".overall-rating-entry .rating-entry-container").data("rating");
+        let summary = $(form).find("input[name=summary]").val();
+        let thoughts = $(form).find("textarea").val();
+        if (summary == "") {
+            summary = null; // It must be null for the server it is left empty
+        }
+        if (thoughts == "") {
+            thoughts = null;
+        }
+        if (overallRating == null) {
+            diaryEntrySubmissionAlert("Overall rating cannot be blank.")
+        } else if ((summary == null) && thoughts) {
+            diaryEntrySubmissionAlert("A summary must be present if you have given your thoughts and feelings.")
+        } else {
+            $.ajax({
+                type: "POST",
+                url: "/cgi-bin/diary/add_entry",
+                data: JSON.stringify({
+                    "session_id": sessionID,
+                    "book_id": $(form).find("select").val(),
+                    "overall_rating": overallRating,
+                    "plot_rating": $(form).find(".plot-rating-entry .rating-entry-container").data("rating"),
+                    "character_rating": $(form).find(".character-rating-entry .rating-entry-container").data("rating"),
+                    "pages_read": $(form).find("input[name=pages-read]").val(),
+                    "summary": summary,
+                    "thoughts": thoughts
+                }),
+				success: function () {
+					reloadCurrentPage(); // Just reloads the page
+					// TODO make this a more efficient and faster method
+				},
+				error: function () {
+					diaryEntrySubmissionAlert("Something went wrong.");
+					console.log(jqXHR.status + " " + jqXHR.responseText);
+				}
+            });
+        }
+    });
 }
 
 function diaryEntrySubmissionAlert (message) {
