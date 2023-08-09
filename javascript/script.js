@@ -1014,8 +1014,8 @@ function loadDiary () {
                 let book = result[i];
                 let template = $(".entries .diary-entry.template").clone().removeClass("template");
                 $(template).find(".cover img").attr("src", book["cover_image"]);
-                $(template).find(".title").html(book["title"]);
-                $(template).find(".title").data("id", book["book_id"]);
+                $(template).find(".book").html(book["title"]);
+                $(template).find(".book").data("id", book["book_id"]);
                 $(template).find(".author").html(book["author_name"]);
                 $(template).find(".author").data("id", book["author_id"]);
                 changeElemStars($(template).find(".rating-container .rating i"), book["average_rating"]);
@@ -1051,6 +1051,8 @@ function loadDiary () {
                 $(template).data("id", book["entry_id"])
                 $(template).appendTo(".entries");
             }
+            assignBookNavigationHandlers();
+            assignAuthorNavigationHandlers();
         },
         error: function (result, jqXHR) {
             console.log(result["success"] + "    " + result["message"]);
