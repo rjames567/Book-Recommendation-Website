@@ -873,6 +873,7 @@ main .container {
 /* -------------------------------------------------------------------------- */
 /* Book Pages - Submit                                                        */
 /* -------------------------------------------------------------------------- */
+.new-diary-entry .new-entry button.submit-entry,
 .book-about .user-review button.submit-review {
   margin: 10px 30px 0 0;
   font-size: 15px; /* Slightly smaller than the h3 for the author's name */
