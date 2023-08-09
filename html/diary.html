@@ -1,61 +1,60 @@
 <div class="new-diary-entry hidden">
     <form class="new-entry" action="">
-        <select name="book">
-            <option selected="true" disabled="disabled" value="Select a book...">Select a book...</option>
-            <!-- Default to a placeholder item, which can then not be reselected afterwards -->
-            <!-- https://stackoverflow.com/a/22033973/21124864 -->
-            <option class="template"></option> <!-- Additional options need to go infront of this -->
-        </select>
-        <div class="overall-rating-entry"> <!-- overall-rating-entry ensures that it is not affected by selectors for non-inputs -->
-            <p>Overall Rating:</p>
-            <div class="rating-entry-container">
-                <!-- https://stackoverflow.com/a/73854551 -->
-                <button class="star"><i class="fa fa-star"></i></button>
-                <button class="star"><i class="fa fa-star"></i></button>
-                <button class="star"><i class="fa fa-star"></i></button>
-                <button class="star"><i class="fa fa-star"></i></button>
-                <button class="star"><i class="fa fa-star"></i></button>
-            </div>
-        </div>
+		<select name="book">
+			<option selected="true" disabled="disabled" value="Select a book...">Select a book...</option>
+			<!-- Default to a placeholder item, which can then not be reselected afterwards -->
+			<!-- https://stackoverflow.com/a/22033973/21124864 -->
+			<option class="template"></option> <!-- Additional options need to go infront of this -->
+		</select>
+		<div class="overall-rating-entry"> <!-- overall-rating-entry ensures that it is not affected by selectors for non-inputs -->
+			<p>Overall Rating:</p>
+			<div class="rating-entry-container">
+				<!-- https://stackoverflow.com/a/73854551 -->
+				<button class="star"><i class="fa fa-star"></i></button>
+				<button class="star"><i class="fa fa-star"></i></button>
+				<button class="star"><i class="fa fa-star"></i></button>
+				<button class="star"><i class="fa fa-star"></i></button>
+				<button class="star"><i class="fa fa-star"></i></button>
+			</div>
+		</div>
 
-        <div class="plot-rating-entry">
-            <p>Plot Rating:</p>
-            <div class="rating-entry-container">
-                <!-- https://stackoverflow.com/a/73854551 -->
-                <button class="star"><i class="fa fa-star"></i></button>
-                <button class="star"><i class="fa fa-star"></i></button>
-                <button class="star"><i class="fa fa-star"></i></button>
-                <button class="star"><i class="fa fa-star"></i></button>
-                <button class="star"><i class="fa fa-star"></i></button>
-            </div>
-        </div>
+		<div class="plot-rating-entry">
+			<p>Plot Rating:</p>
+			<div class="rating-entry-container">
+				<!-- https://stackoverflow.com/a/73854551 -->
+				<button class="star"><i class="fa fa-star"></i></button>
+				<button class="star"><i class="fa fa-star"></i></button>
+				<button class="star"><i class="fa fa-star"></i></button>
+				<button class="star"><i class="fa fa-star"></i></button>
+				<button class="star"><i class="fa fa-star"></i></button>
+			</div>
+		</div>
 
-        <div class="character-rating-entry">
-            <p>Character Rating:</p>
-            <div class="rating-entry-container">
-                <!-- https://stackoverflow.com/a/73854551 -->
-                <button class="star"><i class="fa fa-star"></i></button>
-                <button class="star"><i class="fa fa-star"></i></button>
-                <button class="star"><i class="fa fa-star"></i></button>
-                <button class="star"><i class="fa fa-star"></i></button>
-                <button class="star"><i class="fa fa-star"></i></button>
-            </div>
-        </div>
+		<div class="character-rating-entry">
+			<p>Character Rating:</p>
+			<div class="rating-entry-container">
+				<!-- https://stackoverflow.com/a/73854551 -->
+				<button class="star"><i class="fa fa-star"></i></button>
+				<button class="star"><i class="fa fa-star"></i></button>
+				<button class="star"><i class="fa fa-star"></i></button>
+				<button class="star"><i class="fa fa-star"></i></button>
+				<button class="star"><i class="fa fa-star"></i></button>
+			</div>
+		</div>
 
-        <label for="pages-read"><b>Pages Read</b></label>
-        <input type="number" placeholder="Pages read..." name="pages-read">
+		<label for="pages-read"><b>Pages Read</b></label>
+		<input type="number" placeholder="Pages read..." name="pages-read">
 
-        <label for="summary"><b>Summary</b></label>
-        <input type="text" placeholder="Review summary..." name="summary">
+		<label for="summary"><b>Summary</b></label>
+		<input type="text" placeholder="Review summary..." name="summary">
 
-        <!-- https://css-tricks.com/the-cleanest-trick-for-autogrowing-textareas/ -->
-        <label for="thoughts"><b>Thoughts and Feelings</b></label>
-        <textarea name="thoughts" placeholder="Thoughts and feelings... "></textarea>
+		<label for="thoughts"><b>Thoughts and Feelings</b></label>
+		<textarea name="thoughts" placeholder="Thoughts and feelings... "></textarea>
 
-        <p class="alert"></p>
+		<p class="alert"></p>
 
-        <button type="submit" class="submit-entry">Submit</button>
-    </form>
+		<button type="submit" class="submit-entry">Submit</button>
+	</form>
 </div>
 <div class="entry-management">
     <button class="new-entry"><i class="fa fa-plus"></i>Create new diary entry</button>
