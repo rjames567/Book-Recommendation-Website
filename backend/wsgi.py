@@ -481,6 +481,10 @@ class diaries:
                 author = alias
             else:
                 author = f"{first_name} {surname}"
+
+            thoughts = k[6]
+            if thoughts is not None:
+                thoughts = "</p><p>".join(("<p>" + k[6] + "</p>").split("\n"))
             output_dict[i] = {
                 "entry_id": k[0],
                 "book_id": k[1],
@@ -488,7 +492,7 @@ class diaries:
                 "character_rating": k[3],
                 "plot_rating": k[4],
                 "summary": k[5],
-                "thoughts": "</p><p>".join(("<p>" + k[6] + "</p>").split("\n")),
+                "thoughts": thoughts,
                 "date_added": k[7].strftime("%d-%m-%Y"),
                 "pages_read": k[8],
                 "cover_image": k[9],
@@ -1600,7 +1604,8 @@ class DiaryHandler(Handler):
         super().__init__(log)
         self._routes = {
             "get_entries": self.get_entries,
-            "delete_entry": self.delete_entry
+            "delete_entry": self.delete_entry,
+            "add_entry": self.add_entry
         }
 
     def get_entries(self):
@@ -1611,9 +1616,12 @@ class DiaryHandler(Handler):
 
         result = dict()
         result["entries"] = diaries.get_entries(user_id)
+        write_log("          Hello 1", self._log)
         result["books"] = reading_lists.get_currently_reading(user_id)
+        write_log("          Hello 2", self._log)
 
         response = json.dumps(result)
+        write_log("          Hello 3", self._log)
 
         status = "200 OK"
 
@@ -1641,6 +1649,41 @@ class DiaryHandler(Handler):
 
         response = "true"  # The client does not need the response. This is just for completeness, and a value is
         # required for the return statement.
+
+        status = "200 OK"
+
+        write_log("          Response: " + response, self._log)
+        write_log("          Status: " + status, self._log)
+
+        response_headers = [
+            ("Content-Type", "text/plain"),
+            ("Content-Length", str(len(response)))
+        ]
+
+        return response, status, response_headers
+
+    def add_entry(self):
+        json_response = self.retrieve_post_parameters()
+        params = json.loads(json_response)
+        session_id = params["session_id"]
+        book_id = params["book_id"]
+        write_log("          Session ID: " + session_id, self._log)
+        user_id = sessions.get_user_id(session_id)
+        write_log("          User ID: " + str(user_id), self._log)
+        write_log("          Book ID: " + str(book_id), self._log)
+
+        diaries.add_entry(
+            user_id,
+            book_id,
+            params["overall_rating"],
+            params["character_rating"],
+            params["plot_rating"],
+            params["summary"],
+            params["thoughts"],
+            params["pages_read"]
+        )
+
+        response = "true" # The response does not matter - here for completeness only
 
         status = "200 OK"
 
