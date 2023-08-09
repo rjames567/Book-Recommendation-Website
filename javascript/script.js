@@ -1014,8 +1014,9 @@ function loadDiary () {
         type: "GET",
         url: addGetParameter("/cgi-bin/diary/get_entries", "session_id", sessionID),
         success: function (result) {
+            let entries = result["entries"];
             for (let i = 0; i < Object.keys(result).length; i++) {
-                let book = result[i];
+                let book = entries[i];
                 let template = $(".entries .diary-entry.template").clone().removeClass("template");
                 $(template).find(".cover img").attr("src", book["cover_image"]);
                 $(template).find(".book").html(book["title"]);
@@ -1055,6 +1056,19 @@ function loadDiary () {
                 $(template).data("id", book["entry_id"])
                 $(template).appendTo(".entries");
             }
+
+            let books = result["books"];
+            for (let i = 0; i < Object.keys(books).length; i++) {
+                let book = books[i];
+                console.log(book["title"]);
+                console.log(book["book_id"]);
+                let template = $(".new-diary-entry select option.template").clone().removeClass("template");
+                $(template).html(book["title"]);
+                $(template).attr("value", books["book_id"]);
+                $(template).insertBefore(".new-diary-entry select option.template");
+            }
+            // $(".new-diary-entry select option.template").remove() // The template needs to be removed before any value
+            // is shown as default
             assignDeleteDiaryEntryButton(); // This is more important, so is done first for speed.
             $(".entry-management .new-entry").click(function () {
                 $(".new-diary-entry").removeClass("hidden"); // Show form on click

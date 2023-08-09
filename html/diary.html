@@ -1,6 +1,9 @@
 <div class="new-diary-entry hidden">
     <form class="new-entry" action="">
-        <select name="book">
+        <select name="book" size="2">
+            <option selected="true" disabled="disabled" value="Select a book...">Select a book...</option>
+            <!-- Default to a placeholder item, which can then not be reselected afterwards -->
+            <!-- https://stackoverflow.com/a/22033973/21124864 -->
             <option class="template"></option> <!-- Additional options need to go infront of this -->
         </select>
         <div class="overall-rating-entry"> <!-- overall-rating-entry ensures that it is not affected by selectors for non-inputs -->
