@@ -1056,6 +1056,9 @@ function loadDiary () {
                 $(template).appendTo(".entries");
             }
             assignDeleteDiaryEntryButton(); // This is more important, so is done first for speed.
+            $(".entry-management .new-entry").click(function () {
+                $(".new-diary-entry").removeClass("hidden"); // Show form on click
+            });
             assignDiaryEntrySubmissionHandlers();
             assignBookNavigationHandlers();
             assignAuthorNavigationHandlers();
