@@ -1051,12 +1051,34 @@ function loadDiary () {
                 $(template).data("id", book["entry_id"])
                 $(template).appendTo(".entries");
             }
+            assginDeleteDiaryEntryButton(); // This is more important, so is done first for speed.
             assignBookNavigationHandlers();
             assignAuthorNavigationHandlers();
         },
         error: function (result, jqXHR) {
             console.log(result["success"] + "    " + result["message"]);
         }
+    });
+}
+
+function assginDeleteDiaryEntryButton () {
+    $(".diary-entry .delete").click(function () {
+        let entry = $(this).closest(".diary-entry");
+        $.ajax({
+            type: "POST",
+            url: "cgi-bin/diary/delete_entry",
+            data: JSON.stringify({
+                "session_id": sessionID,
+                "book_id": $(entry).find(".book").data("id"),
+                "entry_id": $(entry).data("id")
+            }),
+            success: function (result) {
+                $(entry).fadeOut(500); // Hide the entry from the list
+            },
+            error: function (jqXHR) {
+                console.log(jqXHR.status + " " + jqXHR.responseText);
+            }
+        });
     });
 }
 
