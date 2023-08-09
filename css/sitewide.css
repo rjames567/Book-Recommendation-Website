@@ -758,6 +758,9 @@ main .container {
   border-bottom: solid 2px var(--light-grey);
 }
 
+.new-diary-entry .overall-rating-entry .rating-entry-container,
+.new-diary-entry .plot-rating-entry .rating-entry-container,
+.new-diary-entry .character-rating-entry .rating-entry-container,
 .book-about .user-review .overall-rating-entry .rating-entry-container,
 .book-about .user-review .plot-rating-entry .rating-entry-container,
 .book-about .user-review .character-rating-entry .rating-entry-container { /* Prevent the cursor changing between the buttons and looking wrong */
@@ -765,6 +768,9 @@ main .container {
   cursor: pointer;
 }
 
+.new-diary-entry .overall-rating-entry p,
+.new-diary-entry .plot-rating-entry p,
+.new-diary-entry .character-rating-entry p,
 .book-about .user-review .overall-rating-entry p,
 .book-about .user-review .plot-rating-entry p,
 .book-about .user-review .character-rating-entry p {
@@ -773,11 +779,13 @@ main .container {
   margin-right: 5px; /* Using shorthand changes the padding at the top from the default */
 }
 
+.new-diary-entry .character-rating-entry,
 .book-about .user-review .leave-review .character-rating-entry {
   margin-bottom: 25px;
 }
 
 /* https://stackoverflow.com/a/73854551 */
+.new-diary-entry .rating-entry-container button,
 .book-about .user-review .rating-entry-container button {
   border: none;
   margin: 0;
@@ -787,18 +795,25 @@ main .container {
   color: var(--light-grey);
 }
 
+.new-diary-entry .overall-rating-entry:hover button,
+.new-diary-entry .plot-rating-entry:hover button,
+.new-diary-entry .character-rating-entry:hover button,
 .book-about .user-review .overall-rating-entry:hover button,
 .book-about .user-review .plot-rating-entry:hover button,
 .book-about .user-review .character-rating-entry:hover button {
   color: var(--yellow);
 }
 
+.new-diary-entry .overall-rating-entry button:hover ~ button,
+.new-diary-entry .plot-rating-entry button:hover ~ button,
+.new-diary-entry .character-rating-entry button:hover ~ button,
 .book-about .user-review .overall-rating-entry button:hover ~ button,
 .book-about .user-review .plot-rating-entry button:hover ~ button,
 .book-about .user-review .character-rating-entry button:hover ~ button {
   color: var(--light-grey);
 }
 
+.new-diary-entry button.highlight,
 .book-about .user-review button.highlight {
   color: var(--yellow);
 }
@@ -807,6 +822,7 @@ main .container {
 /* Book Pages - Summary                                                       */
 /* -------------------------------------------------------------------------- */
 .book-about .user-review input[type=text] {
+  display: block;
   border: none;
   font-size: 16px;
   width: calc(100% - 20px); /* Remove page padding from 100%, as it is included for some reason */
@@ -833,6 +849,7 @@ main .container {
 }
 
 /* https://css-tricks.com/the-cleanest-trick-for-autogrowing-textareas/ */
+.new-diary-entry .textarea-grow-container,
 .book-about .user-review .textarea-grow-container {
   display: grid;
 }
@@ -1061,6 +1078,7 @@ main .container {
 /* Book Pages - Select List popup                                             */
 /* -------------------------------------------------------------------------- */
 /* https://www.w3schools.com/howto/howto_css_modals.asp */
+.new-diary-entry,
 .reading-list-selection {
   display: flex;
   align-content: center;
@@ -1179,6 +1197,47 @@ button.new-entry i {
 
 .diary-entry .book {
   padding: 10px 0 5px 0;
+}
+/* -------------------------------------------------------------------------- */
+/* Diary - New Diary Entry                                                    */
+/* -------------------------------------------------------------------------- */
+.new-diary-entry form {
+  background-color: white;
+  padding: 10px;
+  width: 80%;
+  height: 80%;
+}
+
+.new-diary-entry textarea {
+  font: inherit;
+  display: block;
+  height: 70vw;
+  width: calc(100% - 20px);
+  resize: none;
+  border: none;
+  font-size: 16px;
+  padding: 5px 0 10px 0;
+}
+
+.new-diary-entry textarea:focus {
+  outline: solid 1px var(--light-grey);
+  padding: 5px 0.5rem 10px 0.5rem;
+}
+
+.new-diary-entry input[type=text],
+.new-diary-entry input[type=number] {
+  display: block;
+  border: none;
+  font-size: 16px;
+  /*width: calc(100% - 20px); !* Remove page padding from 100%, as it is included for some reason *!*!*/
+  width: calc(100% - 20px);
+  padding: 5px 0 10px 0;
+}
+
+.new-diary-entry input[type=text]:focus,
+.new-diary-entry input[type=number]:focus {
+  outline: solid 1px var(--light-grey);
+  padding: 5px 0.5rem 10px 0.5rem;
 }
 
 /* FIXME Fix my books entries not filling the width of the screen */
