@@ -1206,6 +1206,7 @@ function changeNumVisibleSummaries () {
 }
 $(window).resize($.debounce(300, changeNumVisibleSummaries));  // Runs every 300ms. Reduces load as this will run
 // frequently
+
 // -----------------------------------------------------------------------------
 // window onload handlers
 // -----------------------------------------------------------------------------
