@@ -105,6 +105,14 @@ class InvalidUserCredentialsError(Exception):
         message = f"Incorrect username or password entered for {username}"
         super().__init__(message)
 
+class ListNotFoundError(Exception):
+    """
+    Exception for when a user's list is not found
+    """
+    def __init__(self, list_name, user_id):
+        message = f"User with id '{user_id} does not have a list called {list_name}."
+        super().__init__(message)
+
 
 # -----------------------------------------------------------------------------
 # Database connection
@@ -260,9 +268,6 @@ class books:
         else:
             res = res[0]
 
-        first_name = res[6]
-        surname = res[7]
-        alias = res[8]
         author = authors.names_to_display(res[8], res[6], res[7])
 
         genres = [i[0] for i in connection.query("""
@@ -853,6 +858,19 @@ class reading_lists:
             }
         
         return output_dict
+    
+    def get_list_id(list_name, user_id):
+        res = connection.query("""
+            SELECT list_id
+            FROM reading_list_names
+            WHERE user_id={user_id}
+                AND list_name={list_name};
+        """.format(user_id=user_id, list_name=list_name))
+
+        if len(res) == 0:
+            raise ListNotFoundError(list_name, user_id)
+        
+        return res[0][0]
 
     def get_names(user_id):
         res = connection.query(
