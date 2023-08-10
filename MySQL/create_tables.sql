@@ -82,6 +82,7 @@ CREATE TABLE books (
     purchase_link TINYTEXT NOT NULL,
     fiction BOOL NOT NULL,
     release_date DATE NOT NULL,
+    date_added DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     isbn TINYTEXT NOT NULL, -- TINYTEXT to avoid issues with leading 0s
     PRIMARY KEY (book_id),
     FOREIGN KEY (author_id) REFERENCES authors(author_id)
