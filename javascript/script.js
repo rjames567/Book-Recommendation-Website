@@ -1110,7 +1110,7 @@ function assignDeleteDiaryEntryButton () {
 function assignDiaryEntrySubmissionHandlers () {
     assignStarRatingEntryButtonHandlers($(".new-diary-entry .new-entry .rating-entry-container"));
     $(".new-diary-entry form.new-entry").on("submit", function () {
-		event.preventDefault(); // Prevent reload and sending of params via get
+        event.preventDefault(); // Prevent reload and sending of params via get
         // Do not need to check for a user being logged in - they cannot reach this point without signing in
         let form = $(".new-diary-entry form.new-entry");
         let overallRating = $(form).find(".overall-rating-entry .rating-entry-container").data("rating");
@@ -1147,14 +1147,14 @@ function assignDiaryEntrySubmissionHandlers () {
                     "summary": summary,
                     "thoughts": thoughts
                 }),
-				success: function () {
-					reloadCurrentPage(); // Just reloads the page
-					// TODO make this a more efficient and faster method
-				},
-				error: function () {
-					diaryEntrySubmissionAlert("Something went wrong.");
-					console.log(jqXHR.status + " " + jqXHR.responseText);
-				}
+                success: function () {
+                    reloadCurrentPage(); // Just reloads the page
+                    // TODO make this a more efficient and faster method
+                },
+                error: function () {
+                    diaryEntrySubmissionAlert("Something went wrong.");
+                    console.log(jqXHR.status + " " + jqXHR.responseText);
+                }
             });
         }
     });
@@ -1183,63 +1183,63 @@ $(window).click(function (event) {
 // Home page
 // -----------------------------------------------------------------------------
 function loadHomePage () {
-	$.ajax({
-		type: "GET",
-		url: addGetParameter("/cgi-bin/home/get_data", "session_id", sessionID),
-		success: function (result) {
-			let trending = result["trending"]
-			for (let i = 0; i < Object.keys(trending).length; i++) {
-				let summary = $(".book-summary.template").clone().removeClass("template");
-				$(summary).find("img").attr("src", trending[i]["cover"]);
-				$(summary).find(".author").html(trending[i]["author"]);
-				$(summary).find(".title").html(trending[i]["title"]);
-				$(summary).appendTo(".row#trending");
-			}
-			let newestAdditions = result["newest_additions"]
-			for (let i = 0; i < Object.keys(newestAdditions).length; i++) {
-				let summary = $(".book-summary.template").clone().removeClass("template");
-				$(summary).find("img").attr("src", newestAdditions[i]["cover"]);
-				$(summary).find(".author").html(newestAdditions[i]["author"]);
-				$(summary).find(".title").html(newestAdditions[i]["title"]);
-				$(summary).appendTo(".row#newest");
-			}
-			if (recommended == null) { // Will only be null if there is no user, so all user specifics can
-				// be hidden.
-				$(".row#recommended").hide();
-				$(".row#reading").hide();
-				$(".row#want-read").hide();
-			} else {
-				let recommended = result["recommended"]
-				for (let i = 0; i < Object.keys(recommended).length; i++) {
-					let summary = $(".book-summary.template").clone().removeClass("template");
-					$(summary).find("img").attr("src", recommended[i]["cover"]);
-					$(summary).find(".author").html(recommended[i]["author"]);
-					$(summary).find(".title").html(recommended[i]["title"]);
-					$(summary).appendTo(".row#recommended");
-				}
-				let currentlyReading = result["currently_reading"]
-				for (let i = 0; i < Object.keys(currentlyReading).length; i++) {
-					let summary = $(".book-summary.template").clone().removeClass("template");
-					$(summary).find("img").attr("src", currentlyReading[i]["cover"]);
-					$(summary).find(".author").html(currentlyReading[i]["author"]);
-					$(summary).find(".title").html(currentlyReading[i]["title"]);
-					$(summary).appendTo(".row#reading");
-				}
-				let wantRead = result["want_read"]
-				for (let i = 0; i < Object.keys(wantRead).length; i++) {
-					let summary = $(".book-summary.template").clone().removeClass("template");
-					$(summary).find("img").attr("src", wantRead[i]["cover"]);
-					$(summary).find(".author").html(wantRead[i]["author"]);
-					$(summary).find(".title").html(wantRead[i]["title"]);
-					$(summary).appendTo(".row#want-read");
-				}
-			}
-			changeNumVisibleSummaries();
-		},
-		error: function (jqXHR) {
-			console.log(jqXHR.status + " " + jqXHR.responseText);
-		}
-	});
+    $.ajax({
+        type: "GET",
+        url: addGetParameter("/cgi-bin/home/get_data", "session_id", sessionID),
+        success: function (result) {
+            let trending = result["trending"]
+            for (let i = 0; i < Object.keys(trending).length; i++) {
+                let summary = $(".book-summary.template").clone().removeClass("template");
+                $(summary).find("img").attr("src", trending[i]["cover"]);
+                $(summary).find(".author").html(trending[i]["author"]);
+                $(summary).find(".title").html(trending[i]["title"]);
+                $(summary).appendTo(".row#trending .books");
+            }
+            let newestAdditions = result["newest_additions"]
+            for (let i = 0; i < Object.keys(newestAdditions).length; i++) {
+                let summary = $(".book-summary.template").clone().removeClass("template");
+                $(summary).find("img").attr("src", newestAdditions[i]["cover"]);
+                $(summary).find(".author").html(newestAdditions[i]["author"]);
+                $(summary).find(".title").html(newestAdditions[i]["title"]);
+                $(summary).appendTo(".row#newest .books");
+            }
+            if (recommended == null) { // Will only be null if there is no user, so all user specifics can
+                // be hidden.
+                $(".row#recommended").hide();
+                $(".row#reading").hide();
+                $(".row#want-read").hide();
+            } else {
+                let recommended = result["recommended"]
+                for (let i = 0; i < Object.keys(recommended).length; i++) {
+                    let summary = $(".book-summary.template").clone().removeClass("template");
+                    $(summary).find("img").attr("src", recommended[i]["cover"]);
+                    $(summary).find(".author").html(recommended[i]["author"]);
+                    $(summary).find(".title").html(recommended[i]["title"]);
+                    $(summary).appendTo(".row#recommended .books");
+                }
+                let currentlyReading = result["currently_reading"]
+                for (let i = 0; i < Object.keys(currentlyReading).length; i++) {
+                    let summary = $(".book-summary.template").clone().removeClass("template");
+                    $(summary).find("img").attr("src", currentlyReading[i]["cover"]);
+                    $(summary).find(".author").html(currentlyReading[i]["author"]);
+                    $(summary).find(".title").html(currentlyReading[i]["title"]);
+                    $(summary).appendTo(".row#reading .books");
+                }
+                let wantRead = result["want_read"]
+                for (let i = 0; i < Object.keys(wantRead).length; i++) {
+                    let summary = $(".book-summary.template").clone().removeClass("template");
+                    $(summary).find("img").attr("src", wantRead[i]["cover"]);
+                    $(summary).find(".author").html(wantRead[i]["author"]);
+                    $(summary).find(".title").html(wantRead[i]["title"]);
+                    $(summary).appendTo(".row#want-read .books");
+                }
+            }
+            changeNumVisibleSummaries();
+        },
+        error: function (jqXHR) {
+            console.log(jqXHR.status + " " + jqXHR.responseText);
+        }
+    });
 }
 
 function changeNumVisibleSummaries () {
@@ -1250,11 +1250,11 @@ function changeNumVisibleSummaries () {
         let num = Math.floor(windowWidth / summaryWidth); // Gets number of summaries to show
         $(summaries).addClass("hidden");
         $(".row").each(function () {
-			let summaries = $(this).find(".book-summary");
-			for (let i = 0; i < num; i++) {
-				$(summaries).eq(i).removeClass("hidden")
-			}
-		});
+            let summaries = $(this).find(".book-summary");
+            for (let i = 0; i < num; i++) {
+                $(summaries).eq(i).removeClass("hidden")
+            }
+        });
         for (let i = 0; i < num; i++) {
             $(summaries[i]).show();
         }
