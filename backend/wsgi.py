@@ -203,7 +203,8 @@ class books:
                 books.cover_image,
                 authors.first_name,
                 authors.surname,
-                authors.alias
+                authors.alias,
+                authors.author_id
             FROM books
             INNER JOIN authors ON books.author_id=authors.author_id
             ORDER BY books.date_added DESC;
@@ -214,8 +215,9 @@ class books:
             output_dict[i] = {
                 "author": authors.names_to_display(k[5], k[3], k[4]),
                 "title": k[0],
-                "id": k[1],
-                "cover": k[2]
+                "book_id": k[1],
+                "cover": k[2],
+                "author_id": k[6]
             }
         
         return output_dict
