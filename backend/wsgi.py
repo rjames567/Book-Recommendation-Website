@@ -28,6 +28,7 @@ hashing_salt = config.get("passwords salt")  # Stored in the config as binary
 hashing_algorithm = config.get("passwords hashing_algorithm")
 token_size = config.get("session_id_length")
 genre_required_match = config.get("books genre_match_threshold")
+number_summaries_home = 8
 
 
 # -----------------------------------------------------------------------------
@@ -155,14 +156,7 @@ class authors:
             res = res[0]
 
         first_name, surname, alias, about = res  # res is a 4 element tuple, so this unpacks it
-        if (alias is not None and
-                (first_name is not None and surname is not None)):
-            author = f"{alias} ({first_name} {surname})"
-        elif (alias is not None and
-              (first_name is None and surname is None)):
-            author = alias
-        else:
-            author = f"{first_name} {surname}"
+        author = authors.names_to_display(alias, first_name, surname)
 
         output_dict = {
             "name": author,
@@ -185,12 +179,47 @@ class authors:
         output_dict["books"] = book_arr
 
         return output_dict
+        
+    def names_to_display(alias, first_name, surname):
+        if (alias is not None and
+                (first_name is not None and surname is not None)):
+            author = f"{alias} ({first_name} {surname})"
+        elif (alias is not None and
+              (first_name is None and surname is None)):
+            author = alias
+        else:
+            author = f"{first_name} {surname}"
+        return author
 
 
 # -----------------------------------------------------------------------------
 # Books
 # -----------------------------------------------------------------------------
 class books:
+    def get_newest():
+        res = connection.query("""
+            SELECT books.title,
+                books.book_id,
+                books.cover_image,
+                authors.first_name,
+                authors.surname,
+                authors.alias
+            FROM books
+            INNER JOIN authors ON books.author_id=authors.author_id
+            ORDER BY books.date_added DESC;
+        """)[:number_summaries_home]  # Get the first n books
+        
+        output_dict = dict()
+        for i, k in enumerate(res):
+            output_dict[i] = {
+                "author": authors.names_to_display(k[5], k[3], k[4]),
+                "title": k[0],
+                "id": k[1],
+                "cover": k[2]
+            }
+        
+        return output_dict
+        
     def get_about_data(book_id, user_id):
         res = connection.query("""
             SELECT books.title,
@@ -232,14 +261,7 @@ class books:
         first_name = res[6]
         surname = res[7]
         alias = res[8]
-        if (alias is not None and
-                (first_name is not None and surname is not None)):
-            author = f"{alias} ({first_name} {surname})"
-        elif (alias is not None and
-              (first_name is None and surname is None)):
-            author = alias
-        else:
-            author = f"{first_name} {surname}"
+        author = authors.names_to_display(res[8], res[6], res[7])
 
         genres = [i[0] for i in connection.query("""
             SELECT genres.name FROM genres
@@ -1702,11 +1724,11 @@ class DiaryHandler(Handler):
 # Home Handler
 # -----------------------------------------------------------------------------
 class HomeHandler(Handler):
-	def __init__(self, log=None):
-		super().__init__(log)
-		self._routes = {
-		
-		}
+    def __init__(self, log=None):
+        super().__init__(log)
+        self._routes = {
+        
+        }
 
 # -----------------------------------------------------------------------------
 # Error Handler
