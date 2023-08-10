@@ -1185,7 +1185,7 @@ $(window).click(function (event) {
 function loadHomePage () {
 	$.ajax({
 		type: "GET",
-		url: addGetParameter("/cgi-bin/home/get_entry_data", "session_id", sessionID),
+		url: addGetParameter("/cgi-bin/home/get_data", "session_id", sessionID),
 		success: function (result) {
 			let trending = result["trending"]
 			for (let i = 0; i < Object.keys(trending).length; i++) {
