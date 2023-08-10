@@ -576,9 +576,25 @@ function assignBookNavigationHandlers () {
     });
 }
 
+function changeNumVisibleSimilarBooks () {
+    if (currentPage == "Book") {
+        let summaries = $(".similar-books .book-summary");
+        let windowWidth = $(".similar-books").width();
+        let summaryWidth = 250;
+        let num = Math.floor(windowWidth / summaryWidth) * 2; // Gets number of summaries to show
+        console.log(num);
+        $(summaries).addClass("hidden");
+        for (let i = 0; i <= num; i++) { // For some reason, i < num shows 1 too few. Clearly not starting from 0.
+            $(summaries).eq(i).removeClass("hidden")
+        }
+    }
+}
+$(window).resize($.debounce(300, changeNumVisibleSimilarBooks));
+
 function switchBookPage (bookID) {
     let request_url = addGetParameter("/cgi-bin/books/about_data", "book_id", bookID);
     request_url = addGetParameter(request_url, "session_id", sessionID);
+    console.log(currentPage);
     $.ajax({
         type: "GET",
         url: request_url,
@@ -661,7 +677,6 @@ function switchBookPage (bookID) {
 
             let similarBooks = result["similar_books"];
             for (let i = 0; i < Object.keys(similarBooks).length; i++) {
-                console.log(similarBooks["0"]["author"]);
                 let template = $(".book-about .similar-books .book-summary.template").clone().removeClass("template");
                 $(template).find("img").attr("src", similarBooks[i]["cover"]);
                 $(template).find(".title").html(similarBooks[i]["title"]);
@@ -786,6 +801,8 @@ function switchBookPage (bookID) {
             // added
             assignAuthorNavigationHandlers();
             assignReviewSubmissionHandlers(bookID);
+            currentPage = "Book";
+            changeNumVisibleSimilarBooks();
         },
         error: function (jqXHR) {
             $("main").html(jqXHR.responseText); // Fills in the main body with 404 error message
@@ -1271,9 +1288,6 @@ function changeNumVisibleHomeSummaries () {
                 $(summaries).eq(i).removeClass("hidden")
             }
         });
-        for (let i = 0; i < num; i++) {
-            $(summaries[i]).show();
-        }
     }
 }
 $(window).resize($.debounce(300, changeNumVisibleHomeSummaries));  // Runs every 300ms. Reduces load as this will run
