@@ -16,6 +16,7 @@ import configuration
 import data_structures
 import environ_manipulation
 import logger
+import ml_utilities
 import mysql_handler
 
 # -----------------------------------------------------------------------------
@@ -204,6 +205,34 @@ class authors:
 # Books
 # -----------------------------------------------------------------------------
 class books:
+    def get_similar_items(book_id):
+        res = connection.query("""
+            SELECT book_id,
+                GROUP_CONCAT(genre_id) as genres
+            FROM book_genres
+            WHERE match_strength>{}
+            GROUP BY book_id;
+        """.format(genre_required_match)) # Match strength is included, as then more are more likely to appear, and
+        # therefore will impact on the similarity.
+
+        genre_dict = {i[0]: set(float(k) for k in i[1].split(",")) for i in res}
+
+
+        target_genres = genre_dict[book_id]
+        genre_dict.pop(book_id)
+
+        tree = data_structures.BinaryTree(access_function=lambda x: x["jaccard_distance"])  # Insert into tree using 
+        # similarity not id
+        for i in genre_dict:
+            tree.insert({
+                "book_id": i,
+                "jaccard_distance": 1 - ml_utilities.jaccard_similarity(target_genres, genre_dict[i]) # 1 - similarity
+                # gives the distance, so this in ascending order gives them in similairty in descending order.
+            })
+
+        return tree.in_order_traversal()  # Get the books ordered by similarity. Note that the distance is 
+        # descending - This is correct, as 0 is identical genres, and 1 is different
+
     def get_newest():
         res = connection.query("""
             SELECT books.title,
