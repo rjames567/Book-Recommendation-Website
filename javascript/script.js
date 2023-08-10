@@ -1183,7 +1183,63 @@ $(window).click(function (event) {
 // Home page
 // -----------------------------------------------------------------------------
 function loadHomePage () {
-    changeNumVisibleSummaries();
+	$.ajax({
+		type: "GET",
+		url: addGetParameter("/cgi-bin/home/get_entry_data", "session_id", sessionID),
+		success: function (result) {
+			let trending = result["trending"]
+			for (let i = 0; i < Object.keys(trending).length; i++) {
+				let summary = $(".book-summary.template").clone().removeClass("template");
+				$(summary).find("img").attr("src", trending[i]["cover"]);
+				$(summary).find(".author").html(trending[i]["author"]);
+				$(summary).find(".title").html(trending[i]["title"]);
+				$(summary).appendTo(".row#trending");
+			}
+			let newestAdditions = result["newest_additions"]
+			for (let i = 0; i < Object.keys(newestAdditions).length; i++) {
+				let summary = $(".book-summary.template").clone().removeClass("template");
+				$(summary).find("img").attr("src", newestAdditions[i]["cover"]);
+				$(summary).find(".author").html(newestAdditions[i]["author"]);
+				$(summary).find(".title").html(newestAdditions[i]["title"]);
+				$(summary).appendTo(".row#newest");
+			}
+			if (recommended == null) { // Will only be null if there is no user, so all user specifics can
+				// be hidden.
+				$(".row#recommended").hide();
+				$(".row#reading").hide();
+				$(".row#want-read").hide();
+			} else {
+				let recommended = result["recommended"]
+				for (let i = 0; i < Object.keys(recommended).length; i++) {
+					let summary = $(".book-summary.template").clone().removeClass("template");
+					$(summary).find("img").attr("src", recommended[i]["cover"]);
+					$(summary).find(".author").html(recommended[i]["author"]);
+					$(summary).find(".title").html(recommended[i]["title"]);
+					$(summary).appendTo(".row#recommended");
+				}
+				let currentlyReading = result["currently_reading"]
+				for (let i = 0; i < Object.keys(currentlyReading).length; i++) {
+					let summary = $(".book-summary.template").clone().removeClass("template");
+					$(summary).find("img").attr("src", currentlyReading[i]["cover"]);
+					$(summary).find(".author").html(currentlyReading[i]["author"]);
+					$(summary).find(".title").html(currentlyReading[i]["title"]);
+					$(summary).appendTo(".row#reading");
+				}
+				let wantRead = result["want_read"]
+				for (let i = 0; i < Object.keys(wantRead).length; i++) {
+					let summary = $(".book-summary.template").clone().removeClass("template");
+					$(summary).find("img").attr("src", wantRead[i]["cover"]);
+					$(summary).find(".author").html(wantRead[i]["author"]);
+					$(summary).find(".title").html(wantRead[i]["title"]);
+					$(summary).appendTo(".row#want-read");
+				}
+			}
+			changeNumVisibleSummaries();
+		},
+		error: function (jqXHR) {
+			console.log(jqXHR.status + " " + jqXHR.responseText);
+		}
+	});
 }
 
 function changeNumVisibleSummaries () {
