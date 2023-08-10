@@ -661,17 +661,19 @@ function switchBookPage (bookID) {
 
             let similarBooks = result["similar_books"];
             for (let i = 0; i < Object.keys(similarBooks).length; i++) {
+                console.log(similarBooks["0"]["author"]);
                 let template = $(".book-about .similar-books .book-summary.template").clone().removeClass("template");
                 $(template).find("img").attr("src", similarBooks[i]["cover"]);
                 $(template).find(".title").html(similarBooks[i]["title"]);
                 $(template).find(".author").html(similarBooks[i]["author"]);
+                $(template).appendTo(".book-about .similar-books");
                 $(template).data("id", similarBooks[i]["book_id"]);
             }
 
             $(".book-about .average-review").html(result["average_rating"]);
             changeElemStars($(".book-about .top-container .rating i"), result["average_rating"]);
             changeElemStars($(".book-about .reviews .average-review-container i"), result["average_rating"]);
-            let numRatings = result["num_ratings"]
+            let numRatings = result["num_ratings"];
             $(".book-about .num-review").html(numRatings);
             $(".book-about .review-distribution .bar#5-star .number").html(result["num_5_stars"]);
             $(".book-about .review-distribution .bar#4-star .number").html(result["num_4_stars"]);
@@ -1247,7 +1249,7 @@ function loadHomePage () {
                     $(summary).appendTo(".row#want-read .books");
                 }
             }
-            changeNumVisibleSummaries(); // Needs to run once, as resize will not trigger by this point
+            changeNumVisibleHomeSummaries(); // Needs to run once, as resize will not trigger by this point
             assignBookNavigationHandlers();
         },
         error: function (jqXHR) {
@@ -1256,7 +1258,7 @@ function loadHomePage () {
     });
 }
 
-function changeNumVisibleSummaries () {
+function changeNumVisibleHomeSummaries () {
     if (currentPage == "Home") {
         let summaries = $(".row .book-summary");
         let windowWidth = $(".row").width();
@@ -1274,7 +1276,7 @@ function changeNumVisibleSummaries () {
         }
     }
 }
-$(window).resize($.debounce(300, changeNumVisibleSummaries));  // Runs every 300ms. Reduces load as this will run
+$(window).resize($.debounce(300, changeNumVisibleHomeSummaries));  // Runs every 300ms. Reduces load as this will run
 // frequently
 
 // -----------------------------------------------------------------------------

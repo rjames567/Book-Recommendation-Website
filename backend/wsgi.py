@@ -240,7 +240,7 @@ class books:
         result = tree.in_order_traversal()[:number_similarities_about]  # Get the books ordered by similarity. Note that the distance is 
         # descending - This is correct, as 0 is identical genres, and 1 is different
 
-        return {i["book_id"]: books.get_summary(i["book_id"]) for i in result}
+        return [books.get_summary(i["book_id"]) for i in result]
 
     def get_summary(book_id):
         res = connection.query("""
@@ -1600,6 +1600,11 @@ class BookHandler(Handler):
         write_log("          User ID: " + str(user_id), self._log)
         try:
             result = books.get_about_data(book_id, user_id)
+            try:
+                write_log(type(book_id), self._log)
+                result["similar_books"] = books.get_similar_items(int(book_id))
+            except Exception as e:
+                write_log(e, self._log)
             status = "200 OK"
             write_log("          Success", self._log)
 
