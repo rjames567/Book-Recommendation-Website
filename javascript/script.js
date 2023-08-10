@@ -1238,7 +1238,8 @@ function loadHomePage () {
                     $(summary).appendTo(".row#want-read .books");
                 }
             }
-            changeNumVisibleSummaries();
+            changeNumVisibleSummaries(); // Needs to run once, as resize will not trigger by this point
+            assignBookNavigationHandlers();
         },
         error: function (jqXHR) {
             console.log(jqXHR.status + " " + jqXHR.responseText);
