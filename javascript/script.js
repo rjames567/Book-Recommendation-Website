@@ -659,6 +659,15 @@ function switchBookPage (bookID) {
             // server load, and send the number as a response to the follow/unfollow request
             $(".book-about .author-about .about").html(result["author_about"]);
 
+            let similarBooks = result["similar_books"];
+            for (let i = 0; i < Object.keys(similarBooks).length; i++) {
+                let template = $(".book-about .similar-books .book-summary.template").clone().removeClass("template");
+                $(template).find("img").attr("src", similarBooks[i]["cover"]);
+                $(template).find(".title").html(similarBooks[i]["title"]);
+                $(template).find(".author").html(similarBooks[i]["author"]);
+                $(template).data("id", similarBooks[i]["book_id"]);
+            }
+
             $(".book-about .average-review").html(result["average_rating"]);
             changeElemStars($(".book-about .top-container .rating i"), result["average_rating"]);
             changeElemStars($(".book-about .reviews .average-review-container i"), result["average_rating"]);
