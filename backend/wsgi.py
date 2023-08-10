@@ -1816,6 +1816,38 @@ class HomeHandler(Handler):
         }
     
     def get_data(self):
+        session_id = self.retrieve_get_parameters()["session_id"]  # Only has one parameter, so this is fine.
+        result = dict()
+        if session_id != "null": # retrieve_get_parameters does not convert "null" to None.
+            write_log("          Session ID: " + session_id, self._log)
+            user_id = sessions.get_user_id(session_id)
+            write_log("          User ID: " + str(user_id), self._log)
+
+            result["recommended"] = {}  # TODO update this once recommendation methods are made
+            result["currently_reading"] = reading_lists.get_currently_reading(user_id)
+            result["want_read"] = reading_lists.get_want_read(user_id)
+        else:
+            write_log("          Session ID: None", self._log)
+            result["recommended"] = None
+            result["currently_reading"] = None
+            result["want_read"] = None
+        
+        result["trending"] = reading_lists.get_popular()
+        result["newest_additions"] = books.get_newest()
+
+        response = json.dumps(result)
+
+        status = "200 OK"
+
+        write_log("          Response: " + response, self._log)
+        write_log("          Status: " + status, self._log)
+
+        response_headers = [
+            ("Content-Type", "application/json"),
+            ("Content-Length", str(len(response)))
+        ]
+
+        return response, status, response_headers
 
 
 # -----------------------------------------------------------------------------
