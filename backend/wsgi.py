@@ -821,6 +821,37 @@ class sessions:
 # Reading lists
 # -----------------------------------------------------------------------------
 class reading_lists:
+    def get_popular():
+        res = connection.query("""
+            SELECT books.book_id,
+                books.title,
+                books.cover_image,
+                authors.author_id,
+                authors.first_name,
+                authors.surname,
+                authors.alias,
+                COUNT(books.book_id) as num
+            FROM books
+            INNER JOIN authors ON books.author_id=authors.author_id
+            INNER JOIN reading_lists ON reading_lists.book_id=books.book_id
+            INNER JOIN reading_list_names ON reading_list_names.list_id=reading_lists.list_id
+            WHERE reading_list_names.list_name="Currently Reading"
+            GROUP BY books.book_id
+            ORDER BY num DESC;
+        """)[:number_summaries_home]
+
+        output_dict = dict()
+        for i, k in enumerate(res):
+            output_dict[i] = {
+                "author": authors.names_to_display(k[6], k[4], k[5]),
+                "title": k[1],
+                "book_id": k[0],
+                "cover": k[2],
+                "author_id": k[3]
+            }
+        
+        return output_dict
+
     def get_names(user_id):
         res = connection.query(
             """
