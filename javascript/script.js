@@ -3,6 +3,7 @@
 // -----------------------------------------------------------------------------
 let disablePopupCancel = false;
 let sessionID = null; // Easier to use, allows for if (sessionID)
+let currentPage;
 
 // -----------------------------------------------------------------------------
 // String Manipulation
@@ -78,6 +79,7 @@ function reloadCurrentPage () {
 function changePageContent (file, async, elem=null, linkName=null) {
     // Elem and linkName must BOTH be specified, or BOTH must not be specified.
     // Async specifies whether the request is synchronous (false) or asynchronous (true)
+    currentPage = linkName;
     $.ajax({
         type: "GET",
         url: file,
@@ -128,6 +130,9 @@ function currentPageFunction (link) {
             break;
         case "Diary":
             loadDiary();
+            break;
+        case "Home":
+            loadHomePage();
             break;
     }
 }
@@ -1174,6 +1179,33 @@ $(window).click(function (event) {
     }
 });
 
+// -----------------------------------------------------------------------------
+// Home page
+// -----------------------------------------------------------------------------
+function loadHomePage () {
+    changeNumVisibleSummaries();
+}
+
+function changeNumVisibleSummaries () {
+    if (currentPage == "Home") {
+        let summaries = $(".row .book-summary");
+        let windowWidth = $(".row").width();
+        let summaryWidth = 250;
+        let num = Math.floor(windowWidth / summaryWidth); // Gets number of summaries to show
+        $(summaries).addClass("hidden");
+        $(".row").each(function () {
+			let summaries = $(this).find(".book-summary");
+			for (let i = 0; i < num; i++) {
+				$(summaries).eq(i).removeClass("hidden")
+			}
+		});
+        for (let i = 0; i < num; i++) {
+            $(summaries[i]).show();
+        }
+    }
+}
+$(window).resize($.debounce(300, changeNumVisibleSummaries));  // Runs every 300ms. Reduces load as this will run
+// frequently
 // -----------------------------------------------------------------------------
 // window onload handlers
 // -----------------------------------------------------------------------------
