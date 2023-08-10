@@ -211,8 +211,7 @@ class books:
                 books.cover_image,
                 authors.first_name,
                 authors.surname,
-                authors.alias,
-                authors.author_id
+                authors.alias
             FROM books
             INNER JOIN authors ON books.author_id=authors.author_id
             ORDER BY books.date_added DESC;
@@ -225,7 +224,6 @@ class books:
                 "title": k[0],
                 "book_id": k[1],
                 "cover": k[2],
-                "author_id": k[6]
             }
         
         return output_dict
@@ -833,7 +831,6 @@ class reading_lists:
             SELECT books.book_id,
                 books.title,
                 books.cover_image,
-                authors.author_id,
                 authors.first_name,
                 authors.surname,
                 authors.alias,
@@ -850,11 +847,10 @@ class reading_lists:
         output_dict = dict()
         for i, k in enumerate(res):
             output_dict[i] = {
-                "author": authors.names_to_display(k[6], k[4], k[5]),
+                "author": authors.names_to_display(k[5], k[3], k[4]),
                 "title": k[1],
                 "book_id": k[0],
                 "cover": k[2],
-                "author_id": k[3]
             }
         
         return output_dict
@@ -893,7 +889,6 @@ class reading_lists:
             SELECT books.book_id,
                 books.title,
                 books.cover_image,
-                authors.author_id,
                 authors.first_name,
                 authors.surname,
                 authors.alias
@@ -905,11 +900,10 @@ class reading_lists:
                 AND reading_list_names.user_id={};
         """.format(user_id))
         return [{
-                "author": authors.names_to_display(i[6], i[4], i[5]),
+                "author": authors.names_to_display(i[5], i[3], i[4]),
                 "title": i[1],
                 "book_id": i[0],
                 "cover": i[2],
-                "author_id": i[3]
             } for i in res]
 
     def get_want_read(user_id):
@@ -917,7 +911,6 @@ class reading_lists:
             SELECT books.book_id,
                 books.title,
                 books.cover_image,
-                authors.author_id,
                 authors.first_name,
                 authors.surname,
                 authors.alias
@@ -929,11 +922,10 @@ class reading_lists:
                 AND reading_list_names.user_id={};
         """.format(user_id))
         return [{
-                "author": authors.names_to_display(i[6], i[4], i[5]),
+                "author": authors.names_to_display(i[5], i[3], i[4]),
                 "title": i[1],
                 "book_id": i[0],
                 "cover": i[2],
-                "author_id": i[3]
             } for i in res]
 
     def get_names_check_book_in(user_id, book_id):
