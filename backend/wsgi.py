@@ -896,7 +896,7 @@ class reading_lists:
                 authors.author_id,
                 authors.first_name,
                 authors.surname,
-                authors.alias,
+                authors.alias
             FROM reading_lists
             INNER JOIN books ON reading_lists.book_id=books.book_id
             INNER JOIN authors ON books.author_id=authors.author_id
@@ -920,7 +920,7 @@ class reading_lists:
                 authors.author_id,
                 authors.first_name,
                 authors.surname,
-                authors.alias,
+                authors.alias
             FROM reading_lists
             INNER JOIN books ON reading_lists.book_id=books.book_id
             INNER JOIN authors ON books.author_id=authors.author_id
@@ -1726,12 +1726,9 @@ class DiaryHandler(Handler):
 
         result = dict()
         result["entries"] = diaries.get_entries(user_id)
-        write_log("          Hello 1", self._log)
         result["books"] = reading_lists.get_currently_reading(user_id)
-        write_log("          Hello 2", self._log)
 
         response = json.dumps(result)
-        write_log("          Hello 3", self._log)
 
         status = "200 OK"
 
@@ -1815,8 +1812,11 @@ class HomeHandler(Handler):
     def __init__(self, log=None):
         super().__init__(log)
         self._routes = {
-        
+            "get_data": self.get_data
         }
+    
+    def get_data(self):
+
 
 # -----------------------------------------------------------------------------
 # Error Handler
