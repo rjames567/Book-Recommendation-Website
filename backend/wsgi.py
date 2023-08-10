@@ -207,16 +207,22 @@ class authors:
 class books:
     def get_similar_items(book_id):
         res = connection.query("""
-            SELECT book_id,
-                GROUP_CONCAT(genre_id) as genres
+            SELECT book_genres.book_id,
+                GROUP_CONCAT(book_genres.genre_id) as genres,
+                books.author_id
             FROM book_genres
+            INNER JOIN books ON books.book_id=book_genres.book_id
             WHERE match_strength>{}
             GROUP BY book_id;
         """.format(genre_required_match)) # Match strength is included, as then more are more likely to appear, and
         # therefore will impact on the similarity.
 
-        genre_dict = {i[0]: set(float(k) for k in i[1].split(",")) for i in res}
 
+        genre_dict = dict()
+        for i in res:
+            items = set(float(k) for k in i[1].split(","))
+            items.add(-i[2])  # Must be negative, as otherwise it would be treated as a genre, which may not work
+            genre_dict[i[0]] = items
 
         target_genres = genre_dict[book_id]
         genre_dict.pop(book_id)
