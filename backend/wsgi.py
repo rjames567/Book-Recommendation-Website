@@ -237,8 +237,10 @@ class books:
                 # gives the distance, so this in ascending order gives them in similairty in descending order.
             })
 
-        return tree.in_order_traversal()[:number_similarities_about]  # Get the books ordered by similarity. Note that the distance is 
+        result = tree.in_order_traversal()[:number_similarities_about]  # Get the books ordered by similarity. Note that the distance is 
         # descending - This is correct, as 0 is identical genres, and 1 is different
+
+        return {i["book_id"]: books.get_summary(i["book_id"]) for i in result}
 
     def get_summary(book_id):
         res = connection.query("""
