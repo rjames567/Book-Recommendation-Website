@@ -547,7 +547,7 @@ function switchGenrePage (genre) {
                 $(item).appendTo(".genre-book-items");
                 $(item).data("id", books[i]["id"]);
             }
-            assignBookNavigationHandlers(true); // Assign navigation for the book summaries.
+            assignBookNavigationHandlers(); // Assign navigation for the book summaries.
         },
         error: function (jqXHR) {
             $("main").html(jqXHR.responseText); // Fills in the main body with 404 error message
@@ -563,15 +563,14 @@ function switchGenrePage (genre) {
 // -----------------------------------------------------------------------------
 // Book pages
 // -----------------------------------------------------------------------------
-function assignBookNavigationHandlers (summary=false) {
+function assignBookNavigationHandlers () {
     // If the link is an entire div, with an image, title etc, it needs to navigate down the DOM to find the title
     $(".book-button").off("click");
     $(".book-button").click(function () {
-        let bookID;
-        if (summary) {
+        let bookID = $(this).closest(".book").data("id");
+        if (!bookID) { // If the previous attempt is undefined, this runs, and it must be this, if the previous is
+            // undefined
             bookID = $(this).closest(".book-summary").data("id");
-        } else {
-            bookID = $(this).closest(".book").data("id");
         }
         switchBookPage(bookID);
     });
@@ -992,7 +991,7 @@ function switchAuthorPage (authorID) {
                 $(summary).data("id", books[i]["id"]);
                 $(summary).appendTo(".author-book-items");
             }
-            assignBookNavigationHandlers(true);
+            assignBookNavigationHandlers();
         },
         error: function (jqXHR) {
             $("main").html(jqXHR.responseText); // Fills in the main body with 404 error message
