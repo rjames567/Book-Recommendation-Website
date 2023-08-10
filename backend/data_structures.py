@@ -45,7 +45,7 @@ class Queue:
 # ------------------------------------------------------------------------------
 # https://www.tutorialspoint.com/python_data_structure/python_binary_tree.htm
 class BinaryTree:
-    def __init__(self, value, access_function=None):
+    def __init__(self, value=None, access_function=None):
         self.left = self.right = None
         self.value = value
         if access_function is None:
@@ -56,16 +56,19 @@ class BinaryTree:
         print(value, self.access_function(value))
     
     def insert(self, value):
-        if self.access_function(value) < self.access_function(self.value):
-            if self.left:
-                self.left.insert(value)
-            else:
-                self.left = BinaryTree(value, self.access_function)
+        if self.value is None:
+            self.value = value
         else:
-            if self.right:
-                self.right.insert(value)
+            if self.access_function(value) < self.access_function(self.value):
+                if self.left:
+                    self.left.insert(value)
+                else:
+                    self.left = BinaryTree(value, self.access_function)
             else:
-                self.right = BinaryTree(value, self.access_function)
+                if self.right:
+                    self.right.insert(value)
+                else:
+                    self.right = BinaryTree(value, self.access_function)
     
     def in_order_traversal(self, root=""):
         if root == "":  # Cannot be None, and an empty string cannot be used.
