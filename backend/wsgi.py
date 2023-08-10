@@ -30,6 +30,7 @@ hashing_algorithm = config.get("passwords hashing_algorithm")
 token_size = config.get("session_id_length")
 genre_required_match = config.get("books genre_match_threshold")
 number_summaries_home = 8
+number_similarities_about = 10
 
 
 # -----------------------------------------------------------------------------
@@ -236,7 +237,7 @@ class books:
                 # gives the distance, so this in ascending order gives them in similairty in descending order.
             })
 
-        return tree.in_order_traversal()  # Get the books ordered by similarity. Note that the distance is 
+        return tree.in_order_traversal()[:number_similarities_about]  # Get the books ordered by similarity. Note that the distance is 
         # descending - This is correct, as 0 is identical genres, and 1 is different
 
     def get_newest():
