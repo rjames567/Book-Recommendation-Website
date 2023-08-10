@@ -408,6 +408,7 @@ main .container {
 .diary-entry .main-content,
 .book .main-content {
   padding: 0 20px;
+  width: -webkit-fill-available;
 }
 
 .diary-entry .cover img,
@@ -469,7 +470,7 @@ main .container {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-width: fit-content; /* Sets width to the width of content - over use of width so it is changes if font size changes. Min-width as flex does not respect width */
+  min-width: 180px;
 }/* Date will always be the same width, so each book will look the same.*/
 
 .book .synopsis {
@@ -1295,5 +1296,3 @@ button.new-entry i {
 .row .books {
   margin-bottom: 10px;
 }
-
-/* FIXME Fix my books entries not filling the width of the screen */
