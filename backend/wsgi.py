@@ -240,6 +240,31 @@ class books:
         return tree.in_order_traversal()[:number_similarities_about]  # Get the books ordered by similarity. Note that the distance is 
         # descending - This is correct, as 0 is identical genres, and 1 is different
 
+    def get_summary(book_id):
+        res = connection.query("""
+            SELECT books.title,
+                books.book_id,
+                books.cover_image,
+                authors.first_name,
+                authors.surname,
+                authors.alias
+            FROM books
+            INNER JOIN authors ON books.author_id=authors.author_id
+            WHERE books.book_id={}
+        """.format(book_id))
+
+        if len(res) == 0:
+            raise BookNotFoundError(book_id)
+        
+        res = res[0]
+
+        return {
+            "author": authors.names_to_display(res[5], res[3], res[4]),
+            "title": res[0],
+            "book_id": res[1],
+            "cover": res[2],
+        }
+
     def get_newest():
         res = connection.query("""
             SELECT books.title,
