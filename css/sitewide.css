@@ -751,6 +751,18 @@ main .container {
 }
 
 /* -------------------------------------------------------------------------- */
+/* Book Pages - Similar Books                                                 */
+/* -------------------------------------------------------------------------- */
+.book-about .book-summary {
+  margin-bottom: 10px;
+}
+
+.book-about .similar-books {
+  text-align: center;
+  border-bottom: solid 2px var(--light-grey);
+}
+
+/* -------------------------------------------------------------------------- */
 /* Book Pages - Leave a Review                                                */
 /* -------------------------------------------------------------------------- */
 .book-about .user-review {
