@@ -52,8 +52,6 @@ class BinaryTree:
             self.access_function = lambda x: x
         else:
             self.access_function = access_function
-        
-        print(value, self.access_function(value))
     
     def insert(self, value):
         if self.value is None:
