@@ -890,14 +890,51 @@ class reading_lists:
 
     def get_currently_reading(user_id):
         res = connection.query("""
-            SELECT reading_lists.book_id, books.title
+            SELECT books.book_id,
+                books.title,
+                books.cover_image,
+                authors.author_id,
+                authors.first_name,
+                authors.surname,
+                authors.alias,
             FROM reading_lists
             INNER JOIN books ON reading_lists.book_id=books.book_id
+            INNER JOIN authors ON books.author_id=authors.author_id
             INNER JOIN reading_list_names ON reading_list_names.list_id=reading_lists.list_id
             WHERE reading_list_names.list_name="Currently Reading"
                 AND reading_list_names.user_id={};
         """.format(user_id))
-        return [{"book_id": i[0], "title": i[1]} for i in res]
+        return [{
+                "author": authors.names_to_display(i[6], i[4], i[5]),
+                "title": i[1],
+                "book_id": i[0],
+                "cover": i[2],
+                "author_id": i[3]
+            } for i in res]
+
+    def get_want_read(user_id):
+        res = connection.query("""
+            SELECT books.book_id,
+                books.title,
+                books.cover_image,
+                authors.author_id,
+                authors.first_name,
+                authors.surname,
+                authors.alias,
+            FROM reading_lists
+            INNER JOIN books ON reading_lists.book_id=books.book_id
+            INNER JOIN authors ON books.author_id=authors.author_id
+            INNER JOIN reading_list_names ON reading_list_names.list_id=reading_lists.list_id
+            WHERE reading_list_names.list_name="Want to Read"
+                AND reading_list_names.user_id={};
+        """.format(user_id))
+        return [{
+                "author": authors.names_to_display(i[6], i[4], i[5]),
+                "title": i[1],
+                "book_id": i[0],
+                "cover": i[2],
+                "author_id": i[3]
+            } for i in res]
 
     def get_names_check_book_in(user_id, book_id):
         res = connection.query(
