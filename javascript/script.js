@@ -1203,11 +1203,12 @@ function loadHomePage () {
                 $(summary).find(".title").html(newestAdditions[i]["title"]);
                 $(summary).appendTo(".row#newest .books");
             }
-            if (recommended == null) { // Will only be null if there is no user, so all user specifics can
+            let currentlyReading = result["currently_reading"]
+            if (currentlyReading == null) { // Will only be null if there is no user, so all user specifics can
                 // be hidden.
-                $(".row#recommended").hide();
-                $(".row#reading").hide();
-                $(".row#want-read").hide();
+                $(".row#recommended").remove(); // Remove so the hr disappears. These will reappear on sign in
+                $(".row#reading").remove();
+                $(".row#want-read").remove();
             } else {
                 let recommended = result["recommended"]
                 for (let i = 0; i < Object.keys(recommended).length; i++) {
@@ -1217,7 +1218,6 @@ function loadHomePage () {
                     $(summary).find(".title").html(recommended[i]["title"]);
                     $(summary).appendTo(".row#recommended .books");
                 }
-                let currentlyReading = result["currently_reading"]
                 for (let i = 0; i < Object.keys(currentlyReading).length; i++) {
                     let summary = $(".book-summary.template").clone().removeClass("template");
                     $(summary).find("img").attr("src", currentlyReading[i]["cover"]);
