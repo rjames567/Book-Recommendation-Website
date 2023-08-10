@@ -758,6 +758,8 @@ main .container {
 }
 
 .book-about .similar-books {
+  margin-bottom: 20px;
+  padding-bottom: 10px;
   text-align: center;
   border-bottom: solid 2px var(--light-grey);
 }
