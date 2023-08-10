@@ -38,3 +38,35 @@ class Queue:
     @property
     def size(self):
         return len(self._items)
+
+
+# ------------------------------------------------------------------------------
+# Binary Tree
+# ------------------------------------------------------------------------------
+# https://www.tutorialspoint.com/python_data_structure/python_binary_tree.htm
+class BinaryTree:
+    def __init__(self, value):
+        self.left = self.right = None
+        self.value = value
+    
+    def insert(self, value):
+        if value < self.value:
+            if self.left:
+                self.left.insert(value)
+            else:
+                self.left = BinaryTree(value)
+        else:
+            if self.right:
+                self.right.insert(value)
+            else:
+                self.right = BinaryTree(value)
+    
+    def in_order_traversal(self, root=""):
+        if root == "":  # Cannot be None, and an empty string cannot be used.
+            root = self
+        res = []
+        if root is not None:
+            res = self.in_order_traversal(root.left)
+            res.append(root.value)
+            res = res + self.in_order_traversal(root.right)
+        return res
