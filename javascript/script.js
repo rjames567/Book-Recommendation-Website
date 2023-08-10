@@ -803,6 +803,7 @@ function switchBookPage (bookID) {
             assignReviewSubmissionHandlers(bookID);
             currentPage = "Book";
             changeNumVisibleSimilarBooks();
+            assignBookNavigationHandlers();
         },
         error: function (jqXHR) {
             $("main").html(jqXHR.responseText); // Fills in the main body with 404 error message
