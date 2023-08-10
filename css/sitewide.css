@@ -541,10 +541,11 @@ main .container {
   display: inline-block;
   padding: 0 15px;
   margin: 0 5px;
+  width: 240px
 }
 
 .book-summary img {
-  height: 300px;
+  width: -webkit-fill-available;
 }
 
 .book-summary .title {
