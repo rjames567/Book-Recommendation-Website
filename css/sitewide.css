@@ -30,7 +30,7 @@ body, html {
 }
 
 .row {
-  width: fit-content;
+  width: 100%;
   text-align: center;
   margin: 0;
 }
@@ -1200,6 +1200,7 @@ button.new-entry i {
 .diary-entry .book {
   padding: 10px 0 5px 0;
 }
+
 /* -------------------------------------------------------------------------- */
 /* Diary - New Diary Entry                                                    */
 /* -------------------------------------------------------------------------- */
@@ -1263,6 +1264,13 @@ button.new-entry i {
 .new-diary-entry input[type=number]:focus {
   outline: solid 1px var(--light-grey);
   padding: 5px 0.5rem 10px 0.5rem;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Home Page                                                                  */
+/* -------------------------------------------------------------------------- */
+.row:last-child hr {
+  display: none; /* Ensure that the last entry does not have an underline */
 }
 
 /* FIXME Fix my books entries not filling the width of the screen */
