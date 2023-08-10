@@ -1193,6 +1193,7 @@ function loadHomePage () {
                 $(summary).find("img").attr("src", trending[i]["cover"]);
                 $(summary).find(".author").html(trending[i]["author"]);
                 $(summary).find(".title").html(trending[i]["title"]);
+                $(summary).data("id", trending[i]["book_id"]);
                 $(summary).appendTo(".row#trending .books");
             }
             let newestAdditions = result["newest_additions"]
@@ -1201,6 +1202,7 @@ function loadHomePage () {
                 $(summary).find("img").attr("src", newestAdditions[i]["cover"]);
                 $(summary).find(".author").html(newestAdditions[i]["author"]);
                 $(summary).find(".title").html(newestAdditions[i]["title"]);
+                $(summary).data("id", newestAdditions[i]["book_id"]);
                 $(summary).appendTo(".row#newest .books");
             }
             let currentlyReading = result["currently_reading"]
@@ -1216,6 +1218,7 @@ function loadHomePage () {
                     $(summary).find("img").attr("src", recommended[i]["cover"]);
                     $(summary).find(".author").html(recommended[i]["author"]);
                     $(summary).find(".title").html(recommended[i]["title"]);
+                    $(summary).data("id", recommended[i]["book_id"]);
                     $(summary).appendTo(".row#recommended .books");
                 }
                 for (let i = 0; i < Object.keys(currentlyReading).length; i++) {
@@ -1223,6 +1226,7 @@ function loadHomePage () {
                     $(summary).find("img").attr("src", currentlyReading[i]["cover"]);
                     $(summary).find(".author").html(currentlyReading[i]["author"]);
                     $(summary).find(".title").html(currentlyReading[i]["title"]);
+                    $(summary).data("id", currentlyReading[i]["book_id"]);
                     $(summary).appendTo(".row#reading .books");
                 }
                 let wantRead = result["want_read"]
@@ -1231,6 +1235,7 @@ function loadHomePage () {
                     $(summary).find("img").attr("src", wantRead[i]["cover"]);
                     $(summary).find(".author").html(wantRead[i]["author"]);
                     $(summary).find(".title").html(wantRead[i]["title"]);
+                    $(summary).data("id", wantRead[i]["book_id"]);
                     $(summary).appendTo(".row#want-read .books");
                 }
             }
