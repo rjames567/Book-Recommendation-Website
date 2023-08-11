@@ -37,3 +37,6 @@ class Matrix:
     def __getitem__(self, index):
         return self._matrix[index] # Returns a list, but doing [a][b] will work as 
         # [b] is performed in resulting arr
+    
+    def __iter__(self):
+        return iter(self._matrix)
