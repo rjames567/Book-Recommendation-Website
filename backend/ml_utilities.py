@@ -26,23 +26,44 @@ class Matrix:
             self._n = len(kwargs[0])
             self._matrix = list(kwargs)
         else:
-            self._m = m  # Columns
-            self._n = n  # Rows
+            self._m = m  # Rows
+            self._n = n  # Columns
             self._matrix = [[0 for i in range(self._n)] for k in range(self._m)]
     
     def print(self):
         for i in self._matrix:
             print(" ".join(str(k) for k in i))
     
+    @property
+    def m(self):
+        return self._m
+    
+    @property
+    def n(self):
+        return self._n
+
     def __getitem__(self, index):
         return self._matrix[index] # Returns a list, but doing [a][b] will work as 
         # [b] is performed in resulting arr
 
     def __add__(self, op_matrix):
         res = Matrix(m=self._m, n=self._n)
-        for count, v1, v2 in zip(list(range(self._n)), self._matrix, op_matrix):
-            for i in range(self._m):
+        for count, v1, v2 in zip(list(range(self._m)), self._matrix, op_matrix):
+            for i in range(self._n):
                 res[count][i] = v1[i] + v2[i]
+        return res
+    
+    def __mul__(self, op_value):
+        if type(op_value) == int:
+            res = Matrix(m=self._m, n=self._n)
+            for row, v1 in enumerate(self._matrix):
+                for col, v2 in enumerate(v1):
+                    res[row][col] = v2 * op_value
+        else:
+            res = Matrix(n=self._n, m=op_value.m)
+            for i in range(self._n):
+                for k in range(op_value.m):
+                    res[i][k] += sum(self._matrix[i][j] * op_value[j][k] for j in range(self._m))
         return res
 
     def __iter__(self):
