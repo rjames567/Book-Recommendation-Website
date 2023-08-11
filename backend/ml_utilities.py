@@ -29,3 +29,7 @@ class Matrix:
             self._m = m
             self._n = n
             self._matrix = [[0 for i in range(self._n)] for k in range(self._m)]
+    
+    def print(self):
+        for i in self._matrix:
+            print(" ".join(str(k) for k in i))
