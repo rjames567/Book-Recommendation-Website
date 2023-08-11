@@ -136,3 +136,33 @@ def output_data():
             num += " "
         print(f"{num}   {', '.join(str(i) for i in users[i])}")
     print("\n\n\n")
+
+
+# -----------------------------------------------------------------------------
+# Data processing
+# -----------------------------------------------------------------------------
+def books_to_matched_genre_list():
+    res = dict()
+    for i in books:
+        genres_list = books[i]
+        arr = []
+        for k in genres:
+            if k in genres_list:
+                arr.append(1)
+            else:
+                arr.append(0)
+        res[i] = arr
+    return res
+
+def users_to_matched_genre_list():
+    res = dict()
+    for i in users:
+        genres_list = users[i]
+        arr = []
+        for k in users:
+            if k in genres_list:
+                arr.append(1)
+            else:
+                arr.append(0)
+        res[i] = arr
+    return res
