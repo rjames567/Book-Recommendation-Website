@@ -59,6 +59,15 @@ class Matrix:
             for i in range(self._n):
                 res[count][i] = v1[i] + v2[i]
         return res
+
+    def __sub__(self, op_matrix):
+        self.__add__(-op_matrix)
+    
+    def __neg__(self):
+        return Matrix(*[[-k for k in i] for i in self._matrix]) # Asterix means it is treated as multiple params
+    
+    def __pos__(self):
+        return Matrix(*[[+k for k in i] for i in self._matrix])
     
     # https://en.wikipedia.org/wiki/Matrix_multiplication_algorithm
     def __mul__(self, op_value):
