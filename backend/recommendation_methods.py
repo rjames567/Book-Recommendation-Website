@@ -98,3 +98,41 @@ users = {
     29: [2, 9, 13, 15, 16, 19],
     30: [2, 4, 5, 10, 14, 18, 19],
 }
+
+
+# -----------------------------------------------------------------------------
+# Output data
+# -----------------------------------------------------------------------------
+def output_data():
+    print("Genres")
+    for i in genres:
+        num = str(i) + ":"
+        if i % 2 == 0:
+            output = "\n"
+            if i / 10 < 1:
+                num += " "    
+            num += " "
+        elif i / 10 >= 1:
+            output = "    "
+        else:
+            output = "     "
+            num += " "
+
+        print(f"{num}   {genres[i]}{output}", end="")
+        
+
+    print("\n\nBook Genres")
+    for i in books:
+        num = str(i) + ":"
+        if i / 10 < 1:
+            num += " "
+        print(f"{num}   {', '.join(str(i) for i in sorted(books[i]))}")
+
+
+    print("\n\nUser Genres")
+    for i in users:
+        num = str(i) + ":"
+        if i / 10 < 1:
+            num += " "
+        print(f"{num}   {', '.join(str(i) for i in users[i])}")
+    print("\n\n\n")
