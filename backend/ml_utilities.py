@@ -33,6 +33,13 @@ class Matrix:
     def print(self):
         for i in self._matrix:
             print(" ".join(str(k) for k in i))
+        
+    def transpose(self):
+        res = Matrix(m=self._n, n=self._m)
+        for row, v1 in enumerate(self._matrix):
+            for col, v2 in enumerate(v1):
+                res[col][row] = v2
+        return res
     
     @property
     def m(self):
@@ -53,6 +60,7 @@ class Matrix:
                 res[count][i] = v1[i] + v2[i]
         return res
     
+    # https://en.wikipedia.org/wiki/Matrix_multiplication_algorithm
     def __mul__(self, op_value):
         if type(op_value) == int:
             res = Matrix(m=self._m, n=self._n)
@@ -65,6 +73,6 @@ class Matrix:
                 for k in range(op_value.m):
                     res[i][k] += sum(self._matrix[i][j] * op_value[j][k] for j in range(self._m))
         return res
-
+    
     def __iter__(self):
         return iter(self._matrix)
