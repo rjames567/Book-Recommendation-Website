@@ -26,8 +26,8 @@ class Matrix:
             self._n = len(kwargs[0])
             self._matrix = list(kwargs)
         else:
-            self._m = m
-            self._n = n
+            self._m = m  # Columns
+            self._n = n  # Rows
             self._matrix = [[0 for i in range(self._n)] for k in range(self._m)]
     
     def print(self):
@@ -37,6 +37,13 @@ class Matrix:
     def __getitem__(self, index):
         return self._matrix[index] # Returns a list, but doing [a][b] will work as 
         # [b] is performed in resulting arr
-    
+
+    def __add__(self, op_matrix):
+        res = Matrix(m=self._m, n=self._n)
+        for count, v1, v2 in zip(list(range(self._n)), self._matrix, op_matrix):
+            for i in range(self._m):
+                res[count][i] = v1[i] + v2[i]
+        return res
+
     def __iter__(self):
         return iter(self._matrix)
