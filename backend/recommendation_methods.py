@@ -166,3 +166,20 @@ def users_to_matched_genre_list():
                 arr.append(0)
         res[i] = arr
     return res
+
+# -----------------------------------------------------------------------------
+# Content-based filtering
+# -----------------------------------------------------------------------------
+def content_recommend(user):
+    user_preference = users_to_matched_genre_list()[user]
+    book_data = books_to_matched_genre_list()
+
+    weightings = []
+    for i in book_data:
+        book_genres = book_data[i]
+        weightings.append({
+            "id": i,
+            "dot_product": ml_utilities.dot_product(book_genres, user_preference) # Order does not matter
+        })
+    
+    return [i["id"] for i in sorted(weightings, key=lambda x: x["dot_product"], reverse=True)][:10]
