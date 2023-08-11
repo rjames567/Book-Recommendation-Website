@@ -33,3 +33,7 @@ class Matrix:
     def print(self):
         for i in self._matrix:
             print(" ".join(str(k) for k in i))
+    
+    def __getitem__(self, index):
+        return self._matrix[index] # Returns a list, but doing [a][b] will work as 
+        # [b] is performed in resulting arr
