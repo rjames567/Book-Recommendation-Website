@@ -6,3 +6,6 @@ def jaccard_similarity(set_1, set_2):
     union = set_1.union(set_2)
     intersection = set_1.intersection(set_2)
     return len(intersection) / len(union)
+
+def dot_product(arr_1, arr_2):
+    return sum(i * k for i, k in zip(arr_1, arr_2))
