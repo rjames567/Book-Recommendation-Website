@@ -149,7 +149,7 @@ CREATE TABLE reviews (
     review_id INT NOT NULL AUTO_INCREMENT,
     book_id INT NOT NULL,
     user_id INT NOT NULL,
-    summary TINYTEXT,
+    summary TEXT,
     overall_rating INT NOT NULL,
     plot_rating INT,
     character_rating INT,
