@@ -1084,7 +1084,7 @@ class reading_lists:
                     "author": author,
                     "author_id": i[7],
                     "date_added": i[8].strftime("%d-%m-%Y"),
-                    "genres": i[9].split(","),
+                    "genres": i[9].split(",")[:num_display_genres],
                     "average_rating": i[10],
                     "num_reviews": i[11]
                 }
