@@ -31,7 +31,7 @@ token_size = config.get("session_id_length")
 genre_required_match = config.get("books genre_match_threshold")
 number_summaries_home = 8
 number_similarities_about = 10
-
+num_display_genres = 10
 
 # -----------------------------------------------------------------------------
 # Utility functions
@@ -334,8 +334,9 @@ class books:
         genres = [i[0] for i in connection.query("""
             SELECT genres.name FROM genres
             INNER JOIN book_genres ON book_genres.genre_id=genres.genre_id
-            WHERE book_genres.book_id={book_id};
-        """.format(book_id=book_id))]  # The query returns a tuple, so this converts the list of tuples to a flat list
+            WHERE book_genres.book_id={book_id}
+            ORDER BY book_genres.match_strength DESC;
+        """.format(book_id=book_id))][:num_display_genres]  # The query returns a tuple, so this converts the list of tuples to a flat list
 
         output_dict = {
             "title": res[0],
