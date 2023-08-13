@@ -53,6 +53,21 @@ with open("data/Original/metadata.json", "r") as f:
 with open("data/metadata-altered.json", "w+") as f:
     f.write(new_file)
 
+with open("data/Original/survey_answers.json") as f:
+    with open("data/survey_answers.json", "w+") as k:
+        for line in f:
+            data = json.loads(line)
+            try:
+                book = isbn_lookup[data["item_id"]]
+                data.pop("item_id")
+                data["book_id"] = book
+                if data["score"] == -1:
+                    data["score"] = 0
+                k.write(json.dumps(data) + "\n")
+            except KeyError:
+                pass
+
+
 del query
 del new_file
 del f
