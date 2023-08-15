@@ -82,12 +82,10 @@ class Matrix:
                 for n in range(res.n):
                     for k in range(self.n):
                         res[m][n] += self[m][k] * op_value[k][n]
-#            for i in range(self._n):
-#                for k in range(op_value.m):
-#                    for j in range(self._n):
-#                        res[i][k] += self._matrix[i][j] * op_value[j][k]
-#                    # res[i][k] += sum(self._matrix[i][j] * op_value[j][k] for j in range(self._m))
         return res
     
     def __iter__(self):
-        return iter(self._matrix)
+        if self._m > 1:
+            return iter(self._matrix)
+        else:
+            return iter(self._matrix[0])
