@@ -11,12 +11,6 @@ def jaccard_similarity(set_1, set_2):
     return len(intersection) / len(union)
 
 # -----------------------------------------------------------------------------
-# Vector manipulation
-# -----------------------------------------------------------------------------
-def dot_product(arr_1, arr_2):
-    return sum(i * k for i, k in zip(arr_1, arr_2))
-
-# -----------------------------------------------------------------------------
 # Matricies
 # -----------------------------------------------------------------------------
 class Matrix:
@@ -41,6 +35,12 @@ class Matrix:
                 res[col][row] = v2
         return res
     
+    def dot_product(self, op_matrix):
+        result = self.transpose()*op_matrix
+        if self._n == 1 and op_matrix.n == 1:
+            return result[0][0]
+        return result
+    
     @property
     def m(self):
         return self._m
@@ -61,13 +61,13 @@ class Matrix:
         return res
 
     def __sub__(self, op_matrix):
-        self.__add__(-op_matrix)
+        return self.__add__(-op_matrix)
     
     def __neg__(self):
         return Matrix(*[[-k for k in i] for i in self._matrix]) # Asterix means it is treated as multiple params
     
     def __pos__(self):
-        return Matrix(*[[+k for k in i] for i in self._matrix])
+        return Matrix(*[[abs(k) for k in i] for i in self._matrix])
     
     # https://en.wikipedia.org/wiki/Matrix_multiplication_algorithm
     def __mul__(self, op_value):
@@ -77,10 +77,16 @@ class Matrix:
                 for col, v2 in enumerate(v1):
                     res[row][col] = v2 * op_value
         else:
-            res = Matrix(n=self._n, m=op_value.m)
-            for i in range(self._n):
-                for k in range(op_value.m):
-                    res[i][k] += sum(self._matrix[i][j] * op_value[j][k] for j in range(self._m))
+            res = Matrix(m=self._m, n=op_value.n)
+            for m in range(res.m):
+                for n in range(res.n):
+                    for k in range(self.n):
+                        res[m][n] += self[m][k] * op_value[k][n]
+#            for i in range(self._n):
+#                for k in range(op_value.m):
+#                    for j in range(self._n):
+#                        res[i][k] += self._matrix[i][j] * op_value[j][k]
+#                    # res[i][k] += sum(self._matrix[i][j] * op_value[j][k] for j in range(self._m))
         return res
     
     def __iter__(self):
