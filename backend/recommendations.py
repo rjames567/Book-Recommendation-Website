@@ -2,7 +2,15 @@
 # Project imports
 # -----------------------------------------------------------------------------
 import configuration
+import ml_utilities
 import mysql_handler
+
+# -----------------------------------------------------------------------------
+# Recommendations
+# -----------------------------------------------------------------------------
+class Recommendations:
+    def __init__(self, connection):
+        self._connection = connection
 
 # -----------------------------------------------------------------------------
 # File execution
@@ -15,3 +23,5 @@ if __name__ == "__main__":
         schema=config.get("mysql schema"),
         host=config.get("mysql host")
     )
+
+    recommendations = Recommendations(connection)
