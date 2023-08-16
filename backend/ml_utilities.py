@@ -22,7 +22,7 @@ class Matrix:
         else:
             self._m = m  # Rows
             self._n = n  # Columns
-            self._matrix = [[0 for i in range(self._n)] for k in range(self._m)]
+            self._matrix = [[None for i in range(self._n)] for k in range(self._m)]
     
     def print(self):
         for i in self._matrix:
