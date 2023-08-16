@@ -27,12 +27,11 @@ class Recommendations:
 
         print(self._available_genres)
 
-        matrix = ml_utilities.Matrix(n=1, m=self._available_genres)
-
-        for i in range(self._available_genres):
-            matrix[i][0] = 0  # Set all genres to having match strenth of 0.
-
-        # matrix.print()
+        matrix = ml_utilities.Matrix(
+            n=1,
+            m=self._available_genres,
+            default_value=0
+        )
 
         for i in book_genres:
             matrix[i[0] - 1][0] = i[1]  # First index is 0 as there is only 1 
@@ -54,4 +53,7 @@ if __name__ == "__main__":
         host=config.get("mysql host")
     )
 
-    recommendations = Recommendations(connection)
+    recommendations = Recommendations(connection)  # Only runs if this file is
+    # run directly so as a scheduled task to generate new recommendations, and
+    # the connection will be closed at the end of the program execution so
+    # shouldn't cause issues.
