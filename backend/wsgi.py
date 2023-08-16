@@ -754,6 +754,10 @@ class accounts:
                 """.format(username)
             )[0][0]
 
+            reading_lists.create_list(user_id, "Want to Read")
+            reading_lists.create_list(user_id, "Currently Reading")
+            reading_lists.create_list(user_id, "Have Read")
+
             return user_id
 
     def get_user_id(username):
