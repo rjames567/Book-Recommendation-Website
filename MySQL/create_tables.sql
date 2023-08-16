@@ -67,6 +67,16 @@ CREATE TABLE book_genres (
     FOREIGN KEY (genre_id) REFERENCES genres(genre_id)
 );
 
+CREATE TABLE user_genres (
+    link_id INT NOT NULL AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    genre_id INT NOT NULL,
+    match_strength FLOAT NOT NULL,
+    PRIMARY KEY (link_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (genre_id) REFERENCES genres(genre_id)
+);
+
 -- -----------------------------------
 -- Books
 -- -----------------------------------
