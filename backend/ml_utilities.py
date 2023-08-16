@@ -14,7 +14,7 @@ def jaccard_similarity(set_1, set_2):
 # Matricies
 # -----------------------------------------------------------------------------
 class Matrix:
-    def __init__(self, *kwargs, m=None, n=None):
+    def __init__(self, *kwargs, m=None, n=None, default_value=None):
         if m is None:
             self._m = len(kwargs)
             self._n = len(kwargs[0])
@@ -22,7 +22,7 @@ class Matrix:
         else:
             self._m = m  # Rows
             self._n = n  # Columns
-            self._matrix = [[None for i in range(self._n)] for k in range(self._m)]
+            self._matrix = [[default_value for i in range(self._n)] for k in range(self._m)]
     
     def print(self):
         for i in self._matrix:
