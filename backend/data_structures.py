@@ -157,3 +157,24 @@ class Matrix:
             return iter(self._matrix)
         else:
             return iter(self._matrix[0])
+
+
+class Vector(Matrix):  # Vectors are a type of matrix
+    def __init__(self, *kwargs, dimensions=None, default_value=None):
+        if dimensions is None:
+            kwargs = [[i] for i in kwargs]  # Convert kwargs to 2D array
+
+        super().__init__(*kwargs,
+            m=dimensions,
+            n=1,
+            default_value=default_value
+        ) # This handles processing and value checking
+
+    def __getitem__(self, index):
+        return self._matrix[index][0]
+    
+    def __setitem__(self, index, value):
+        self._matrix[index][0] = value
+    
+    def __iter__(self):
+        return iter(i[0] for i in self._matrix)
