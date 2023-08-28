@@ -2,7 +2,7 @@
 # Project imports
 # -----------------------------------------------------------------------------
 import configuration
-import ml_utilities
+import data_structures
 import mysql_handler
 
 # -----------------------------------------------------------------------------
@@ -27,7 +27,7 @@ class Recommendations:
 
         print(self._available_genres)
 
-        matrix = ml_utilities.Matrix(
+        matrix = data_structures.Matrix(
             n=1,
             m=self._available_genres,
             default_value=0
@@ -38,6 +38,20 @@ class Recommendations:
             # column - It is subtracted as MySQL IDs start at 1. Second index
             # is the book id. The value is the match strength.
         
+        return matrix
+
+    def gen_user_matrix(self, user_id):
+        matrix = data_structures.Matrix(n=1, m=10)
+        user_data = self._connection.query("""
+            SELECT match_strength
+            FROM user_genres
+            WHERE user_id={}
+            ORDER BY book_id ASC;
+        """.format(user_id))
+
+        for i, k in enumerate(user_data):
+            matrix[i][0] = k[0]
+
         return matrix
 
 
