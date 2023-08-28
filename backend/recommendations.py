@@ -41,16 +41,33 @@ class Recommendations:
         return matrix
 
     def gen_user_matrix(self, user_id):
-        matrix = data_structures.Matrix(n=1, m=10)
-        user_data = self._connection.query("""
-            SELECT match_strength
+        matrix = data_structures.Matrix(n=1, m=self._available_genres)
+        
+        user_genres = self._connection.query(x:="""
+            SELECT genre_id,
+                match_strength
             FROM user_genres
             WHERE user_id={}
-            ORDER BY book_id ASC;
-        """.format(user_id))
+        """.format(user_id))  # Avoiding storing all data for genres unless
+        # needed does reduce generation speed, but reduces required storage,
+        # and given that the speed is not essential, this is acceptable.
 
-        for i, k in enumerate(user_data):
-            matrix[i][0] = k[0]
+        print(x)
+
+        print(user_genres)
+
+        print(self._available_genres)
+
+        matrix = data_structures.Matrix(
+            n=1,
+            m=self._available_genres,
+            default_value=0
+        )
+
+        for i in user_genres:
+            matrix[i[0] - 1][0] = i[1]  # First index is 0 as there is only 1 
+            # column - It is subtracted as MySQL IDs start at 1. Second index
+            # is the book id. The value is the match strength.
 
         return matrix
 
