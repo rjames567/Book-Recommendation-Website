@@ -152,6 +152,10 @@ class Matrix:
                     res[row][col] = v2 * op_value
         return res
 
+    def __truediv__(self, value):
+        return self.__mul__(1/value)  # Equivilent to dividing bur will only
+        # work with scalars.
+
     def __iter__(self):
         if self._m > 1:
             return iter(self._matrix)
