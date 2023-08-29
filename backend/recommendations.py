@@ -79,6 +79,30 @@ class Recommendations:
         user_vector /= num_reviews
 
         return user_vector
+    
+    def update_user_data_remove_review(self, temp, user_id, book_id, rating):
+        # user_vector = self.gen_user_vector(user_id)
+        user_vector = temp
+
+        num_reviews = self._connection.query("""
+            SELECT COUNT(review_id)
+            FROM reviews
+            WHERE user_id={}
+        """.format(user_id))[0][0]  # This will always give a result, select
+        # only tuple, and its only value from the result.
+
+        user_vector *= num_reviews # This must be called after adding the
+        # review to the database - undoes the division, so it can be 
+        # manipulated to change the values.
+
+        book_vector = self.gen_book_vector(book_id)
+
+        user_vector -= book_vector * (rating/5)
+
+        user_vector /= num_reviews - 1
+
+        return user_vector
+        
 
 
 # -----------------------------------------------------------------------------
@@ -97,3 +121,17 @@ if __name__ == "__main__":
     # run directly so as a scheduled task to generate new recommendations, and
     # the connection will be closed at the end of the program execution so
     # shouldn't cause issues.
+
+    v1 = recommendations.gen_user_vector(1)
+    
+    v1.print()
+
+    v2 = recommendations.update_user_data_add_review(1, 2, 5)
+
+    v2.print()
+
+    print("\n\n")
+
+    v3 = recommendations.update_user_data_remove_review(v2, 1, 2, 5)
+
+    v3.print()
