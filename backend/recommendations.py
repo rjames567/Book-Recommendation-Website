@@ -58,6 +58,28 @@ class Recommendations:
 
         return vector
 
+    def update_user_data_add_review(self, user_id, book_id, rating):
+        user_vector = self.gen_user_vector(user_id)
+
+        num_reviews = self._connection.query("""
+            SELECT COUNT(review_id)
+            FROM reviews
+            WHERE user_id={}
+        """.format(user_id))[0][0]  # This will always give a result, select
+        # only tuple, and its only value from the result.
+
+        user_vector *= num_reviews - 1 # This must be called after adding the
+        # review to the database - undoes the division, so it can be 
+        # manipulated to change the values.
+
+        book_vector = self.gen_book_vector(book_id)
+
+        user_vector += book_vector * (rating/5)
+
+        user_vector /= num_reviews
+
+        return user_vector
+
 
 # -----------------------------------------------------------------------------
 # File execution
