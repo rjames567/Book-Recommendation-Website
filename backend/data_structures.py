@@ -139,17 +139,17 @@ class Matrix:
 
     # https://en.wikipedia.org/wiki/Matrix_multiplication_algorithm
     def __mul__(self, op_value):
-        if type(op_value) == int:
-            res = Matrix(m=self._m, n=self._n)
-            for row, v1 in enumerate(self._matrix):
-                for col, v2 in enumerate(v1):
-                    res[row][col] = v2 * op_value
-        else:
+        if type(op_value) == Matrix:
             res = Matrix(m=self._m, n=op_value.n, default_value=0)
             for m in range(res.m):
                 for n in range(res.n):
                     for k in range(self.n):
                         res[m][n] += self[m][k] * op_value[k][n]
+        else:
+            res = Matrix(m=self._m, n=self._n)
+            for row, v1 in enumerate(self._matrix):
+                for col, v2 in enumerate(v1):
+                    res[row][col] = v2 * op_value
         return res
 
     def __iter__(self):
