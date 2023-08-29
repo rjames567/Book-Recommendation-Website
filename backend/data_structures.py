@@ -148,6 +148,7 @@ class Matrix:
             res = Matrix(m=self._m, n=op_value.n)
             for m in range(res.m):
                 for n in range(res.n):
+                    res[m][n] = 0
                     for k in range(self.n):
                         res[m][n] += self[m][k] * op_value[k][n]
         return res
