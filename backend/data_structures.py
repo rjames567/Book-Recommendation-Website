@@ -161,6 +161,12 @@ class Matrix:
             return iter(self._matrix)
         else:
             return iter(self._matrix[0])
+    
+    def __eq__(self, matrix):
+        return self._matrix == matrix._matrix  # Needs to be rewritten as 
+        # comparing two objects with the same contents are treated as not 
+        # equal. This is required to check this. Just checks the stored array
+        # that is used to store the matrix data.
 
 
 class Vector(Matrix):  # Vectors are a type of matrix
