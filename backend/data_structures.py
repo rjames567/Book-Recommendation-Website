@@ -145,10 +145,9 @@ class Matrix:
                 for col, v2 in enumerate(v1):
                     res[row][col] = v2 * op_value
         else:
-            res = Matrix(m=self._m, n=op_value.n)
+            res = Matrix(m=self._m, n=op_value.n, default_value=0)
             for m in range(res.m):
                 for n in range(res.n):
-                    res[m][n] = 0
                     for k in range(self.n):
                         res[m][n] += self[m][k] * op_value[k][n]
         return res
