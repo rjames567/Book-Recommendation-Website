@@ -91,6 +91,8 @@ class Matrix:
             self._m = m  # Rows
             self._n = n  # Columns
             self._matrix = [[default_value for i in range(self._n)] for k in range(self._m)]
+        
+        self._is_matrix = True
 
     def print(self):
         for i in self._matrix:
@@ -132,10 +134,14 @@ class Matrix:
         return self.__add__(-op_matrix)
 
     def __neg__(self):
-        return Matrix(*[[-k for k in i] for i in self._matrix])  # Asterix means it is treated as multiple params
+        if self._is_matrix:
+            return Matrix(*[[-k for k in i] for i in self._matrix])  # Asterix means it is treated as multiple params
+        return Matrix(*[[-k for k in i] for i in self._matrix])
 
     def __pos__(self):
-        return Matrix(*[[abs(k) for k in i] for i in self._matrix])
+        if self._is_matrix:
+            return Matrix(*[[abs(k) for k in i] for i in self._matrix])
+        return Vector(*[[abs(k) for k in i] for i in self._matrix])
 
     # https://en.wikipedia.org/wiki/Matrix_multiplication_algorithm
     def __mul__(self, op_value):
@@ -157,10 +163,7 @@ class Matrix:
         # work with scalars.
 
     def __iter__(self):
-        if self._m > 1:
-            return iter(self._matrix)
-        else:
-            return iter(self._matrix[0])
+        return iter(self._matrix)
     
     def __eq__(self, matrix):
         return self._matrix == matrix._matrix  # Needs to be rewritten as 
@@ -179,6 +182,8 @@ class Vector(Matrix):  # Vectors are a type of matrix
             n=1,
             default_value=default_value
         ) # This handles processing and value checking
+                
+        self._is_matrix = False
 
     def __getitem__(self, index):
         return self._matrix[index][0]
@@ -188,3 +193,21 @@ class Vector(Matrix):  # Vectors are a type of matrix
     
     def __iter__(self):
         return iter(i[0] for i in self._matrix)
+
+    def __mul__(self, op_value):  # Can only multiply Vector by scalar
+        # Overwritten as multiplication is only by a scalar, must have a vector
+        # result, and can be performed with one less iteration.
+        res = Vector(dimensions=self._m)
+        for count, arr in enumerate(self._matrix):
+            res[count] = op_value * arr[0]  # The values are stored as lists of
+            # single elements
+        return res
+
+    def __add__(self, op_vector):
+        # This is overwritten as it cann be done with fewer iterations, and the
+        # result must be a vector not a matrix.
+        res = Vector(dimensions=self._m)
+        for count, v1, v2 in zip(list(range(self._m)), self._matrix, op_vector):
+            res[count] = v1[0] + v2  # v1 is a list with one element in it.
+
+        return res
