@@ -156,7 +156,7 @@ class Matrix:
             res = Matrix(m=self._m, n=self._n)
             for row, v1 in enumerate(self._matrix):
                 for col, v2 in enumerate(v1):
-                    res[row][col] = v2 * op_value
+                    res[row][col] = op_value * v2
         return res
 
     def __truediv__(self, value):
@@ -185,6 +185,11 @@ class Vector(Matrix):  # Vectors are a type of matrix
         ) # This handles processing and value checking
                 
         self._is_matrix = False
+
+    def dot_product(self, op_vector):
+        # Dot product on vectors will always return an integer, so can be done
+        # differently which is faster ~ 3x
+        return sum(self[i] * k for i, k in enumerate(op_vector))
 
     def __getitem__(self, index):
         return self._matrix[index][0]
