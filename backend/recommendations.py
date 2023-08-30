@@ -17,13 +17,14 @@ class Recommendations:
         """))  # This is computed here as it is needed frequently.
         self._floating_error_threshold = 1E-15
 
-    def gen_book_vector(self, book_id):
-        book_genres = self._connection.query("""
-            SELECT genre_id,
-                match_strength
-            FROM book_genres
-            WHERE book_id={}
-        """.format(book_id))
+    def gen_book_vector(self, book_id=None, book_genres=None):
+        if book_id is not None:
+            book_genres = self._connection.query("""
+                SELECT genre_id,
+                    match_strength
+                FROM book_genres
+                WHERE book_id={}
+            """.format(book_id))
         vector = data_structures.Vector(
             dimensions=self._available_genres,
             default_value=0
@@ -112,6 +113,39 @@ class Recommendations:
                 vector[count] = 0
         return vector
 
+    def gen_all_user_data(self):
+        # This is for initial setup only. Updating user data when it is needed is faster.
+        users = self._connection.query("""
+            SELECT user_id FROM users
+        """)
+
+        for user in users:
+            user = user[0]  # The query gives an array of single element tuples – gets the integer value.
+            items = self._connection.query("""
+                SELECT (SELECT GROUP_CONCAT(book_genres.match_strength) as match_strengths
+                        FROM book_genres
+                        WHERE book_genres.book_id=reviews.book_id
+                        ORDER BY book_genres.genre_id ASC) as genres,
+                    (SELECT GROUP_CONCAT(book_genres.genre_id) as genre_ids
+                        FROM book_genres
+                        WHERE book_genres.book_id=reviews.book_id
+                        ORDER BY book_genres.genre_id ASC) as genres,
+                    reviews.overall_rating
+                FROM book_genres
+                INNER JOIN reviews ON book_genres.book_id=reviews.book_id
+                WHERE user_id={}
+                GROUP BY reviews.book_id;
+            """.format(user))
+
+            ratings = [i[2] / 5 for i in items]
+            book_vectors = []
+            for item in items:
+                arr = [(int(genre), float(match)) for genre, match in zip(item[1].split(","), item[0].split(","))]
+                book_vectors.append(self.gen_book_vector(book_genres=arr))
+
+            user_vector = sum((vector * rating for vector, rating in zip(book_vectors, ratings)), data_structures.Vector(dimensions=self._available_genres, default_value=0)) / len(items)
+            user_vector.print()
+
 
 # -----------------------------------------------------------------------------
 # File execution
@@ -129,3 +163,5 @@ if __name__ == "__main__":
     # run directly so as a scheduled task to generate new recommendations, and
     # the connection will be closed at the end of the program execution so
     # shouldn't cause issues.
+
+    recommendations.gen_all_user_data()
