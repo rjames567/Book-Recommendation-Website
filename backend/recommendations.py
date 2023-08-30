@@ -172,17 +172,35 @@ class Recommendations:
             self.save_user_preference_vector(user, user_vector)
 
     def recommend_user_books(self, user_id):
+        self._connection.query("""
+            DELETE FROM recommendations
+            WHERE user_id={}
+                AND date_added<=DATE_SUB(NOW(), INTERVAL 2 DAY)
+        """.format(user_id))
+
+        existing_recommendations = self._connection.query("SELECT book_id FROM recommendations WHERE user_id={}".format(user_id))
+        existing_recommendations = {i[0] for i in existing_recommendations}  # Sets are faster for 'in' operations
+
         user_preferences = self.gen_user_vector(user_id)
         weightings = []
         for i in self._connection.query("SELECT book_id FROM books"):
             book = i[0]
-            data = self.gen_book_vector(book_id=book)
-            weightings.append({
-                "id": book,
-                "dot_product": user_preferences.dot_product(data)
-            })
+            if book not in existing_recommendations:  # Prevent duplicate recommendations, which is likely
+                data = self.gen_book_vector(book_id=book)
+                weightings.append({
+                    "id": book,
+                    "dot_product": user_preferences.dot_product(data)
+                })
 
-        return [i["id"] for i in sorted(weightings, key=lambda x: x["dot_product"], reverse=True)][:self._recommendation_number]
+        new_recommendations = [i["id"] for i in sorted(weightings, key=lambda x: x["dot_product"], reverse=True)][:self._recommendation_number]
+
+        values = ""
+        for count, recommendation in enumerate(new_recommendations):
+            if count != 0:
+                values += ","
+            values += f"({user_id}, {recommendation})"
+
+        self._connection.query("INSERT INTO recommendations (user_id, book_id) VALUES " + values)
 
 
 # -----------------------------------------------------------------------------
@@ -201,3 +219,5 @@ if __name__ == "__main__":
     # run directly so as a scheduled task to generate new recommendations, and
     # the connection will be closed at the end of the program execution so
     # shouldn't cause issues.
+
+    print(recommendations.recommend_user_books(1))
