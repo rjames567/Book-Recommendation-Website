@@ -67,6 +67,9 @@ CREATE TABLE book_genres (
     FOREIGN KEY (genre_id) REFERENCES genres(genre_id)
 );
 
+-- -----------------------------------
+-- Recommendations
+-- -----------------------------------
 CREATE TABLE user_genres (
     link_id INT NOT NULL AUTO_INCREMENT,
     user_id INT NOT NULL,
@@ -75,6 +78,16 @@ CREATE TABLE user_genres (
     PRIMARY KEY (link_id),
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (genre_id) REFERENCES genres(genre_id)
+);
+
+CREATE TABLE recommendations (
+    recommendation_id INT NOT NULL AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    book_id INT NOT NULL,
+    date_added DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (recommendation_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (book_id) REFERENCES books(book_id)
 );
 
 -- -----------------------------------
