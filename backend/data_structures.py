@@ -136,12 +136,13 @@ class Matrix:
     def __neg__(self):
         if self._is_matrix:
             return Matrix(*[[-k for k in i] for i in self._matrix])  # Asterix means it is treated as multiple params
-        return Matrix(*[[-k for k in i] for i in self._matrix])
+        return Vector(*[-i[0] for i in self._matrix])  # Vectors are arrays of single element arrays, so this
+        # flattens for the correct params
 
     def __pos__(self):
         if self._is_matrix:
             return Matrix(*[[abs(k) for k in i] for i in self._matrix])
-        return Vector(*[[abs(k) for k in i] for i in self._matrix])
+        return Vector(*[abs(i[0]) for i in self._matrix])
 
     # https://en.wikipedia.org/wiki/Matrix_multiplication_algorithm
     def __mul__(self, op_value):
@@ -204,10 +205,9 @@ class Vector(Matrix):  # Vectors are a type of matrix
         return res
 
     def __add__(self, op_vector):
-        # This is overwritten as it cann be done with fewer iterations, and the
+        # This is overwritten as it can be done with fewer iterations, and the
         # result must be a vector not a matrix.
         res = Vector(dimensions=self._m)
         for count, v1, v2 in zip(list(range(self._m)), self._matrix, op_vector):
             res[count] = v1[0] + v2  # v1 is a list with one element in it.
-
         return res
