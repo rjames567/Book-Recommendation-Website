@@ -5,6 +5,7 @@ import configuration
 import data_structures
 import mysql_handler
 
+
 # -----------------------------------------------------------------------------
 # Recommendations
 # -----------------------------------------------------------------------------
@@ -15,7 +16,7 @@ class Recommendations:
             SELECT genre_id FROM genres        
         """))  # This is computed here as it is needed frequently.
         self._floating_error_threshold = 1E-15
-    
+
     def gen_book_vector(self, book_id):
         book_genres = self._connection.query("""
             SELECT genre_id,
@@ -32,12 +33,12 @@ class Recommendations:
             vector[i[0] - 1] = i[1]  # First index is 0 as there is only 1 
             # column - It is subtracted as MySQL IDs start at 1. Second index
             # is the book id. The value is the match strength.
-        
+
         return vector
 
     def gen_user_vector(self, user_id):
         vector = data_structures.Vector(dimensions=self._available_genres)
-        
+
         user_genres = self._connection.query("""
             SELECT genre_id,
                 match_strength
@@ -69,21 +70,20 @@ class Recommendations:
         """.format(user_id))[0][0]  # This will always give a result, select
         # only tuple, and its only value from the result.
 
-        user_vector *= num_reviews - 1 # This must be called after adding the
+        user_vector *= num_reviews - 1  # This must be called after adding the
         # review to the database - undoes the division, so it can be 
         # manipulated to change the values.
 
         book_vector = self.gen_book_vector(book_id)
 
-        user_vector += book_vector * (rating/5)
+        user_vector += book_vector * (rating / 5)
 
         user_vector /= num_reviews
 
         return user_vector
-    
-    def update_user_data_remove_review(self, temp, user_id, book_id, rating):
-        # user_vector = self.gen_user_vector(user_id)
-        user_vector = temp
+
+    def update_user_data_remove_review(self, user_id, book_id, rating):
+        user_vector = self.gen_user_vector(user_id)
 
         num_reviews = self._connection.query("""
             SELECT COUNT(review_id)
@@ -92,7 +92,7 @@ class Recommendations:
         """.format(user_id))[0][0]  # This will always give a result, select
         # only tuple, and its only value from the result.
 
-        user_vector *= num_reviews # This must be called after removing the
+        user_vector *= num_reviews + 1  # This must be called after removing the
         # review to the database - undoes the division, so it can be 
         # manipulated to change the values.
 
@@ -100,9 +100,9 @@ class Recommendations:
 
         user_vector -= book_vector * (rating / 5)
 
-        user_vector /= num_reviews - 1
+        user_vector /= num_reviews
 
-        return self.remove_rounding_errors(user_vector)\
+        return self.remove_rounding_errors(user_vector)
 
     def remove_rounding_errors(self, vector):
         # Storage space is limited so 0s are not stored, but due to float errors, these can become small <1E-19, so are
@@ -111,7 +111,6 @@ class Recommendations:
             if val < self._floating_error_threshold:
                 vector[count] = 0
         return vector
-        
 
 
 # -----------------------------------------------------------------------------
@@ -130,17 +129,3 @@ if __name__ == "__main__":
     # run directly so as a scheduled task to generate new recommendations, and
     # the connection will be closed at the end of the program execution so
     # shouldn't cause issues.
-
-    v1 = recommendations.gen_user_vector(1)
-    
-    v1.print()
-
-    v2 = recommendations.update_user_data_add_review(1, 2, 5)
-
-    v2.print()
-
-    print("\n\n")
-
-    v3 = recommendations.update_user_data_remove_review(v2, 1, 2, 5)
-
-    v3.print()
