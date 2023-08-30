@@ -113,6 +113,22 @@ class Recommendations:
                 vector[count] = 0
         return vector
 
+    def save_user_preference_vector(self, user_id, vector):
+        self._connection.query("""
+            DELETE FROM user_genres
+            WHERE user_id={}
+        """.format(user_id))
+        values = ""
+        for genre, match in enumerate(vector):
+            if match == 0:
+                continue  # Prevents matches with strength 0 being inserted - skips to next iteration
+            if genre != 0:
+                values += ","
+            values += f"({user_id}, {genre + 1}, {match})"  # Genre id is incremented, as MySQL indexes from 1, python
+            # from 0
+
+        self._connection.query("INSERT INTO user_genres (user_id, genre_id, match_strength) VALUES " + values)
+
     def gen_all_user_data(self):
         # This is for initial setup only. Updating user data when it is needed is faster.
         users = self._connection.query("""
@@ -144,7 +160,7 @@ class Recommendations:
                 book_vectors.append(self.gen_book_vector(book_genres=arr))
 
             user_vector = sum((vector * rating for vector, rating in zip(book_vectors, ratings)), data_structures.Vector(dimensions=self._available_genres, default_value=0)) / len(items)
-            user_vector.print()
+            self.save_user_preference_vector(user, user_vector)
 
 
 # -----------------------------------------------------------------------------
