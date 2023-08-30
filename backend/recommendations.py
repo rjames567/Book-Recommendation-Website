@@ -81,7 +81,10 @@ class Recommendations:
 
         user_vector /= num_reviews
 
-        return user_vector
+        res_vector = self.remove_rounding_errors(user_vector)
+
+        self.save_user_preference_vector(user_id, res_vector)
+        return res_vector
 
     def update_user_data_remove_review(self, user_id, book_id, rating):
         user_vector = self.gen_user_vector(user_id)
@@ -103,7 +106,11 @@ class Recommendations:
 
         user_vector /= num_reviews
 
-        return self.remove_rounding_errors(user_vector)
+        res_vector = self.remove_rounding_errors(user_vector)
+
+        self.save_user_preference_vector(user_id, res_vector)
+        return res_vector
+
 
     def remove_rounding_errors(self, vector):
         # Storage space is limited so 0s are not stored, but due to float errors, these can become small <1E-19, so are
