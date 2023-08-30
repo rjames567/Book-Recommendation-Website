@@ -16,6 +16,8 @@ class Recommendations:
             SELECT genre_id FROM genres        
         """))  # This is computed here as it is needed frequently.
         self._floating_error_threshold = 1E-15
+        self._recommendation_number = 15  # Constant to specify number of
+        # recommendations to generate each time
 
     def gen_book_vector(self, book_id=None, book_genres=None):
         if book_id is not None:
@@ -169,6 +171,19 @@ class Recommendations:
             user_vector = sum((vector * rating for vector, rating in zip(book_vectors, ratings)), data_structures.Vector(dimensions=self._available_genres, default_value=0)) / len(items)
             self.save_user_preference_vector(user, user_vector)
 
+    def recommend_user_books(self, user_id):
+        user_preferences = self.gen_user_vector(user_id)
+        weightings = []
+        for i in self._connection.query("SELECT book_id FROM books"):
+            book = i[0]
+            data = self.gen_book_vector(book_id=book)
+            weightings.append({
+                "id": book,
+                "dot_product": user_preferences.dot_product(data)
+            })
+
+        return [i["id"] for i in sorted(weightings, key=lambda x: x["dot_product"], reverse=True)][:self._recommendation_number]
+
 
 # -----------------------------------------------------------------------------
 # File execution
@@ -186,5 +201,3 @@ if __name__ == "__main__":
     # run directly so as a scheduled task to generate new recommendations, and
     # the connection will be closed at the end of the program execution so
     # shouldn't cause issues.
-
-    recommendations.gen_all_user_data()
