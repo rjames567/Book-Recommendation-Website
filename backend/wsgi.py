@@ -18,6 +18,7 @@ import environ_manipulation
 import logger
 import ml_utilities
 import mysql_handler
+import recommendations
 
 # -----------------------------------------------------------------------------
 # Project constants
