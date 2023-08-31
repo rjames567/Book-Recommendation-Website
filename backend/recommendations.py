@@ -189,10 +189,10 @@ class Recommendations:
                 data = self.gen_book_vector(book_id=book)
                 weightings.append({
                     "id": book,
-                    "dot_product": user_preferences.dot_product(data)
+                    "cos_sim": user_preferences.cosine_sim(data)
                 })
 
-        new_recommendations = sorted(weightings, key=lambda x: x["dot_product"], reverse=True)[:self._recommendation_number]
+        new_recommendations = sorted(weightings, key=lambda x: x["cos_sim"], reverse=True)[:self._recommendation_number]
         # Note that this could raise an error, but should not do so, as the amount available books should be greater
         # than 3x the amount recommendations made, and they are removed every two days.
 
@@ -200,13 +200,14 @@ class Recommendations:
         for count, recommendation in enumerate(new_recommendations):
             if count != 0:
                 values += ","
-            values += f"({user_id}, {recommendation['id']}, {recommendation['dot_product']})"
+            values += f"({user_id}, {recommendation['id']}, {recommendation['cos_sim']})"
+
+        # Cosine sim can be multiplied by 100, to give percentage match for the user.
 
         self._connection.query("INSERT INTO recommendations (user_id, book_id, certainty) VALUES " + values)
         # Certainty is to allow for it to be done by order on a query, as they may become out of order when the entries
         # are deleted after the specified period.
 
-# TODO add certainty to table
 
 # -----------------------------------------------------------------------------
 # File execution
