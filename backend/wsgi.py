@@ -36,13 +36,6 @@ number_similarities_about = 10
 num_display_genres = 10
 
 # -----------------------------------------------------------------------------
-# Utility functions
-# -----------------------------------------------------------------------------
-def write_log(msg, log):
-    if log is not None:
-        log.output_message(msg)
-
-# -----------------------------------------------------------------------------
 # Database connection
 # -----------------------------------------------------------------------------
 connection = mysql_handler.Connection(
@@ -90,11 +83,11 @@ class Middleware(object):
     def __init__(self, routes, log=None):
         self._routes = routes
         self._log = log
-        write_log(f"Create Middleware object", self._log)
+        self._log.output_message(f"Create Middleware object")
 
     def __call__(self, environ, start_response):
         target_name = environ_manipulation.application.get_target(environ)
-        write_log(f"Attempting to redirect to {target_name} application", self._log)
+        self._log.output_message(f"Attempting to redirect to {target_name} application")
         target_application = self._routes.get(target_name) or ErrorHandler("404 Not Found", log)
         return target_application(environ, start_response)
 
@@ -106,7 +99,7 @@ class Handler(object):
     def __init__(self, log=None):
         self._routes = {}  # There are no routes for the base class - included so the __call__ should still work
         self._log = log
-        write_log("Created " + __class__.__name__ + " instance", self._log)  # Cannot use
+        self._log.output_message("Created " + __class__.__name__ + " instance")  # Cannot use
         # commas as it the method only takes 2 parameters, and these would
         # pass each element as a parameter
 
@@ -127,15 +120,14 @@ class Handler(object):
 
     def __call__(self, environ, start_response):
         self._environ = environ  # Set so methods do not need to have it as a parameter.
-        write_log(self.__class__.__name__ + " object called", self._log)
-        write_log(f"     Handling request. URI: {self._environ['REQUEST_URI']}", self._log)
+        self._log.output_message(self.__class__.__name__ + " object called")
+        self._log.output_message(f"     Handling request. URI: {self._environ['REQUEST_URI']}")
         target_name = environ_manipulation.application.get_sub_target(self._environ)
-        write_log(f"     Redirecting to {self.__class__.__name__}.{target_name}", self._log)
+        self._log.output_message(f"     Redirecting to {self.__class__.__name__}.{target_name}")
         target_function = self._routes.get(target_name) or ErrorHandler("404 Not Found", log).error_response
         response, status, response_headers = target_function()
         start_response(status, response_headers)
-        # write_log(f"     Response given.    status: {status}    headers: {response_headers}    response: {response}",
-                #   self._log)
+        self._log.output_message(f"     Response given.    status: {status}    headers: {response_headers}    response: {response}")
         yield response.encode("utf-8")
 
 
@@ -163,13 +155,13 @@ class AccountHandler(Handler):
             )
             session_id = sessions.create_session(user_id)
             message = "Signed in successfully"
-            write_log("          Signed into account     Username: " + username, self._log)
-            write_log("          Session id: " + session_id, self._log)
+            self._log.output_message("          Signed into account     Username: " + username)
+            self._log.output_message("          Session id: " + session_id)
         except accounts_mod.InvalidUserCredentialsError:
-            write_log("          Failed to sign into account     Username: " + username, self._log)
+            self._log.output_message("          Failed to sign into account     Username: " + username)
             message = "Invalid username or password"
             session_id = None
-            write_log("          Session id: #N/A", self._log)
+            self._log.output_message("          Session id: #N/A")
 
         response = json.dumps({
             "message": message,
@@ -188,7 +180,7 @@ class AccountHandler(Handler):
     def sign_out(self):
         session_id = self.retrieve_post_parameters()
         sessions.close(session_id)
-        write_log("          Closed session     Session id: " + session_id, self._log)
+        self._log.output_message("          Closed session     Session id: " + session_id)
 
         status = "200 OK"
 
@@ -214,13 +206,13 @@ class AccountHandler(Handler):
             )
             session_id = sessions.create_session(user_id)
             message = "Account created successfully"
-            write_log("          Created account     Username: " + username, self._log)
+            self._log.output_message("          Created account     Username: " + username)
         except accounts_mod.UserExistsError:
-            write_log("          Failed to create account - username is taken     Username: " + username, self._log)
+            self._log.output_message("          Failed to create account - username is taken     Username: " + username)
             message = "Username is already taken."
             session_id = None  # json.dumps converts this to null automatically
 
-        write_log("          Session id: " + session_id, self._log)
+        self._log.output_message("          Session id: " + session_id)
 
         response = json.dumps({
             "message": message,
@@ -254,9 +246,9 @@ class MyBooksHandler(Handler):
 
     def get_list_names(self):
         session_id = self.retrieve_get_parameters()["session_id"]
-        write_log("          Session id: " + session_id, self._log)
+        self._log.output_message("          Session id: " + session_id)
         user_id = sessions.get_user_id(session_id)
-        write_log("          User id: " + str(user_id), self._log)
+        self._log.output_message("          User id: " + str(user_id))
 
         names = reading_lists.get_names(user_id)
         response = json.dumps({i: names.pop() for i in range(names.size)})
@@ -274,12 +266,12 @@ class MyBooksHandler(Handler):
         response_dict = self.retrieve_get_parameters()
 
         session_id = response_dict["session_id"]
-        write_log("          Session id: " + session_id, self._log)
+        self._log.output_message("          Session id: " + session_id)
         user_id = sessions.get_user_id(session_id)
-        write_log("          User id: " + str(user_id), self._log)
+        self._log.output_message("          User id: " + str(user_id))
 
         list_id = response_dict["list_id"]
-        write_log("          List ID: " + str(list_id), self._log)
+        self._log.output_message("          List ID: " + str(list_id))
 
         result = dict()
 
@@ -310,12 +302,12 @@ class MyBooksHandler(Handler):
         list_id = response_dict["list_id"]
         book_id = response_dict["book_id"]  # Replace ampersand code with character
 
-        write_log("          Session id: " + session_id, self._log)
+        self._log.output_message("          Session id: " + session_id)
         user_id = sessions.get_user_id(session_id)
-        write_log("          User id: " + str(user_id), self._log)
+        self._log.output_message("          User id: " + str(user_id))
 
-        write_log("          List ID: " + str(list_id), self._log)
-        write_log("          Book ID: " + str(book_id), self._log)
+        self._log.output_message("          List ID: " + str(list_id))
+        self._log.output_message("          Book ID: " + str(book_id))
 
         reading_lists.remove_entry(user_id, list_id, book_id)
         response = "true"  # A response is needed to use this result, but does not impact the client at all.
@@ -336,15 +328,15 @@ class MyBooksHandler(Handler):
         list_id = response_dict["list_id"]
         book_id = response_dict["book_id"]
 
-        write_log("          Session id: " + session_id, self._log)
+        self._log.output_message("          Session id: " + session_id)
         user_id = sessions.get_user_id(session_id)
-        write_log("          User id: " + str(user_id), self._log)
+        self._log.output_message("          User id: " + str(user_id))
 
-        write_log("          List ID: " + str(list_id), self._log)
-        write_log("          Book ID: " + str(book_id), self._log)
+        self._log.output_message("          List ID: " + str(list_id))
+        self._log.output_message("          Book ID: " + str(book_id))
 
         target_list_id = response_dict["target_list_id"]
-        write_log("          Target list ID: " + str(target_list_id), self._log)
+        self._log.output_message("          Target list ID: " + str(target_list_id))
 
         reading_lists.move_entry(user_id, list_id, target_list_id, book_id)
 
@@ -365,10 +357,10 @@ class MyBooksHandler(Handler):
         session_id = response_dict["session_id"]
         list_id = response_dict["list_id"]
 
-        write_log("          Session id: " + session_id, self._log)
+        self._log.output_message("          Session id: " + session_id)
         user_id = sessions.get_user_id(session_id)
-        write_log("          User id: " + str(user_id), self._log)
-        write_log("          List ID: " + str(list_id), self._log)
+        self._log.output_message("          User id: " + str(user_id))
+        self._log.output_message("          List ID: " + str(list_id))
 
         reading_lists.remove_list(user_id, list_id)
 
@@ -389,10 +381,10 @@ class MyBooksHandler(Handler):
         session_id = response_dict["session_id"]
         list_name = response_dict["list_name"]
 
-        write_log("          Session id: " + session_id, self._log)
+        self._log.output_message("          Session id: " + session_id)
         user_id = sessions.get_user_id(session_id)
-        write_log("          User id: " + str(user_id), self._log)
-        write_log("          List name: " + list_name, self._log)
+        self._log.output_message("          User id: " + str(user_id))
+        self._log.output_message("          List name: " + list_name)
 
         reading_lists.create_list(user_id, list_name)
 
@@ -410,11 +402,11 @@ class MyBooksHandler(Handler):
     def get_list_names_include_book(self):
         params = self.retrieve_get_parameters()
         session_id = params["session_id"]
-        write_log("          Session id: " + session_id, self._log)
+        self._log.output_message("          Session id: " + session_id)
         user_id = sessions.get_user_id(session_id)
-        write_log("          User id: " + str(user_id), self._log)
+        self._log.output_message("          User id: " + str(user_id))
         book_id = params["book_id"]
-        write_log("          Book id: " + str(book_id), self._log)
+        self._log.output_message("          Book id: " + str(book_id))
 
         result = reading_lists.get_names_check_book_in(user_id, book_id)
 
@@ -433,13 +425,13 @@ class MyBooksHandler(Handler):
         params = self.retrieve_post_parameters()
         params = json.loads(params)
         session_id = params["session_id"]
-        write_log("          Session id: " + session_id, self._log)
+        self._log.output_message("          Session id: " + session_id)
         user_id = sessions.get_user_id(session_id)
-        write_log("          User id: " + str(user_id), self._log)
+        self._log.output_message("          User id: " + str(user_id))
         book_id = params["book_id"]
-        write_log("          Book id: " + str(book_id), self._log)
+        self._log.output_message("          Book id: " + str(book_id))
         list_id = params["list_id"]
-        write_log("          List id: " + str(list_id), self._log)
+        self._log.output_message("          List id: " + str(list_id))
 
         reading_lists.add_entry(user_id, list_id, book_id)
 
@@ -467,15 +459,15 @@ class GenreHandler(Handler):
 
     def get_genre_data(self):
         genre_name = self.retrieve_get_parameters()["genre_name"]
-        write_log("          Genre name: " + genre_name, self._log)
+        self._log.output_message("          Genre name: " + genre_name)
         try:
             result = genres.get_about_data(genre_name)
             status = "200 OK"
-            write_log("          Success", self._log)
+            self._log.output_message("          Success")
 
             response = json.dumps(result)
-            write_log("          Response: " + response, self._log)
-            write_log("          Status: " + status, self._log)
+            self._log.output_message("          Response: " + response)
+            self._log.output_message("          Status: " + status)
 
             response_headers = [
                 ("Content-Type", "application/json"),
@@ -486,7 +478,7 @@ class GenreHandler(Handler):
 
         except genres_mod.GenreNotFoundError:
             status = "404 Not Found"
-            write_log("          Status: " + status, self._log)
+            self._log.output_message("          Status: " + status)
             return ErrorHandler("404 Not Found").error_response()  # Return the content for a 404 error
 
 
@@ -506,23 +498,23 @@ class BookHandler(Handler):
         get_params = self.retrieve_get_parameters()
         session_id = get_params["session_id"]
         book_id = get_params["book_id"]
-        write_log("          Book ID: " + book_id, self._log)
-        write_log("          Session ID: " + session_id, self._log)
+        self._log.output_message("          Book ID: " + book_id)
+        self._log.output_message("          Session ID: " + session_id)
         if session_id != "null":
             user_id = sessions.get_user_id(session_id)
         else:
             user_id = None
-        write_log("          User ID: " + str(user_id), self._log)
+        self._log.output_message("          User ID: " + str(user_id))
         try:
             result = books.get_about_data(book_id, user_id)
 
             result["similar_books"] = books.get_similar_items(int(book_id))
             status = "200 OK"
-            write_log("          Success", self._log)
+            self._log.output_message("          Success")
 
             response = json.dumps(result)
-            # write_log("          Response: " + response, self._log)
-            write_log("          Status: " + status, self._log)
+            # self._log.output_message("          Response: " + response)
+            self._log.output_message("          Status: " + status)
 
             response_headers = [
                 ("Content-Type", "application/json"),
@@ -533,7 +525,7 @@ class BookHandler(Handler):
 
         except book_mod.BookNotFoundError:
             status = "404 Not Found"
-            write_log("          Status: " + status, self._log)
+            self._log.output_message("          Status: " + status)
             return ErrorHandler("404 Not Found").error_response()  # Return the content for a 404 error
 
     def delete_review(self):
@@ -541,10 +533,10 @@ class BookHandler(Handler):
         params = json.loads(json_response)
         session_id = params["session_id"]
         review_id = params["review_id"]
-        write_log("          Review ID: " + str(review_id), self._log)
-        write_log("          Session ID: " + session_id, self._log)
+        self._log.output_message("          Review ID: " + str(review_id))
+        self._log.output_message("          Session ID: " + session_id)
         user_id = sessions.get_user_id(session_id)
-        write_log("          User ID: " + str(user_id), self._log)
+        self._log.output_message("          User ID: " + str(user_id))
 
         books.delete_review(review_id, user_id)
 
@@ -562,13 +554,13 @@ class BookHandler(Handler):
     def leave_review(self):
         json_response = self.retrieve_post_parameters()
         params = json.loads(json_response)
-        write_log(params, self._log)
+        self._log.output_message(params)
         session_id = params["session_id"]
-        write_log("          Session ID: " + session_id, self._log)
+        self._log.output_message("          Session ID: " + session_id)
         user_id = sessions.get_user_id(session_id)
-        write_log("          User ID: " + str(user_id), self._log)
+        self._log.output_message("          User ID: " + str(user_id))
         book_id = params["book_id"]
-        write_log("          Book ID: " + str(book_id), self._log)
+        self._log.output_message("          Book ID: " + str(book_id))
 
         books.leave_review(
             user_id,
@@ -609,10 +601,10 @@ class AuthorHandler(Handler):
         params = json.loads(json_response)
         session_id = params["session_id"]
         author_id = params["author_id"]
-        write_log("          Author ID: " + str(author_id), self._log)
-        write_log("          Session ID: " + session_id, self._log)
+        self._log.output_message("          Author ID: " + str(author_id))
+        self._log.output_message("          Session ID: " + session_id)
         user_id = sessions.get_user_id(session_id)
-        write_log("          User ID: " + str(user_id), self._log)
+        self._log.output_message("          User ID: " + str(user_id))
 
         authors.follow(user_id, author_id)
 
@@ -633,10 +625,10 @@ class AuthorHandler(Handler):
         params = json.loads(json_response)
         session_id = params["session_id"]
         author_id = params["author_id"]
-        write_log("          Author ID: " + str(author_id), self._log)
-        write_log("          Session ID: " + session_id, self._log)
+        self._log.output_message("          Author ID: " + str(author_id))
+        self._log.output_message("          Session ID: " + session_id)
         user_id = sessions.get_user_id(session_id)
-        write_log("          User ID: " + str(user_id), self._log)
+        self._log.output_message("          User ID: " + str(user_id))
 
         authors.unfollow(user_id, author_id)
 
@@ -655,15 +647,15 @@ class AuthorHandler(Handler):
     def get_author_data(self):
         get_params = self.retrieve_get_parameters()
         author_id = get_params["author_id"]
-        write_log("          Author ID: " + str(author_id), self._log)
+        self._log.output_message("          Author ID: " + str(author_id))
         try:
             result = authors.get_about_data(author_id)
             status = "200 OK"
-            write_log("          Success", self._log)
+            self._log.output_message("          Success")
 
             response = json.dumps(result)
-            write_log("          Response: " + response, self._log)
-            write_log("          Status: " + status, self._log)
+            self._log.output_message("          Response: " + response)
+            self._log.output_message("          Status: " + status)
 
             response_headers = [
                 ("Content-Type", "application/json"),
@@ -674,7 +666,7 @@ class AuthorHandler(Handler):
 
         except author_mod.AuthorNotFoundError:
             status = "404 Not Found"
-            write_log("          Status: " + status, self._log)
+            self._log.output_message("          Status: " + status)
             return ErrorHandler("404 Not Found").error_response()  # Return the content for a 404 error
 
 
@@ -692,9 +684,9 @@ class DiaryHandler(Handler):
 
     def get_entries(self):
         session_id = self.retrieve_get_parameters()["session_id"]  # Only has one parameter, so this is fine.
-        write_log("          Session ID: " + session_id, self._log)
+        self._log.output_message("          Session ID: " + session_id)
         user_id = sessions.get_user_id(session_id)
-        write_log("          User ID: " + str(user_id), self._log)
+        self._log.output_message("          User ID: " + str(user_id))
 
         result = dict()
         result["entries"] = diaries.get_entries(user_id)
@@ -704,8 +696,8 @@ class DiaryHandler(Handler):
 
         status = "200 OK"
 
-        write_log("          Response: " + response, self._log)
-        write_log("          Status: " + status, self._log)
+        self._log.output_message("          Response: " + response)
+        self._log.output_message("          Status: " + status)
 
         response_headers = [
             ("Content-Type", "application/json"),
@@ -719,10 +711,10 @@ class DiaryHandler(Handler):
         params = json.loads(json_response)
         session_id = params["session_id"]
         entry_id = params["entry_id"]
-        write_log("          Entry ID: " + str(entry_id), self._log)
-        write_log("          Session ID: " + session_id, self._log)
+        self._log.output_message("          Entry ID: " + str(entry_id))
+        self._log.output_message("          Session ID: " + session_id)
         user_id = sessions.get_user_id(session_id)
-        write_log("          User ID: " + str(user_id), self._log)
+        self._log.output_message("          User ID: " + str(user_id))
 
         diaries.delete_entry(user_id, entry_id)
 
@@ -731,8 +723,8 @@ class DiaryHandler(Handler):
 
         status = "200 OK"
 
-        write_log("          Response: " + response, self._log)
-        write_log("          Status: " + status, self._log)
+        self._log.output_message("          Response: " + response)
+        self._log.output_message("          Status: " + status)
 
         response_headers = [
             ("Content-Type", "text/plain"),
@@ -746,10 +738,10 @@ class DiaryHandler(Handler):
         params = json.loads(json_response)
         session_id = params["session_id"]
         book_id = params["book_id"]
-        write_log("          Session ID: " + session_id, self._log)
+        self._log.output_message("          Session ID: " + session_id)
         user_id = sessions.get_user_id(session_id)
-        write_log("          User ID: " + str(user_id), self._log)
-        write_log("          Book ID: " + str(book_id), self._log)
+        self._log.output_message("          User ID: " + str(user_id))
+        self._log.output_message("          Book ID: " + str(book_id))
 
         diaries.add_entry(
             user_id,
@@ -766,8 +758,8 @@ class DiaryHandler(Handler):
 
         status = "200 OK"
 
-        write_log("          Response: " + response, self._log)
-        write_log("          Status: " + status, self._log)
+        self._log.output_message("          Response: " + response)
+        self._log.output_message("          Status: " + status)
 
         response_headers = [
             ("Content-Type", "text/plain"),
@@ -791,15 +783,15 @@ class HomeHandler(Handler):
         session_id = self.retrieve_get_parameters()["session_id"]  # Only has one parameter, so this is fine.
         result = dict()
         if session_id != "null": # retrieve_get_parameters does not convert "null" to None.
-            write_log("          Session ID: " + session_id, self._log)
+            self._log.output_message("          Session ID: " + session_id)
             user_id = sessions.get_user_id(session_id)
-            write_log("          User ID: " + str(user_id), self._log)
+            self._log.output_message("          User ID: " + str(user_id))
 
             result["recommended"] = {}  # TODO update this once recommendation methods are made
             result["currently_reading"] = reading_lists.get_currently_reading(user_id)
             result["want_read"] = reading_lists.get_want_read(user_id)
         else:
-            write_log("          Session ID: None", self._log)
+            self._log.output_message("          Session ID: None")
             result["recommended"] = None
             result["currently_reading"] = None
             result["want_read"] = None
@@ -811,8 +803,8 @@ class HomeHandler(Handler):
 
         status = "200 OK"
 
-        write_log("          Response: " + response, self._log)
-        write_log("          Status: " + status, self._log)
+        self._log.output_message("          Response: " + response)
+        self._log.output_message("          Status: " + status)
 
         response_headers = [
             ("Content-Type", "application/json"),
@@ -831,7 +823,7 @@ class ErrorHandler(Handler):
         self._status = status
 
     def error_response(self):
-        write_log(f"     Handling error: {self._status}", self._log)
+        self._log.output_message(f"     Handling error: {self._status}")
         response = f"<h1>{self._status}</h1>"
         if self._status[0] == "4":  # Other messages are successful, so do not need to be created.
             response += "<p>The page you were looking for does not exist.</p>"
@@ -845,25 +837,20 @@ class ErrorHandler(Handler):
         return response, self._status, response_headers  # Status is needed as this format is needed elsewhere
 
     def __call__(self, environ, start_response):
-        write_log(self.__class__.__name__ + " object called", self._log)
-        write_log(f"     Handling request. URI: {environ['REQUEST_URI']}", self._log)
+        self._log.output_message(self.__class__.__name__ + " object called")
+        self._log.output_message(f"     Handling request. URI: {environ['REQUEST_URI']}")
         response, status, response_headers = self.error_response()  # Overwrite standard method. Different to reduce
         # necessary processing – it is known an error has occurred, it does not need to be checked for.
         start_response(status, response_headers)
-        write_log(
-            f"     Response given.    status: {self._status}    headers: {response_headers}    response: {response}",
-            self._log)
+        self._log.output_message(f"     Response given.    status: {self._status}    headers: {response_headers}    response: {response}")
         yield response.encode("utf-8")
 
 
 # -----------------------------------------------------------------------------
 # File execution
 # -----------------------------------------------------------------------------
-if debugging:
-    log = logger.Logging()
-else:
-    log = None
-    
+log = logger.Logging(debugging=debugging)
+
 # https://www.sitepoint.com/python-web-applications-the-basics-of-wsgi/
 routes = {
     "account": AccountHandler(log),
