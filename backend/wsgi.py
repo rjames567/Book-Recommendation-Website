@@ -12,16 +12,19 @@ import urllib.parse
 # -----------------------------------------------------------------------------
 # Project imports
 # -----------------------------------------------------------------------------
-import authors as author_mod  # Can't use standard name, as it is the logical
+import accounts as accounts_mod  # Can't use standard name, as it is the logical
 # name for the class instance.
+import authors as author_mod
 import books as book_mod
+import diaries as diaries_mod
+import recommendations
+
 import configuration
 import data_structures
 import environ_manipulation
 import logger
 import ml_utilities
 import mysql_handler
-import recommendations
 
 # -----------------------------------------------------------------------------
 # Project constants
@@ -48,49 +51,6 @@ def write_log(msg, log):
 # -----------------------------------------------------------------------------
 # Exceptions
 # -----------------------------------------------------------------------------
-class GenreNotFoundError(Exception):
-    """
-    Exception for when a genre is not found.
-    """
-
-    def __init__(self, genre_name):
-        message = f"Genre '{genre_name}' was not found"
-        super().__init__(message)
-
-
-class SessionExpiredError(Exception):
-    """
-    Exception for when a client is using a session that has expired, and is no
-    longer valid.
-    """
-
-    def __init__(self, session_id):
-        message = f"Session id '{session_id}' has expired"
-        super().__init__(message)
-
-
-class UserExistsError(Exception):
-    """
-    Exception for when a user account already exists with a specific username,
-    and it has been attempted to add a second.
-
-    Usernames must be unique in the database.
-    """
-
-    def __init__(self, username):
-        message = f"User already exists with the username {username}."
-        super().__init__(message)
-
-
-class InvalidUserCredentialsError(Exception):
-    """
-    Exception for where a user's provided username and password are not valid.
-    """
-
-    def __init__(self, username):
-        message = f"Incorrect username or password entered for {username}"
-        super().__init__(message)
-
 class ListNotFoundError(Exception):
     """
     Exception for when a user's list is not found
@@ -113,6 +73,8 @@ connection = mysql_handler.Connection(
 # -----------------------------------------------------------------------------
 # Class instantiation
 # -----------------------------------------------------------------------------
+diaries = diaries_mod.Diaries(connection)
+sessions = accounts_mod.Sessions(connection, token_size)
 authors = author_mod.Authors(connection)
 books = book_mod.Books(
     connection,
@@ -122,401 +84,6 @@ books = book_mod.Books(
     num_display_genres,
     authors
 )
-
-# -----------------------------------------------------------------------------
-# Diaries
-# -----------------------------------------------------------------------------
-class diaries:
-    def add_entry(user_id, book_id, overall_rating, character_rating, plot_rating, summary, thoughts, pages_read):
-        params = locals()
-        params = {i: "null" if k is None else k for i, k in zip(params.keys(), params.values())}
-        if thoughts is not None:
-            params["thoughts"] = '"' + re.sub("\n+", "\n", params["thoughts"]) + '"'
-        if summary is not None:
-            params["summary"] = '"' + params["summary"] + '"'
-        connection.query("""
-            INSERT INTO diary_entries (user_id, book_id, overall_rating, character_rating, plot_rating, summary, thoughts, pages_read)
-            VALUES
-            ({user_id}, {book_id}, {overall_rating}, {character_rating}, {plot_rating}, {summary}, {thoughts}, {pages_read});
-        """.format(
-            user_id=params["user_id"],
-            book_id=params["book_id"],
-            overall_rating=params["overall_rating"],
-            character_rating=params["character_rating"],
-            plot_rating=params["plot_rating"],
-            summary=params["summary"],
-            thoughts=params["thoughts"],
-            pages_read=params["pages_read"]
-        ))
-
-    def delete_entry(user_id, entry_id):
-        # The user id is just a way of helping preventing a random deletion of a list. The corresponding user_id must be
-        # known.
-        connection.query("""
-            DELETE from diary_entries
-            WHERE user_id={user_id}
-                AND entry_id={entry_id};
-        """.format(user_id=user_id, entry_id=entry_id))
-
-    def get_entries(user_id):
-        res = connection.query("""
-            SELECT diary_entries.entry_id,
-                diary_entries.book_id,
-                diary_entries.overall_rating,
-                diary_entries.character_rating,
-                diary_entries.plot_rating,
-                diary_entries.summary,
-                diary_entries.thoughts,
-                diary_entries.date_added,
-                diary_entries.pages_read,
-                books.cover_image,
-                books.title,
-                authors.author_id,
-                authors.first_name,
-                authors.surname,
-                authors.alias,
-                (SELECT IFNULL(ROUND(AVG(reviews.overall_rating), 2), 0)
-                    FROM reviews
-                    WHERE reviews.book_id=books.book_id) AS average_rating,
-                (SELECT COUNT(reviews.overall_rating)
-                    FROM reviews
-                    WHERE reviews.book_id=books.book_id) AS num_rating
-            FROM diary_entries
-            INNER JOIN books ON books.book_id=diary_entries.book_id
-            INNER JOIN authors ON books.author_id=authors.author_id
-            WHERE diary_entries.user_id={}
-            ORDER BY diary_entries.date_added DESC;
-        """.format(user_id))  # Order by ensures that most recent is at the top.
-
-        output_dict = dict()
-        for i, k in enumerate(res):
-            first_name = k[12]
-            surname = k[13]
-            alias = k[14]
-            if (alias is not None and
-                    (first_name is not None and surname is not None)):
-                author = f"{alias} ({first_name} {surname})"
-            elif (alias is not None and
-                  (first_name is None and surname is None)):
-                author = alias
-            else:
-                author = f"{first_name} {surname}"
-
-            thoughts = k[6]
-            if thoughts is not None:
-                thoughts = "</p><p>".join(("<p>" + k[6] + "</p>").split("\n"))
-            output_dict[i] = {
-                "entry_id": k[0],
-                "book_id": k[1],
-                "overall_rating": k[2],
-                "character_rating": k[3],
-                "plot_rating": k[4],
-                "summary": k[5],
-                "thoughts": thoughts,
-                "date_added": k[7].strftime("%d-%m-%Y"),
-                "pages_read": k[8],
-                "cover_image": k[9],
-                "title": k[10],
-                "author_id": k[11],
-                "author_name": author,
-                "average_rating": float(k[15]),
-                "number_ratings": k[16]
-            }
-
-        return output_dict
-
-
-# -----------------------------------------------------------------------------
-# Genres
-# -----------------------------------------------------------------------------
-class genres:
-    def get_about_data(genre_name):
-        res = connection.query("""
-            SELECT genre_id, name, about FROM genres
-            WHERE name="{genre_name}";
-        """.format(
-            genre_name=genre_name))  # There will only be one entry with that name, so take only tuple from result
-        # list
-
-        if len(res) == 0:  # Protect against a list out of range errors
-            raise GenreNotFoundError(genre_name)
-        else:
-            res = res[0]
-
-        db_books = connection.query("""
-            SELECT books.book_id, books.title, books.cover_image, authors.first_name, authors.surname, authors.alias FROM books
-            INNER JOIN authors ON books.author_id=authors.author_id
-            INNER JOIN book_genres ON books.book_id=book_genres.book_id
-            INNER JOIN genres ON genres.genre_id=book_genres.genre_id
-            WHERE genres.genre_id={genre_id};
-        """.format(genre_id=res[0]))
-
-        book_dict = dict()
-        for i, k in enumerate(db_books):
-            book_id, title, cover, first_name, surname, alias = k
-            if (alias is not None and
-                    (first_name is not None and surname is not None)):
-                author = f"{alias} ({first_name} {surname})"
-            elif (alias is not None and
-                  (first_name is None and surname is None)):
-                author = alias
-            else:
-                author = f"{first_name} {surname}"
-
-            book_dict[i] = {
-                "id": book_id,
-                "title": title,
-                "author": author,
-                "cover": cover
-            }
-
-        output_dict = {
-            "name": res[1],
-            "about": "</p><p>".join(("<p>" + res[2] + "</p>").split("\n")),
-            # Split each paragraph into <p></p> elements
-            "books": book_dict
-        }
-
-        return output_dict
-
-
-# -----------------------------------------------------------------------------
-# Login
-# -----------------------------------------------------------------------------
-class login:
-    def hash_password(password):
-        """
-        Method to hash the password, including a salt.
-
-        password -> string
-            The string that is to be hashed.
-
-        Returns a string.
-        """
-        result = hashlib.pbkdf2_hmac(
-            hashing_algorithm,
-            password.encode("utf-8"),  # Needs to be in binary
-            hashing_salt,  # Salt needs to be in binary - stored as binary in config
-            number_hash_passes  # Recommended number of passes is 100,000
-        )
-
-        return result.hex()  # Hash is returned as a hex string, so converts back
-
-
-class accounts:
-    def check_credentials(username, password):
-        """
-        Method to check whether given user credentials are stored in the
-        database.
-
-        username -> string
-            The username that is to be checked
-
-        password -> string
-            The password that is to checked
-
-        Raises InvalidUserCredentialsError if the credentials are incorrect.
-
-        Returns an integer value for the
-        """
-        entered_password = login.hash_password(password)
-        query_result = connection.query(
-            """
-            SELECT password_hash FROM users
-            WHERE username="{}";
-            """.format(username)
-        )
-
-        if (len(query_result) == 0) or (query_result[0][0] != entered_password):
-            raise InvalidUserCredentialsError(username)
-        else:
-            return accounts.get_user_id(username)
-
-    def create_user(first_name, surname, username, password):
-        """
-        Method to create a new user in the database.
-
-        first_name -> string
-            The first name of the new user
-
-        surname -> string
-            The surname of the new user
-
-        username -> string
-            The unique identifier for the new user
-
-        password -> string
-            The password for the new user
-
-        Raises UserExistsError, if the username provided already is in the
-        database, as usernames must be unique.
-
-        Returns an integer, which is the user id of the new user.
-        """
-        query_result = connection.query(
-            """
-            SELECT username FROM users
-            WHERE username="{}"
-            """.format(username)
-        )
-
-        if len(query_result):
-            raise UserExistsError(username)
-        else:
-            connection.query(
-                """
-                INSERT INTO users (first_name, surname, username, password_hash)
-                VALUES ("{first_name}", "{surname}", "{username}", "{password}");
-                """.format(
-                    first_name=first_name,
-                    surname=surname,
-                    username=username,
-                    password=login.hash_password(password)  # Password must be hashed before
-                    # storing in the database.
-                )
-            )
-
-            user_id = connection.query(
-                """
-                SELECT user_id FROM users
-                WHERE username="{}"
-                """.format(username)
-            )[0][0]
-
-            reading_lists.create_list(user_id, "Want to Read")
-            reading_lists.create_list(user_id, "Currently Reading")
-            reading_lists.create_list(user_id, "Have Read")
-
-            return user_id
-
-    def get_user_id(username):
-        """
-        Method to get the corresponding id of the given username.
-
-        username -> string
-            The target username to get the id of
-
-        Returns an integer.
-        """
-        query_result = connection.query(
-            """
-            SELECT user_id FROM users
-            WHERE username="{}";
-            """.format(username)
-        )
-
-        return query_result[0][0]
-
-
-# -----------------------------------------------------------------------------
-# Sessions
-# -----------------------------------------------------------------------------
-class sessions:
-    def create_session(user_id):
-        """
-        Method to create new session. Adds the new session token to the
-        database, which can the be queries using it, to get the corresponding
-        user id.
-
-        user_id -> integer
-            The user id for the new session
-
-        Return a string, which is the session token, to be sent to the client
-        after login.
-        """
-        token = secrets.token_bytes(token_size).hex() + str(time.time()).replace(".", "")  # Remove the fullstops from
-        # the time to make it shorter
-        # Generates a random string, and adds time to reduce required size of
-        # the randomly generated string for speed.
-        # https://docs.python.org/3/library/secrets.html#:~:text=it%20is%20believed%20that%2032%20bytes%20(256%20bits)%20of%20randomness%20is%20sufficient%20for%20the%20typical%20use%2Dcase%20expected%20for%20the%20secrets%20module
-
-        # Probability of getting duplicates is very low, and gets lower as the
-        # size of the string increases. It would also need to be within 1
-        # second, as time.time() is added to the end which is the number of
-        # seconds since the epoch.
-
-        connection.query(
-            """
-            INSERT INTO sessions (client_id, user_id) VALUES ("{token}", {user_id});
-            """.format(token=token, user_id=user_id)
-        )
-
-        return token
-
-    def update_time(session_id):
-        """
-        Method to update the stored session time to the current time, so that
-        the timeout for the session is reset.
-
-        session_id -> string
-            The session id for which the creation time needs to be updated for
-
-        Does not have a return value
-        """
-        connection.query(
-            """
-            UPDATE sessions
-            SET
-                date_added=NOW()
-            WHERE client_id="{}";
-            """.format(session_id)
-        )
-
-    def get_user_id(session_id):
-        """
-        Method to get the corresponding user_id to the session id passed in. It
-        checks whether the session has expired, and if it has expired, it raises
-        a SessionExpiredError. If it has not, it returns the user id.
-
-        When the session has expired, it removes the entry from the database.
-
-        session_id -> string
-            The session id to get corresponding user id of
-
-        Returns an integer of the user id.
-        """
-        res = connection.query(
-            """
-            SELECT user_id, date_added FROM sessions
-            WHERE client_id="{}";
-            """.format(session_id)
-        )
-        if len(res) == 0:
-            raise SessionExpiredError(session_id)  # If there is no entries
-            # it must have been deleted by a maintenance script, as it had
-            # expired.
-        else:
-            res = res[0]  # Gets first element result from list - should only be
-            # one result
-        expiry_datetime = res[1] + datetime.timedelta(days=1)
-        # Set expiry date to one day after it has been last used
-
-        if datetime.datetime.now() > expiry_datetime:
-            sessions.close(session_id)
-            raise SessionExpiredError(session_id)
-        else:
-            return res[0]
-
-        # Does not update the session time - Excluded from this as any request
-        # from the client indicates that is still active, regardless of whether
-        # the user id is needed to carry out the required process.
-
-    def close(session_id):
-        """
-        Method to close an open session using the session id, which is has been sent
-        to the client. It should be called when the browser/tab is closed.
-
-        session_id -> string
-            The session id which should be closed
-
-        Does not have a return value.
-        """
-        connection.query(
-            """
-            DELETE FROM sessions
-            WHERE client_id="{}";
-            """.format(session_id)
-        )
 
 
 # -----------------------------------------------------------------------------
@@ -884,7 +451,7 @@ class AccountHandler(Handler):
             message = "Signed in successfully"
             write_log("          Signed into account     Username: " + username, self._log)
             write_log("          Session id: " + session_id, self._log)
-        except InvalidUserCredentialsError:
+        except accounts_mod.InvalidUserCredentialsError:
             write_log("          Failed to sign into account     Username: " + username, self._log)
             message = "Invalid username or password"
             session_id = None
@@ -934,7 +501,7 @@ class AccountHandler(Handler):
             session_id = sessions.create_session(user_id)
             message = "Account created successfully"
             write_log("          Created account     Username: " + username, self._log)
-        except UserExistsError:
+        except accounts_mod.UserExistsError:
             write_log("          Failed to create account - username is taken     Username: " + username, self._log)
             message = "Username is already taken."
             session_id = None  # json.dumps converts this to null automatically
@@ -1579,7 +1146,7 @@ class ErrorHandler(Handler):
 # Object initialisation
 # -----------------------------------------------------------------------------
 if debugging:
-    log = None # logger.Logging()
+    logger.Logging()
 else:
     log = None
 # https://www.sitepoint.com/python-web-applications-the-basics-of-wsgi/
