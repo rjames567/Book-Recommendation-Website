@@ -1310,7 +1310,7 @@ function loadRecommendationsPage () {
                 $(template).find(".cover img").attr("src", recommendation["cover_image"]);
 
                 $(template).find(".title-container a.title").html(recommendation["title"]);
-                $(template).find(".title-container a.title").data("id", recommendation["book_id"]);
+                $(template).data("id", recommendation["book_id"]);
 
                 $(template).find(".title-container a.author").html(recommendation["author_name"]);
                 $(template).find(".title-container a.author").data("id", recommendation["author_id"]);
@@ -1335,6 +1335,10 @@ function loadRecommendationsPage () {
 
                 $(template).appendTo(".recommendation-entries");
             }
+
+            assignAuthorNavigationHandlers();
+            assignGenreNavigationHandlers();
+            assignBookNavigationHandlers();
         },
         error: function (jqXHR) {
             console.log(jqXHR.status + " " + jqXHR.responseText);
