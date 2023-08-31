@@ -60,7 +60,7 @@ class Authors:
             res = res[0]
 
         first_name, surname, alias, about = res  # res is a 4 element tuple, so this unpacks it
-        author = names_to_display(alias, first_name, surname)
+        author = names_to_display(first_name, surname, alias)
         output_dict = {
             "name": author,
             "about": "</p><p>".join(("<p>" + about + "</p>").split("\n")),
@@ -87,7 +87,7 @@ class Authors:
 # -----------------------------------------------------------------------------
 # Functions
 # -----------------------------------------------------------------------------
-def names_to_display(alias, first_name, surname):
+def names_to_display(first_name, surname, alias):
     if (alias is not None and
             (first_name is not None and surname is not None)):
         author = f"{alias} ({first_name} {surname})"

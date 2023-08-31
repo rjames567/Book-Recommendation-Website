@@ -48,7 +48,7 @@ class ReadingLists:
         output_dict = dict()
         for i, k in enumerate(res):
             output_dict[i] = {
-                "author": authors.names_to_display(k[5], k[3], k[4]),
+                "author": authors.names_to_display(k[3], k[4], k[5]),
                 "title": k[1],
                 "book_id": k[0],
                 "cover": k[2],
@@ -101,7 +101,7 @@ class ReadingLists:
                 AND reading_list_names.user_id={};
         """.format(user_id))
         return [{
-                "author": authors.names_to_display(i[5], i[3], i[4]),
+                "author": authors.names_to_display(i[3], i[4], i[5]),
                 "title": i[1],
                 "book_id": i[0],
                 "cover": i[2],
@@ -123,7 +123,7 @@ class ReadingLists:
                 AND reading_list_names.user_id={};
         """.format(user_id))
         return [{
-                "author": authors.names_to_display(i[5], i[3], i[4]),
+                "author": authors.names_to_display(i[3], i[4], i[5]),
                 "title": i[1],
                 "book_id": i[0],
                 "cover": i[2],

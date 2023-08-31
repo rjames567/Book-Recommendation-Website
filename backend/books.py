@@ -91,7 +91,7 @@ class Books:
         res = res[0]
 
         return {
-            "author": authors.names_to_display(res[5], res[3], res[4]),
+            "author": authors.names_to_display(res[3], res[4], res[5]),
             "title": res[0],
             "book_id": res[1],
             "cover": res[2],
@@ -113,7 +113,7 @@ class Books:
         output_dict = dict()
         for i, k in enumerate(res):
             output_dict[i] = {
-                "author": authors.names_to_display(k[5], k[3], k[4]),
+                "author": authors.names_to_display(k[3], k[4], k[5]),
                 "title": k[0],
                 "book_id": k[1],
                 "cover": k[2],
@@ -159,7 +159,7 @@ class Books:
         else:
             res = res[0]
 
-        author = authors.names_to_display(res[8], res[6], res[7])
+        author = authors.names_to_display(res[6], res[7], res[8])
 
         genres = [i[0] for i in self._connection.query("""
             SELECT genres.name FROM genres

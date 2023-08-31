@@ -284,6 +284,3 @@ if __name__ == "__main__":
     # run directly so as a scheduled task to generate new recommendations, and
     # the connection will be closed at the end of the program execution so
     # shouldn't cause issues.
-
-    import json
-    print(recommendations.get_user_recommendations(1)[0]["genres"])
