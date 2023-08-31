@@ -14,7 +14,7 @@ import books as book_mod
 import diaries as diaries_mod
 import genres as genres_mod
 import reading_lists as reading_lists_mod
-import recommendations
+import recommendations as recommendations_mod
 
 import configuration
 import environ_manipulation
@@ -48,6 +48,7 @@ connection = mysql_handler.Connection(
 # -----------------------------------------------------------------------------
 # Class instantiation
 # -----------------------------------------------------------------------------
+recommendations = recommendations_mod.Recommendations(connection, genre_required_match)
 diaries = diaries_mod.Diaries(connection)
 genres = genres_mod.Genres(connection)
 sessions = accounts_mod.Sessions(connection, token_size)
@@ -821,8 +822,30 @@ class RecommendationsHandler(Handler):
     def __init__(self, log=None):
         super().__init__(log)
         self._routes = {
-            
+            "get_recommendations": self.get_user_recommendations
         }
+    
+    def get_user_recommendations(self):
+        session_id = self.retrieve_get_parameters()["session_id"]  # Only has one parameter, so this is fine.
+        self._log.output_message("          Session ID: " + session_id)
+        user_id = sessions.get_user_id(session_id)
+        self._log.output_message("          User ID: " + str(user_id))
+        
+        result = recommendations.get_user_recommendations(user_id)
+
+        response = json.dumps(result)
+
+        status = "200 OK"
+
+        self._log.output_message("          Response: " + response)
+        self._log.output_message("          Status: " + status)
+
+        response_headers = [
+            ("Content-Type", "application/json"),
+            ("Content-Length", str(len(response)))
+        ]
+
+        return response, status, response_headers
 
 
 # -----------------------------------------------------------------------------
