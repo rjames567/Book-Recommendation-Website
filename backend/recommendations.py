@@ -229,7 +229,7 @@ class Recommendations:
                     WHERE book_genres.book_id=recommendations.book_id
                         AND book_genres.match_strength>{match_strength}
                     GROUP BY books.book_id) AS genres,
-                (SELECT CAST(IFNULL(AVG(reviews.overall_rating), 0) as FLOAT)  # Prevent any null values - replace with 0s.
+                (SELECT ROUND(CAST(IFNULL(AVG(reviews.overall_rating), 0) as FLOAT), 2)
                     FROM reviews
                     WHERE reviews.book_id=books.book_id) AS average_rating,
                 (SELECT COUNT(reviews.overall_rating)
@@ -243,7 +243,8 @@ class Recommendations:
         """.format(
             match_strength=self._genre_match_threshold,
             user_id=user_id
-        ))
+        ))  # ORDER BY does not use calculated certainty for higher accuracy, and avoiding collisions
+        # IFNULL prevents any null values - replace with 0s.
 
         output_dict = dict()
         for i, k in enumerate(items):
@@ -259,7 +260,7 @@ class Recommendations:
                 "author_name": author,
                 "author_id": k[9],
                 "genres": k[10].split(","),
-                "average_rating": k[11],
+                "average_rating": round(k[11], 2),
                 "number_ratings": k[12]
             }
 
