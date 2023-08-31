@@ -192,16 +192,21 @@ class Recommendations:
                     "dot_product": user_preferences.dot_product(data)
                 })
 
-        new_recommendations = [i["id"] for i in sorted(weightings, key=lambda x: x["dot_product"], reverse=True)][:self._recommendation_number]
+        new_recommendations = sorted(weightings, key=lambda x: x["dot_product"], reverse=True)[:self._recommendation_number]
+        # Note that this could raise an error, but should not do so, as the amount available books should be greater
+        # than 3x the amount recommendations made, and they are removed every two days.
 
         values = ""
         for count, recommendation in enumerate(new_recommendations):
             if count != 0:
                 values += ","
-            values += f"({user_id}, {recommendation})"
+            values += f"({user_id}, {recommendation['id']}, {recommendation['dot_product']})"
 
-        self._connection.query("INSERT INTO recommendations (user_id, book_id) VALUES " + values)
+        self._connection.query("INSERT INTO recommendations (user_id, book_id, certainty) VALUES " + values)
+        # Certainty is to allow for it to be done by order on a query, as they may become out of order when the entries
+        # are deleted after the specified period.
 
+# TODO add certainty to table
 
 # -----------------------------------------------------------------------------
 # File execution
@@ -219,5 +224,3 @@ if __name__ == "__main__":
     # run directly so as a scheduled task to generate new recommendations, and
     # the connection will be closed at the end of the program execution so
     # shouldn't cause issues.
-
-    print(recommendations.recommend_user_books(1))

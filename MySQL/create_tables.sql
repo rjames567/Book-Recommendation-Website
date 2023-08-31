@@ -85,6 +85,7 @@ CREATE TABLE recommendations (
     user_id INT NOT NULL,
     book_id INT NOT NULL,
     date_added DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    certainty FLOAT NOT NULL,
     PRIMARY KEY (recommendation_id),
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (book_id) REFERENCES books(book_id)
