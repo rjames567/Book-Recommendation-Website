@@ -107,4 +107,4 @@ if __name__ == "__main__":
         host=config.get("mysql host")
     )
 
-    author = Authors(connection)
+    authors = Authors(connection)
