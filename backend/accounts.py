@@ -9,7 +9,9 @@ import time
 # -----------------------------------------------------------------------------
 # Project imports
 # -----------------------------------------------------------------------------
+import authors
 import configuration
+import reading_lists
 import mysql_handler
 
 
@@ -104,7 +106,7 @@ class Accounts:
         if (len(query_result) == 0) or (query_result[0][0] != entered_password):
             raise InvalidUserCredentialsError(username)
         else:
-            return accounts.get_user_id(username)
+            return self.get_user_id(username)
 
     def create_user(self, first_name, surname, username, password):
         """
@@ -306,3 +308,18 @@ if __name__ == "__main__":
     )
 
     sessions = Sessions(connection, config.get("session_id_length"))
+    authors = authors.Authors(connection)
+    reading_lists = reading_lists.ReadingLists(
+        connection,
+        8,
+        config.get("books genre_match_threshold"),
+        10,
+        authors
+    )
+    accounts = Accounts(
+        connection,
+        config.get("passwords hashing_algorithm"),
+        config.get("passwords salt"),
+        config.get("passwords number_hash_passes"),
+        reading_lists
+    )

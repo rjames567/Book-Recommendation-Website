@@ -17,6 +17,7 @@ import accounts as accounts_mod  # Can't use standard name, as it is the logical
 import authors as author_mod
 import books as book_mod
 import diaries as diaries_mod
+import genres as genres_mod
 import reading_lists as reading_lists_mod
 import recommendations
 
@@ -62,6 +63,7 @@ connection = mysql_handler.Connection(
 # Class instantiation
 # -----------------------------------------------------------------------------
 diaries = diaries_mod.Diaries(connection)
+genres = genres_mod.Genres(connection)
 sessions = accounts_mod.Sessions(connection, token_size)
 authors = author_mod.Authors(connection)
 reading_lists = reading_lists_mod.ReadingLists(
@@ -491,7 +493,7 @@ class GenreHandler(Handler):
 
             return response, status, response_headers
 
-        except GenreNotFoundError:
+        except genres_mod.GenreNotFoundError:
             status = "404 Not Found"
             write_log("          Status: " + status, self._log)
             return ErrorHandler("404 Not Found").error_response()  # Return the content for a 404 error
