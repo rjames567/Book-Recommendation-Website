@@ -6,7 +6,7 @@ import re
 # -----------------------------------------------------------------------------
 # Project imports
 # -----------------------------------------------------------------------------
-import authors as author_mod
+import authors
 import configuration
 import data_structures
 import ml_utilities
@@ -29,8 +29,7 @@ class BookNotFoundError(Exception):
 # Objects
 # -----------------------------------------------------------------------------
 class Books:
-    def __init__(self, connection, genre_required_match, number_similarities_about, number_summaries_home, num_display_genres, authors):
-        self._authors = authors
+    def __init__(self, connection, genre_required_match, number_similarities_about, number_summaries_home, num_display_genres):
         self._num_display_genres = num_display_genres
         self._number_summaries_home = number_summaries_home
         self._number_similarities_about = number_similarities_about
@@ -92,7 +91,7 @@ class Books:
         res = res[0]
 
         return {
-            "author": self._authors.names_to_display(res[5], res[3], res[4]),
+            "author": authors.names_to_display(res[5], res[3], res[4]),
             "title": res[0],
             "book_id": res[1],
             "cover": res[2],
@@ -114,7 +113,7 @@ class Books:
         output_dict = dict()
         for i, k in enumerate(res):
             output_dict[i] = {
-                "author": self._authors.names_to_display(k[5], k[3], k[4]),
+                "author": authors.names_to_display(k[5], k[3], k[4]),
                 "title": k[0],
                 "book_id": k[1],
                 "cover": k[2],
@@ -160,7 +159,7 @@ class Books:
         else:
             res = res[0]
 
-        author = self._authors.names_to_display(res[8], res[6], res[7])
+        author = authors.names_to_display(res[8], res[6], res[7])
 
         genres = [i[0] for i in self._connection.query("""
             SELECT genres.name FROM genres
@@ -337,12 +336,10 @@ if __name__ == "__main__":
         host=config.get("mysql host")
     )
 
-    authors = author_mod.Authors(connection)
     books = Books(
         connection,
         config.get("books genre_match_threshold"),
         10,
         8,
-        10,
-        authors
+        10
     )

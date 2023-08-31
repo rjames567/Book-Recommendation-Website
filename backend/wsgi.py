@@ -70,16 +70,14 @@ reading_lists = reading_lists_mod.ReadingLists(
     connection,
     number_summaries_home,
     genre_required_match,
-    num_display_genres,
-    authors
+    num_display_genres
 )
 books = book_mod.Books(
     connection,
     genre_required_match,
     number_similarities_about,
     number_summaries_home,
-    num_display_genres,
-    authors
+    num_display_genres
 )
 accounts = accounts_mod.Accounts(
     connection,

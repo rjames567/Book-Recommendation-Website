@@ -80,6 +80,7 @@ class Accounts:
         )
 
         return result.hex()  # Hash is returned as a hex string, so converts back
+
     def check_credentials(self, username, password):
         """
         Method to check whether given user credentials are stored in the
@@ -308,13 +309,11 @@ if __name__ == "__main__":
     )
 
     sessions = Sessions(connection, config.get("session_id_length"))
-    authors = authors.Authors(connection)
     reading_lists = reading_lists.ReadingLists(
         connection,
         8,
         config.get("books genre_match_threshold"),
-        10,
-        authors
+        10
     )
     accounts = Accounts(
         connection,

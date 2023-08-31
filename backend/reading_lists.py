@@ -21,12 +21,11 @@ class ListNotFoundError(Exception):
 # Objects
 # -----------------------------------------------------------------------------
 class ReadingLists:
-    def __init__(self, connection, number_summaries_home, genre_required_match, num_display_genres, authors):
+    def __init__(self, connection, number_summaries_home, genre_required_match, num_display_genres):
         self._connection = connection
         self._number_summaries_home = number_summaries_home
         self._genre_required_match = genre_required_match
         self._num_display_genres = num_display_genres
-        self._authors = authors
 
     def get_popular(self):
         res = self._connection.query("""
@@ -49,7 +48,7 @@ class ReadingLists:
         output_dict = dict()
         for i, k in enumerate(res):
             output_dict[i] = {
-                "author": self._authors.names_to_display(k[5], k[3], k[4]),
+                "author": authors.names_to_display(k[5], k[3], k[4]),
                 "title": k[1],
                 "book_id": k[0],
                 "cover": k[2],
@@ -102,7 +101,7 @@ class ReadingLists:
                 AND reading_list_names.user_id={};
         """.format(user_id))
         return [{
-                "author": self._authors.names_to_display(i[5], i[3], i[4]),
+                "author": authors.names_to_display(i[5], i[3], i[4]),
                 "title": i[1],
                 "book_id": i[0],
                 "cover": i[2],
@@ -124,7 +123,7 @@ class ReadingLists:
                 AND reading_list_names.user_id={};
         """.format(user_id))
         return [{
-                "author": self._authors.names_to_display(i[5], i[3], i[4]),
+                "author": authors.names_to_display(i[5], i[3], i[4]),
                 "title": i[1],
                 "book_id": i[0],
                 "cover": i[2],
@@ -198,17 +197,7 @@ class ReadingLists:
 
         output_queue = data_structures.Queue()
         for i in res:
-            first_name = i[4]
-            surname = i[5]
-            alias = i[6]
-            if (alias is not None and
-                    (first_name is not None and surname is not None)):
-                author = f"{alias} ({first_name} {surname})"
-            elif (alias is not None and
-                  (first_name is None and surname is None)):
-                author = alias
-            else:
-                author = f"{first_name} {surname}"
+            author = authors.names_to_display(i[4], i[5], i[6])
 
             synopsis = "</p><p>".join(("<p>" + i[3] + "</p>").split("\n"))
             # Change new lines to new paragraphs
@@ -317,11 +306,9 @@ if __name__ == "__main__":
         host=config.get("mysql host")
     )
 
-    authors = authors.Authors(connection)
     reading_lists = ReadingLists(
         connection,
         8,
         config.get("books genre_match_threshold"),
-        10,
-        authors
+        10
     )
