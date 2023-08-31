@@ -33,7 +33,7 @@ token_size = config.get("session_id_length")
 genre_required_match = config.get("books genre_match_threshold")
 number_summaries_home = 8
 number_similarities_about = 10
-num_display_genres = 10
+num_display_genres = 8
 
 # -----------------------------------------------------------------------------
 # Database connection
