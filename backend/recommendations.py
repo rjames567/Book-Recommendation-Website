@@ -10,8 +10,9 @@ import mysql_handler
 # Recommendations
 # -----------------------------------------------------------------------------
 class Recommendations:
-    def __init__(self, connection):
+    def __init__(self, connection, genre_match_threshold):
         self._connection = connection
+        self._genre_match_threshold = genre_match_threshold
         self._available_genres = len(self._connection.query("""
             SELECT genre_id FROM genres        
         """))  # This is computed here as it is needed frequently.
@@ -208,6 +209,69 @@ class Recommendations:
         # Certainty is to allow for it to be done by order on a query, as they may become out of order when the entries
         # are deleted after the specified period.
 
+    def get_user_recommendations(self, user_id):
+        items = self._connection.query("""
+            SELECT recommendations.book_id,
+                ROUND(recommendations.certainty * 100, 2) as certainty,
+                recommendations.date_added,
+                books.cover_image,
+                books.synopsis,
+                books.title,
+                authors.first_name,
+                authors.surname,
+                authors.alias,
+                authors.author_id,
+                (SELECT GROUP_CONCAT(genres.name) FROM book_genres
+                    INNER JOIN genres ON book_genres.genre_id=genres.genre_id
+                    WHERE book_genres.book_id=recommendations.book_id
+                        AND book_genres.match_strength>{match_strength}
+                    GROUP BY books.book_id) AS genres,
+                (SELECT CAST(IFNULL(AVG(reviews.overall_rating), 0) as FLOAT)  # Prevent any null values - replace with 0s.
+                    FROM reviews
+                    WHERE reviews.book_id=books.book_id) AS average_rating,
+                (SELECT COUNT(reviews.overall_rating)
+                    FROM reviews
+                    WHERE reviews.book_id=books.book_id) AS num_ratings
+            FROM recommendations
+            INNER JOIN books ON recommendations.book_id=books.book_id
+            INNER JOIN authors ON books.author_id=authors.author_id
+            WHERE recommendations.user_id={user_id}
+            ORDER BY certainty DESC;
+        """.format(
+            match_strength=self._genre_match_threshold,
+            user_id=user_id
+        ))
+
+        output_dict = dict()
+        for i, k in enumerate(items):
+            first_name = k[6]
+            surname = k[7]
+            alias = k[8]
+            if (alias is not None and
+                    (first_name is not None and surname is not None)):
+                author = f"{alias} ({first_name} {surname})"
+            elif (alias is not None and
+                  (first_name is None and surname is None)):
+                author = alias
+            else:
+                author = f"{first_name} {surname}"
+
+            output_dict[i] = {
+                "book_id": k[0],
+                "certainty": k[1],
+                "date_added": k[2],
+                "cover_image": k[3],
+                "synopsis": k[4],
+                "title": k[5],
+                "author_name": author,
+                "author_id": k[9],
+                "genres": k[10],
+                "average_rating": k[11],
+                "number_ratings": k[12]
+            }
+
+        return output_dict
+
 
 # -----------------------------------------------------------------------------
 # File execution
@@ -221,7 +285,7 @@ if __name__ == "__main__":
         host=config.get("mysql host")
     )
 
-    recommendations = Recommendations(connection)  # Only runs if this file is
+    recommendations = Recommendations(connection, config.get("books genre_match_threshold"))  # Only runs if this file is
     # run directly so as a scheduled task to generate new recommendations, and
     # the connection will be closed at the end of the program execution so
     # shouldn't cause issues.
