@@ -134,6 +134,9 @@ function currentPageFunction (link) {
         case "Home":
             loadHomePage();
             break;
+        case "Recommendations":
+            loadRecommendationsPage();
+            break;
     }
 }
 
@@ -1293,6 +1296,22 @@ function changeNumVisibleHomeSummaries () {
 }
 $(window).resize($.debounce(300, changeNumVisibleHomeSummaries));  // Runs every 300ms. Reduces load as this will run
 // frequently
+
+// -----------------------------------------------------------------------------
+// Recommendation page
+// -----------------------------------------------------------------------------
+function loadRecommendationsPage () {
+    $.ajax({
+        type: "GET",
+        url: addGetParameter("/cgi-bin/recommendations/get_recommendations", "session_id", sessionID),
+        success: function (result) {
+            console.log("success")
+        },
+        error: function (jqXHR) {
+            console.log(jqXHR.status + " " + jqXHR.responseText);
+        }
+    });
+}
 
 // -----------------------------------------------------------------------------
 // window onload handlers
