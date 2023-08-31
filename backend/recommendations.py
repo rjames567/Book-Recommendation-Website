@@ -215,7 +215,7 @@ class Recommendations:
     def get_user_recommendations(self, user_id):
         items = self._connection.query("""
             SELECT recommendations.book_id,
-                ROUND(recommendations.certainty * 100, 2) as certainty,
+                ROUND(recommendations.certainty * 100, 1) as certainty,
                 recommendations.date_added,
                 books.cover_image,
                 books.synopsis,
@@ -239,7 +239,7 @@ class Recommendations:
             INNER JOIN books ON recommendations.book_id=books.book_id
             INNER JOIN authors ON books.author_id=authors.author_id
             WHERE recommendations.user_id={user_id}
-            ORDER BY certainty DESC;
+            ORDER BY recommendations.certainty DESC;
         """.format(
             match_strength=self._genre_match_threshold,
             user_id=user_id
@@ -258,7 +258,7 @@ class Recommendations:
                 "title": k[5],
                 "author_name": author,
                 "author_id": k[9],
-                "genres": k[10],
+                "genres": k[10].split(","),
                 "average_rating": k[11],
                 "number_ratings": k[12]
             }
