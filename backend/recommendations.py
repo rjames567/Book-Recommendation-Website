@@ -1,6 +1,7 @@
 # -----------------------------------------------------------------------------
 # Project imports
 # -----------------------------------------------------------------------------
+import authors
 import configuration
 import data_structures
 import mysql_handler
@@ -244,17 +245,7 @@ class Recommendations:
 
         output_dict = dict()
         for i, k in enumerate(items):
-            first_name = k[6]
-            surname = k[7]
-            alias = k[8]
-            if (alias is not None and
-                    (first_name is not None and surname is not None)):
-                author = f"{alias} ({first_name} {surname})"
-            elif (alias is not None and
-                  (first_name is None and surname is None)):
-                author = alias
-            else:
-                author = f"{first_name} {surname}"
+            author = authors.names_to_display(k[6], k[7], k[8])
 
             output_dict[i] = {
                 "book_id": k[0],

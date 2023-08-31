@@ -1,6 +1,7 @@
 # -----------------------------------------------------------------------------
 # Project imports
 # -----------------------------------------------------------------------------
+import authors
 import configuration
 import mysql_handler
 
@@ -49,14 +50,7 @@ class Genres:
         book_dict = dict()
         for i, k in enumerate(db_books):
             book_id, title, cover, first_name, surname, alias = k
-            if (alias is not None and
-                    (first_name is not None and surname is not None)):
-                author = f"{alias} ({first_name} {surname})"
-            elif (alias is not None and
-                  (first_name is None and surname is None)):
-                author = alias
-            else:
-                author = f"{first_name} {surname}"
+            author = authors.names_to_display(first_name, surname, alias)
 
             book_dict[i] = {
                 "id": book_id,
