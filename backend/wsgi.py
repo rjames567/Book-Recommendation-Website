@@ -1,12 +1,7 @@
 # -----------------------------------------------------------------------------
 # Standard Python library imports
 # -----------------------------------------------------------------------------
-import datetime
-import hashlib
 import json
-import re
-import secrets
-import time
 import urllib.parse
 
 # -----------------------------------------------------------------------------
@@ -22,10 +17,8 @@ import reading_lists as reading_lists_mod
 import recommendations
 
 import configuration
-import data_structures
 import environ_manipulation
 import logger
-import ml_utilities
 import mysql_handler
 
 # -----------------------------------------------------------------------------
@@ -864,12 +857,13 @@ class ErrorHandler(Handler):
 
 
 # -----------------------------------------------------------------------------
-# Object initialisation
+# File execution
 # -----------------------------------------------------------------------------
 if debugging:
     log = logger.Logging()
 else:
     log = None
+    
 # https://www.sitepoint.com/python-web-applications-the-basics-of-wsgi/
 routes = {
     "account": AccountHandler(log),
