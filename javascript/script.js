@@ -1335,7 +1335,6 @@ function loadRecommendationsPage () {
 
                 $(template).appendTo(".recommendation-entries");
             }
-            console.log("success")
         },
         error: function (jqXHR) {
             console.log(jqXHR.status + " " + jqXHR.responseText);
