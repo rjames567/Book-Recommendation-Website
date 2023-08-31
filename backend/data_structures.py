@@ -1,4 +1,10 @@
 # ------------------------------------------------------------------------------
+# Standard Python library imports
+# ------------------------------------------------------------------------------
+import math
+
+
+# ------------------------------------------------------------------------------
 # Custom exceptions
 # ------------------------------------------------------------------------------
 class QueueOverflowError(Exception):
@@ -190,6 +196,9 @@ class Vector(Matrix):  # Vectors are a type of matrix
         # Dot product on vectors will always return an integer, so can be done
         # differently which is faster ~ 3x
         return sum(self[i] * k for i, k in enumerate(op_vector))
+
+    def __abs__(self):
+        return math.sqrt(sum(i[0]**2 for i in self._matrix))
 
     def __getitem__(self, index):
         return self._matrix[index][0]
