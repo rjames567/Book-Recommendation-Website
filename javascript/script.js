@@ -585,7 +585,6 @@ function changeNumVisibleSimilarBooks () {
         let windowWidth = $(".similar-books").width();
         let summaryWidth = 250;
         let num = Math.floor(windowWidth / summaryWidth) * 2; // Gets number of summaries to show
-        console.log(num);
         $(summaries).addClass("hidden");
         for (let i = 0; i <= num; i++) { // For some reason, i < num shows 1 too few. Clearly not starting from 0.
             $(summaries).eq(i).removeClass("hidden")
@@ -597,7 +596,6 @@ $(window).resize($.debounce(300, changeNumVisibleSimilarBooks));
 function switchBookPage (bookID) {
     let request_url = addGetParameter("/cgi-bin/books/about_data", "book_id", bookID);
     request_url = addGetParameter(request_url, "session_id", sessionID);
-    console.log(currentPage);
     $.ajax({
         type: "GET",
         url: request_url,
@@ -1149,7 +1147,6 @@ function assignDiaryEntrySubmissionHandlers () {
         let thoughts = $(form).find("textarea").val();
         let pagesRead = $(form).find("input[name=pages-read]").val();
         let bookID = $(form).find("select").val();
-        console.log(bookID);
         if (summary == "") {
             summary = null; // It must be null for the server it is left empty
         }
@@ -1294,6 +1291,7 @@ function changeNumVisibleHomeSummaries () {
         });
     }
 }
+
 $(window).resize($.debounce(300, changeNumVisibleHomeSummaries));  // Runs every 300ms. Reduces load as this will run
 // frequently
 
@@ -1305,6 +1303,38 @@ function loadRecommendationsPage () {
         type: "GET",
         url: addGetParameter("/cgi-bin/recommendations/get_recommendations", "session_id", sessionID),
         success: function (result) {
+            for (let i = 0; i < Object.keys(result).length; i++) {
+                let recommendation = result[i];
+                let template = $(".recommendation-entries .book.template").clone().removeClass("template");
+                
+                $(template).find(".cover img").attr("src", recommendation["cover_image"]);
+
+                $(template).find(".title-container a.title").html(recommendation["title"]);
+                $(template).find(".title-container a.title").data("id", recommendation["book_id"]);
+
+                $(template).find(".title-container a.author").html(recommendation["author_name"]);
+                $(template).find(".title-container a.author").data("id", recommendation["author_id"]);
+
+                let averageReview = recommendation["average_rating"];
+                $(template).find(".rating-container .average-review").html(averageReview);
+                changeElemStars($(template).find(".rating-container .rating i"), averageReview);
+                $(template).find(".rating-container .num-review").html(recommendation["number_ratings"]);
+
+                $(template).find(".synopsis").html(recommendation["synopsis"])
+
+                $(template).find(".book-info .date-added").html(recommendation["date_added"]);
+                $(template).find(".book-info .match-strength").html(recommendation["certainty"]);
+
+                let genres = recommendation["genres"];
+                for (let k = 0; k < Object.keys(genres).length; k++) {
+                    let genreTemplate = $(template).find(".book-genres ol li.template").clone().removeClass("template");
+                    console.log(genres[k]);
+                    $(genreTemplate).find("a").html(genres[k]);
+                    $(genreTemplate).appendTo($(template).find(".book-genres ol"));
+                }
+
+                $(template).appendTo(".recommendation-entries");
+            }
             console.log("success")
         },
         error: function (jqXHR) {
