@@ -6,6 +6,7 @@ import re
 # -----------------------------------------------------------------------------
 # Project imports
 # -----------------------------------------------------------------------------
+import authors
 import configuration
 import mysql_handler
 
@@ -80,17 +81,7 @@ class Diaries:
 
         output_dict = dict()
         for i, k in enumerate(res):
-            first_name = k[12]
-            surname = k[13]
-            alias = k[14]
-            if (alias is not None and
-                    (first_name is not None and surname is not None)):
-                author = f"{alias} ({first_name} {surname})"
-            elif (alias is not None and
-                  (first_name is None and surname is None)):
-                author = alias
-            else:
-                author = f"{first_name} {surname}"
+            author = authors.names_to_display(k[12], k[13], k[14])
 
             thoughts = k[6]
             if thoughts is not None:
