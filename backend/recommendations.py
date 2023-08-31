@@ -11,8 +11,9 @@ import mysql_handler
 # Recommendations
 # -----------------------------------------------------------------------------
 class Recommendations:
-    def __init__(self, connection, genre_match_threshold):
+    def __init__(self, connection, genre_match_threshold, num_display_genres):
         self._connection = connection
+        self._num_display_genres = num_display_genres
         self._genre_match_threshold = genre_match_threshold
         self._available_genres = len(self._connection.query("""
             SELECT genre_id FROM genres        
@@ -259,7 +260,7 @@ class Recommendations:
                 "title": k[5],
                 "author_name": author,
                 "author_id": k[9],
-                "genres": k[10].split(","),
+                "genres": k[10].split(",")[:self._num_display_genres],
                 "average_rating": round(k[11], 2),
                 "number_ratings": k[12]
             }
@@ -279,7 +280,10 @@ if __name__ == "__main__":
         host=config.get("mysql host")
     )
 
-    recommendations = Recommendations(connection, config.get("books genre_match_threshold"))  # Only runs if this file is
+    recommendations = Recommendations(connection, config.get("books genre_match_threshold"), 10)  # Only runs if this file is
     # run directly so as a scheduled task to generate new recommendations, and
     # the connection will be closed at the end of the program execution so
     # shouldn't cause issues.
+
+    import json
+    print(recommendations.get_user_recommendations(1)[0]["genres"])
