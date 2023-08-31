@@ -210,6 +210,8 @@ class Recommendations:
         # Certainty is to allow for it to be done by order on a query, as they may become out of order when the entries
         # are deleted after the specified period.
 
+        # TODO prevent items from reading lists or read items from appearing
+
     def get_user_recommendations(self, user_id):
         items = self._connection.query("""
             SELECT recommendations.book_id,
@@ -250,9 +252,9 @@ class Recommendations:
             output_dict[i] = {
                 "book_id": k[0],
                 "certainty": k[1],
-                "date_added": k[2],
+                "date_added": k[2].strftime("%d/%m/%Y"),
                 "cover_image": k[3],
-                "synopsis": k[4],
+                "synopsis": "</p><p>".join(("<p>" + k[4] + "</p>").split("\n")),
                 "title": k[5],
                 "author_name": author,
                 "author_id": k[9],
