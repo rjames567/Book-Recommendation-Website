@@ -197,6 +197,10 @@ class Vector(Matrix):  # Vectors are a type of matrix
         # differently which is faster ~ 3x
         return sum(self[i] * k for i, k in enumerate(op_vector))
 
+    def cosine_sim(self, op_vector):
+        return self.dot_product(op_vector) / (abs(self) * abs(op_vector))  # Gives a a value between 0 and 1, cosine
+        # converts to an angle between the vectors
+
     def __abs__(self):
         return math.sqrt(sum(i[0]**2 for i in self._matrix))
 
