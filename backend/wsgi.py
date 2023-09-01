@@ -796,7 +796,7 @@ class HomeHandler(Handler):
             user_id = sessions.get_user_id(session_id)
             self._log.output_message("          User ID: " + str(user_id))
 
-            result["recommended"] = {}  # TODO update this once recommendation methods are made
+            result["recommended"] = recommendations.get_user_recommendation_summaries(user_id)
             result["currently_reading"] = reading_lists.get_currently_reading(user_id)
             result["want_read"] = reading_lists.get_want_read(user_id)
         else:
@@ -842,10 +842,9 @@ class RecommendationsHandler(Handler):
         self._log.output_message("          User ID: " + str(user_id))
         
         result = recommendations.get_user_recommendations(user_id)
+        result["list_id"] = reading_lists.get_list_id("Want to Read", user_id)
 
         response = json.dumps(result)
-
-        result["list_id"] = reading_lists.get_list_id("Want to Read", user_id)
 
         status = "200 OK"
 
