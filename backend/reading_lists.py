@@ -70,7 +70,7 @@ class ReadingLists:
             SELECT list_id
             FROM reading_list_names
             WHERE user_id={user_id}
-                AND list_name={list_name};
+                AND list_name="{list_name}";
         """.format(user_id=user_id, list_name=list_name))
 
         if len(res) == 0:
