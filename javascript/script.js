@@ -1352,7 +1352,7 @@ function assignDeleteRecommendationHandlers () {
         let book = $(this).closest(".book");
         $.ajax({
             type: "POST",
-            url: "/cgi-bin/recommendation/remove",
+            url: "/cgi-bin/recommendation/remove_recommendation",
             data: JSON.stringify({
                 "book_id": $(book).data("id"),
                 "session_id": sessionID
