@@ -1325,6 +1325,8 @@ function loadRecommendationsPage () {
                 $(template).find(".book-info .date-added").html(recommendation["date_added"]);
                 $(template).find(".book-info .match-strength").html(recommendation["certainty"]);
 
+                $(template).find(".actions button.read").data("id", result["list_id"])
+
                 let genres = recommendation["genres"];
                 for (let k = 0; k < Object.keys(genres).length; k++) {
                     let genreTemplate = $(template).find(".book-genres ol li.template").clone().removeClass("template");
@@ -1339,6 +1341,7 @@ function loadRecommendationsPage () {
             assignGenreNavigationHandlers();
             assignBookNavigationHandlers();
             assignDeleteRecommendationHandlers();
+            assignMoveRecommendationHandlers();
         },
         error: function (jqXHR) {
             console.log(jqXHR.status + " " + jqXHR.responseText);
@@ -1356,6 +1359,28 @@ function assignDeleteRecommendationHandlers () {
             data: JSON.stringify({
                 "book_id": $(book).data("id"),
                 "session_id": sessionID
+            }),
+            success: function (result) {
+                $(book).fadeOut(500); // Hide the entry from the list
+            },
+            error: function (jqXHR) {
+                console.log(jqXHR.status + " " + jqXHR.responseText);
+            }
+        });
+    });
+}
+
+function assignMoveRecommendationHandlers () {
+    $(".book .actions button.read").off("click");
+    $(".book .actions button.read").click(function () {
+        let book = $(this).closest(".book");
+        $.ajax({
+            type: "POST",
+            url: "/cgi-bin/my_books/add_list_entry",
+            data: JSON.stringify({
+                "book_id": $(book).data("id"),
+                "session_id": sessionID,
+                "list_id": $(this).data("id")
             }),
             success: function (result) {
                 $(book).fadeOut(500); // Hide the entry from the list
