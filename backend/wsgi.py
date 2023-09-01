@@ -545,7 +545,7 @@ class BookHandler(Handler):
         self._log.output_message("          User ID: " + str(user_id))
 
         rating, book_id = books.delete_review(review_id, user_id)
-        recommendations.update_user_data_remove_review(user_id, book_id, rating)
+        recommendations.update_user_data_decrement(user_id, book_id, rating)
 
         response = "true"  # A response is needed to use this result, but does not impact the client at all.
 
@@ -579,7 +579,7 @@ class BookHandler(Handler):
             params["thoughts"]
         )
 
-        recommendations.update_user_data_add_review(user_id, book_id, params["overall_rating"])
+        recommendations.update_user_data_increment(user_id, book_id, params["overall_rating"])
 
         response = "true"  # A response is needed to use this result, but does not impact the client at all.
 
