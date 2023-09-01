@@ -830,7 +830,8 @@ class RecommendationsHandler(Handler):
     def __init__(self, log=None):
         super().__init__(log)
         self._routes = {
-            "get_recommendations": self.get_user_recommendations
+            "get_recommendations": self.get_user_recommendations,
+            "remove_recommendation": self.remove_user_recommendation
         }
     
     def get_user_recommendations(self):
@@ -850,6 +851,32 @@ class RecommendationsHandler(Handler):
 
         response_headers = [
             ("Content-Type", "application/json"),
+            ("Content-Length", str(len(response)))
+        ]
+
+        return response, status, response_headers
+
+    def remove_user_recommendation(self):
+        json_response = self.retrieve_post_parameters()
+        params = json.loads(json_response)
+        session_id = params["session_id"]
+        book_id = params["book_id"]
+        self._log.output_message("          Session ID: " + session_id)
+        user_id = sessions.get_user_id(session_id)
+        self._log.output_message("          User ID: " + str(user_id))
+        self._log.output_message("          Book ID: " + str(book_id))
+
+        recommendations.update_user_data_decrement(user_id, book_id, 1, delete_recommendation=True)
+
+        response = "true" # The response does not matter - here for completeness only
+
+        status = "200 OK"
+
+        self._log.output_message("          Response: " + response)
+        self._log.output_message("          Status: " + status)
+
+        response_headers = [
+            ("Content-Type", "text/plain"),
             ("Content-Length", str(len(response)))
         ]
 
