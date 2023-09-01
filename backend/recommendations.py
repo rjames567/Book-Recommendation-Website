@@ -276,6 +276,13 @@ class Recommendations:
             }
 
         return output_dict
+    
+    def remove_stored_recommendation(self, user_id, book_id):
+        self._connection.query("""
+            DELETE FROM recommendations
+            WHERE user_id={user_id}
+                AND book_id={book_id};
+        """.format(user_id=user_id, book_id=book_id))
 
 
 # -----------------------------------------------------------------------------
@@ -294,11 +301,3 @@ if __name__ == "__main__":
     # run directly so as a scheduled task to generate new recommendations, and
     # the connection will be closed at the end of the program execution so
     # shouldn't cause issues.
-
-    connection.query("DELETE from recommendations where user_id=1")
-    recommendations.recommend_user_books_old(1)
-    print(recommendations.recommend_user_books_old(1))
-
-    connection.query("DELETE from recommendations where user_id=1")
-    recommendations.recommend_user_books(1)
-    print(recommendations.recommend_user_books(1))
