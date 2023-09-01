@@ -48,3 +48,14 @@ Make the directory readable
 
 Make the fastcgi file executable
 > chmod a+x /path/to/project/backend/flup.server.fcgi
+
+### Scheduled tasks
+Install cron to the server
+> sudo apt-get install cron -y
+
+Open the crontab file by running the command:
+> sudo crontab -e
+
+Modify the crontab file. Write the following commands to it. They run the scripts at 1:00 am, as it is
+likely to have a low number of clients, so the impact should be minimal. However, to change this, change the timing clause of the cronjob - https://crontab.guru/ can make this easier.
+> 0 1 * * * python3 /absolute/path/to/project/backend/recommendations.py
