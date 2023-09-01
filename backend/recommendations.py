@@ -189,9 +189,6 @@ class Recommendations:
             FROM reading_lists
             INNER JOIN reading_list_names ON reading_lists.list_id=reading_list_names.list_id
             WHERE reading_lists.user_id={}
-                AND (reading_list_names.list_name="Currently Reading"
-                OR reading_list_names.list_name="Have Read"
-                OR reading_list_names.list_name="Want to Read");
         """.format(user_id))
         reading_list_items = {i[0] for i in reading_list_items}
 
@@ -200,7 +197,7 @@ class Recommendations:
         for i in self._connection.query("SELECT book_id FROM books"):
             book = i[0]
             if (book not in existing_recommendations and  # Prevent duplicate recommendations, which is likely
-                book not in reading_list_items):  # Prevent recommendation of items that have been read/reading/want to read
+                book not in reading_list_items):  # Prevent recommendation of items that are in any of the users lists.
                 data = self.gen_book_vector(book_id=book)
                 weightings.append({
                     "id": book,
