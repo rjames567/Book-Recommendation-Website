@@ -1224,7 +1224,7 @@ function loadHomePage () {
                 $(summary).data("id", trending[i]["book_id"]);
                 $(summary).appendTo(".row#trending .books");
             }
-            let newestAdditions = result["newest_additions"]
+            let newestAdditions = result["newest_additions"];
             for (let i = 0; i < Object.keys(newestAdditions).length; i++) {
                 let summary = $(".book-summary.template").clone().removeClass("template");
                 $(summary).find("img").attr("src", newestAdditions[i]["cover"]);
@@ -1233,23 +1233,15 @@ function loadHomePage () {
                 $(summary).data("id", newestAdditions[i]["book_id"]);
                 $(summary).appendTo(".row#newest .books");
             }
-            let currentlyReading = result["currently_reading"]
+            let currentlyReading = result["currently_reading"];
             if (currentlyReading == null) { // Will only be null if there is no user, so all user specifics can
                 // be hidden.
-                $(".row#recommended").remove(); // Remove so the hr disappears. These will reappear on sign in
-                $(".row#reading").remove();
-                $(".row#want-read").remove();
+                $(".row#want-read").hide(); // Remove so the hr disappears. These will reappear on sign in
+            } else if (currentlyReading.length == 0) {
+                $(".row#want-read").hide();
             } else {
-                let recommended = result["recommended"]
-                for (let i = 0; i < Object.keys(recommended).length; i++) {
-                    let summary = $(".book-summary.template").clone().removeClass("template");
-                    $(summary).find("img").attr("src", recommended[i]["cover"]);
-                    $(summary).find(".author").html(recommended[i]["author"]);
-                    $(summary).find(".title").html(recommended[i]["title"]);
-                    $(summary).data("id", recommended[i]["book_id"]);
-                    $(summary).appendTo(".row#recommended .books");
-                }
-                for (let i = 0; i < Object.keys(currentlyReading).length; i++) {
+                $(".row#want-read").show();
+                for (let i = 0; i < currentlyReading.length; i++) {
                     let summary = $(".book-summary.template").clone().removeClass("template");
                     $(summary).find("img").attr("src", currentlyReading[i]["cover"]);
                     $(summary).find(".author").html(currentlyReading[i]["author"]);
@@ -1257,14 +1249,37 @@ function loadHomePage () {
                     $(summary).data("id", currentlyReading[i]["book_id"]);
                     $(summary).appendTo(".row#reading .books");
                 }
-                let wantRead = result["want_read"]
-                for (let i = 0; i < Object.keys(wantRead).length; i++) {
+            }
+            let wantRead = result["want_read"];
+            if (wantRead == null) {
+                $(".row#reading").hide();
+            } else if (wantRead.length == 0) {
+                $(".row#reading").hide();
+            } else {
+                $(".row#reading").show();
+                for (let i = 0; i < wantRead.length; i++) {
                     let summary = $(".book-summary.template").clone().removeClass("template");
                     $(summary).find("img").attr("src", wantRead[i]["cover"]);
                     $(summary).find(".author").html(wantRead[i]["author"]);
                     $(summary).find(".title").html(wantRead[i]["title"]);
                     $(summary).data("id", wantRead[i]["book_id"]);
                     $(summary).appendTo(".row#want-read .books");
+                }
+            }
+            let recommended = result["recommended"];
+            if (recommended == null) {
+                $(".row#recommended").hide();
+            } else if (recommended.length == 0) {
+                $(".row#recommended").hide();
+            } else {
+                $(".row#recommended").show();
+                for (let i = 0; i < recommended.length; i++) {
+                    let summary = $(".book-summary.template").clone().removeClass("template");
+                    $(summary).find("img").attr("src", recommended[i]["cover"]);
+                    $(summary).find(".author").html(recommended[i]["author"]);
+                    $(summary).find(".title").html(recommended[i]["title"]);
+                    $(summary).data("id", recommended[i]["book_id"]);
+                    $(summary).appendTo(".row#recommended .books");
                 }
             }
             changeNumVisibleHomeSummaries(); // Needs to run once, as resize will not trigger by this point
@@ -1303,7 +1318,7 @@ function loadRecommendationsPage () {
         type: "GET",
         url: addGetParameter("/cgi-bin/recommendations/get_recommendations", "session_id", sessionID),
         success: function (result) {
-            for (let i = 0; i < Object.keys(result).length; i++) {
+            for (let i = 0; i < Object.keys(result).length - 1; i++) { // Have to minus 1, as it includes the list id.
                 let recommendation = result[i];
                 let template = $(".recommendation-entries .book.template").clone().removeClass("template");
                 
@@ -1324,8 +1339,8 @@ function loadRecommendationsPage () {
 
                 $(template).find(".book-info .date-added").html(recommendation["date_added"]);
                 $(template).find(".book-info .match-strength").html(recommendation["certainty"]);
-
-                $(template).find(".actions button.read").data("id", result["list_id"])
+                
+                $(template).find(".actions button.read").data("id", result["list_id"]);
 
                 let genres = recommendation["genres"];
                 for (let k = 0; k < Object.keys(genres).length; k++) {
