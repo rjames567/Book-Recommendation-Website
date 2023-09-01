@@ -231,8 +231,9 @@ class Books:
                         summary,
                         rating_body
                     FROM reviews
-                    WHERE user_id={user_id};
-                """.format(user_id=user_id))
+                    WHERE user_id={user_id}
+                        AND book_id={book_id};
+                """.format(user_id=user_id, book_id=book_id))
             if len(res) == 0:
                 output_dict["current_user_review"] = None
             else:
