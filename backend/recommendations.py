@@ -184,11 +184,23 @@ class Recommendations:
         existing_recommendations = self._connection.query("SELECT book_id FROM recommendations WHERE user_id={}".format(user_id))
         existing_recommendations = {i[0] for i in existing_recommendations}  # Sets are faster for 'in' operations
 
+        reading_list_items = self._connection.query("""
+            SELECT reading_lists.book_id
+            FROM reading_lists
+            INNER JOIN reading_list_names ON reading_lists.list_id=reading_list_names.list_id
+            WHERE reading_lists.user_id={}
+                AND (reading_list_names.list_name="Currently Reading"
+                OR reading_list_names.list_name="Have Read"
+                OR reading_list_names.list_name="Want to Read");
+        """.format(user_id))
+        reading_list_items = {i[0] for i in reading_list_items}
+
         user_preferences = self.gen_user_vector(user_id)
         weightings = []
         for i in self._connection.query("SELECT book_id FROM books"):
             book = i[0]
-            if book not in existing_recommendations:  # Prevent duplicate recommendations, which is likely
+            if (book not in existing_recommendations and  # Prevent duplicate recommendations, which is likely
+                book not in reading_list_items):  # Prevent recommendation of items that have been read/reading/want to read
                 data = self.gen_book_vector(book_id=book)
                 weightings.append({
                     "id": book,
@@ -210,8 +222,6 @@ class Recommendations:
         self._connection.query("INSERT INTO recommendations (user_id, book_id, certainty) VALUES " + values)
         # Certainty is to allow for it to be done by order on a query, as they may become out of order when the entries
         # are deleted after the specified period.
-
-        # TODO prevent items from reading lists or read items from appearing
 
     def get_user_recommendations(self, user_id):
         items = self._connection.query("""
@@ -284,3 +294,11 @@ if __name__ == "__main__":
     # run directly so as a scheduled task to generate new recommendations, and
     # the connection will be closed at the end of the program execution so
     # shouldn't cause issues.
+
+    connection.query("DELETE from recommendations where user_id=1")
+    recommendations.recommend_user_books_old(1)
+    print(recommendations.recommend_user_books_old(1))
+
+    connection.query("DELETE from recommendations where user_id=1")
+    recommendations.recommend_user_books(1)
+    print(recommendations.recommend_user_books(1))
