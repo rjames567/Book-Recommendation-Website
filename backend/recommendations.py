@@ -1,4 +1,9 @@
 # -----------------------------------------------------------------------------
+# Standard Python library imports
+# -----------------------------------------------------------------------------
+import math
+
+# -----------------------------------------------------------------------------
 # Project imports
 # -----------------------------------------------------------------------------
 import authors
@@ -66,7 +71,7 @@ class Recommendations:
 
         return vector
 
-    def update_user_data_increment(self, user_id, book_id, rating):
+    def update_user_data_increment(self, user_id, book_id, rating, significant=False):
         user_vector = self.gen_user_vector(user_id)
 
         num_reviews = self._connection.query("""
@@ -83,6 +88,7 @@ class Recommendations:
         book_vector = self.gen_book_vector(book_id)
 
         user_vector += book_vector * self.calc_scale_factor(rating)
+        # Significant increase is not required so is left out
 
         user_vector /= num_reviews
 
@@ -100,7 +106,7 @@ class Recommendations:
         # 3 is neurtral and has no effect
         # 1 has a more significant impact than 5
 
-    def update_user_data_decrement(self, user_id, book_id, rating, significant=False):
+    def update_user_data_decrement(self, user_id, book_id, rating, delete_recommendation=False):
         user_vector = self.gen_user_vector(user_id)
 
         num_reviews = self._connection.query("""
@@ -115,8 +121,14 @@ class Recommendations:
         # manipulated to change the values.
 
         book_vector = self.gen_book_vector(book_id)
-
-        user_vector -= book_vector * self.calc_scale_factor(rating)
+        
+        if delete_recommendation:
+            scale_factor = math.log(self.calc_scale_factor(rating + 3))
+            # Math/log is ln not log. Rating+3 undoes the subtraction in calc_scale_factor
+            # Increases the impact of the change, for when a user has deleted a recommendation.
+        else:
+            scale_factor = self.calc_scale_factor(rating)
+        user_vector -= book_vector * scale_factor
 
         user_vector /= num_reviews
 
