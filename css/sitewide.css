@@ -396,7 +396,8 @@ main .container {
   padding: 10px 20px 0 5px;
 }
 
-.book:nth-last-child(2) hr { /* Last child would not remove the last hr between the last entry and buttons */
+.recommendation-entries .book:nth-last-child(1) hr,
+.my-books .book:nth-last-child(2) hr { /* Last child would not remove the last hr between the last entry and buttons */
   display: none;
 }
 
