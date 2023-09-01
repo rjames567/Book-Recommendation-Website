@@ -296,11 +296,20 @@ class Books:
         return output_dict
 
     def delete_review(self, review_id, user_id):
+        res = self._connection.query("""
+            SELECT overall_rating,
+                book_id
+            FROM reviews
+            WHERE review_id={review_id}
+                AND user_id={user_id}
+        """.format(review_id=review_id, user_id=user_id))[0]
         self._connection.query("""
             DELETE FROM reviews
             WHERE user_id={user_id}
                 AND review_id={review_id};
         """.format(user_id=user_id, review_id=review_id))
+
+        return res  # overall rating, book id
 
     def leave_review(self, user_id, book_id, overall_rating, plot_rating, character_rating, summary, thoughts):
         params = locals()
