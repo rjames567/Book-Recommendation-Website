@@ -844,6 +844,8 @@ class RecommendationsHandler(Handler):
 
         response = json.dumps(result)
 
+        result["list_id"] = reading_lists.get_list_id("Want to Read", user_id)
+
         status = "200 OK"
 
         self._log.output_message("          Response: " + response)
