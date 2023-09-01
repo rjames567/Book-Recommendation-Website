@@ -343,7 +343,7 @@ if __name__ == "__main__":
         config.get("passwords number_hash_passes"),
         None  # Reading lists object is not used, so passing None is safe.
     )
-    recommendations = Recommendations(connection, config.get("books genre_match_threshold"), 10)  # Only runs if this file is
+    recommendations = Recommendations(connection, config.get("books genre_match_threshold"), config.get("home number_display_genres"))  # Only runs if this file is
     # run directly so as a scheduled task to generate new recommendations, and
     # the connection will be closed at the end of the program execution so
     # shouldn't cause issues.

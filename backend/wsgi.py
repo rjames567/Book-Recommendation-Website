@@ -31,9 +31,9 @@ hashing_salt = config.get("passwords salt")  # Stored in the config as binary
 hashing_algorithm = config.get("passwords hashing_algorithm")
 token_size = config.get("session_id_length")
 genre_required_match = config.get("books genre_match_threshold")
-number_summaries_home = 8
-number_similarities_about = 10
-num_display_genres = 8
+number_summaries_home = config.get("home number_home_summaries")
+number_similarities_about = config.get("home number_about_similarities")
+num_display_genres = config.get("home number_display_genres")
 
 # -----------------------------------------------------------------------------
 # Database connection
@@ -51,8 +51,7 @@ connection = mysql_handler.Connection(
 recommendations = recommendations_mod.Recommendations(
     connection,
     genre_required_match,
-    num_display_genres,
-    number_summaries_home
+    num_display_genres
 )
 diaries = diaries_mod.Diaries(connection)
 genres = genres_mod.Genres(connection)

@@ -319,8 +319,8 @@ if __name__ == "__main__":
     recommendation = recommendations.Recommendations(connection, config.get("books genre_match_threshold"), 10)
     reading_lists = ReadingLists(
         connection,
-        8,
+        config.get("home number_home_summaries"),
         config.get("books genre_match_threshold"),
-        10,
+        config.get("home number_display_genres"),
         recommendation
     )

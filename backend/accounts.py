@@ -315,9 +315,9 @@ if __name__ == "__main__":
     sessions = Sessions(connection, config.get("session_id_length"))
     reading_lists = reading_lists.ReadingLists(
         connection,
-        8,
+        config.get("home number_home_summaries"),
         config.get("books genre_match_threshold"),
-        10
+        config.get("home number_display_genres")
     )
     accounts = Accounts(
         connection,

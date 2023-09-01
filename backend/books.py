@@ -349,7 +349,7 @@ if __name__ == "__main__":
     books = Books(
         connection,
         config.get("books genre_match_threshold"),
-        10,
-        8,
-        10
+        config.get("home number_about_similarities"),
+        config.get("home number_home_summaries"),
+        config.get("home number_display_genres")
     )
