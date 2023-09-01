@@ -12,6 +12,12 @@ Having cloned this repo, to set up this repository, the following commands need 
 Install the lighttpd web server.
 > sudo apt install lighttpd
 
+To start the webserver:
+> sudo systemctl start lighttpd
+
+To stop the webserver:
+> sudo systemctl stop lighttpd
+
 ### Packages
 Install Pip to make installing python packages simpler
 > sudo apt install pip
