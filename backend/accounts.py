@@ -183,6 +183,10 @@ class Accounts:
         )
 
         return query_result[0][0]
+    
+    def get_user_id_list(self):
+        res = self._connection.query("SELECT user_id FROM users")
+        return [i[0] for i in res]
 
 
 class Sessions:
