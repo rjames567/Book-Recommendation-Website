@@ -1376,7 +1376,7 @@ function assignMoveRecommendationHandlers () {
         let book = $(this).closest(".book");
         $.ajax({
             type: "POST",
-            url: "/cgi-bin/my_books/add_list_entry",
+            url: "/cgi-bin/recommendations/add_list_entry",
             data: JSON.stringify({
                 "book_id": $(book).data("id"),
                 "session_id": sessionID,
