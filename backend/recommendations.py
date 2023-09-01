@@ -6,6 +6,7 @@ import math
 # -----------------------------------------------------------------------------
 # Project imports
 # -----------------------------------------------------------------------------
+import accounts
 import authors
 import configuration
 import data_structures
@@ -335,9 +336,17 @@ if __name__ == "__main__":
         host=config.get("mysql host")
     )
 
+    account = accounts.Accounts(
+        connection,
+        config.get("passwords hashing_algorithm"),
+        config.get("passwords salt"),
+        config.get("passwords number_hash_passes"),
+        None  # Reading lists object is not used, so passing None is safe.
+    )
     recommendations = Recommendations(connection, config.get("books genre_match_threshold"), 10)  # Only runs if this file is
     # run directly so as a scheduled task to generate new recommendations, and
     # the connection will be closed at the end of the program execution so
     # shouldn't cause issues.
 
-    print(recommendations.get_user_recommendation_summaries(1))
+    for i in account.get_user_id_list():  # Recommend all users a new set of books. Included to be set up as a cron job.
+        recommendations.recommend_user_books(i)
