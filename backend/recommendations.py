@@ -82,7 +82,7 @@ class Recommendations:
 
         book_vector = self.gen_book_vector(book_id)
 
-        user_vector += book_vector * (rating / 5)
+        user_vector += book_vector * self.calc_scale_factor(rating)
 
         user_vector /= num_reviews
 
@@ -91,7 +91,16 @@ class Recommendations:
         self.save_user_preference_vector(user_id, res_vector)
         return res_vector
 
-    def update_user_data_decrement(self, user_id, book_id, rating):
+    def calc_scale_factor(self, rating):
+        # https://www.desmos.com/calculator/1rloljemzz
+        x = rating - 3
+        return ((1/100) * x**3) - ((1/40) * x ** 2) + ((1/3) * x)
+    
+        # Almost linear between 2 and 4.
+        # 3 is neurtral and has no effect
+        # 1 has a more significant impact than 5
+
+    def update_user_data_decrement(self, user_id, book_id, rating, significant=False):
         user_vector = self.gen_user_vector(user_id)
 
         num_reviews = self._connection.query("""
@@ -107,7 +116,7 @@ class Recommendations:
 
         book_vector = self.gen_book_vector(book_id)
 
-        user_vector -= book_vector * (rating / 5)
+        user_vector -= book_vector * self.calc_scale_factor(rating)
 
         user_vector /= num_reviews
 
