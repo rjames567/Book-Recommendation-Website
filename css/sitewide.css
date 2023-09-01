@@ -589,6 +589,7 @@ main .container {
 .book-about .right { /* Left only needs width specified as fit-content, which is handled by flex */
   flex-grow: 100; /* Will wrap words on page */
   padding-left: 20px;
+  max-width: 95%;
 }
 
 .book-about .left {
@@ -665,7 +666,8 @@ main .container {
 /* Book Pages - Synopsis                                                      */
 /* -------------------------------------------------------------------------- */
 .book-about .synopsis {
-  padding: 5px 0 15px 0
+  padding: 5px 0 15px 0;
+  min-width: 100px;
 }
 
 /* -------------------------------------------------------------------------- */
