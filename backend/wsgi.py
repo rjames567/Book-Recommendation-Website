@@ -51,7 +51,8 @@ connection = mysql_handler.Connection(
 recommendations = recommendations_mod.Recommendations(
     connection,
     genre_required_match,
-    num_display_genres
+    num_display_genres,
+    number_summaries_home
 )
 diaries = diaries_mod.Diaries(connection)
 genres = genres_mod.Genres(connection)
@@ -796,9 +797,9 @@ class HomeHandler(Handler):
             user_id = sessions.get_user_id(session_id)
             self._log.output_message("          User ID: " + str(user_id))
 
-            result["recommended"] = recommendations.get_user_recommendation_summaries(user_id)
-            result["currently_reading"] = reading_lists.get_currently_reading(user_id)
-            result["want_read"] = reading_lists.get_want_read(user_id)
+            result["recommended"] = recommendations.get_user_recommendation_summaries(user_id)[:number_summaries_home]
+            result["currently_reading"] = reading_lists.get_currently_reading(user_id)[:number_summaries_home]
+            result["want_read"] = reading_lists.get_want_read(user_id)[:number_summaries_home]
         else:
             self._log.output_message("          Session ID: None")
             result["recommended"] = None
