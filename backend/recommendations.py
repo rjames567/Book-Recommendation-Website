@@ -300,6 +300,27 @@ class Recommendations:
             WHERE user_id={user_id}
                 AND book_id={book_id};
         """.format(user_id=user_id, book_id=book_id))
+    
+    def get_user_recommendation_summaries(self, user_id):
+        res = self._connection.query("""
+            SELECT books.book_id,
+                books.title,
+                books.cover_image,
+                authors.first_name,
+                authors.surname,
+                authors.alias
+            FROM recommendations
+            INNER JOIN books ON recommendations.book_id=books.book_id
+            INNER JOIN authors ON books.author_id=authors.author_id
+            WHERE recommendations.user_id={}
+            ORDER BY recommendations.certainty DESC;
+        """.format(user_id))
+        return [{
+                "author": authors.names_to_display(i[3], i[4], i[5]),
+                "title": i[1],
+                "book_id": i[0],
+                "cover": i[2],
+            } for i in res]
 
 
 # -----------------------------------------------------------------------------
@@ -318,3 +339,5 @@ if __name__ == "__main__":
     # run directly so as a scheduled task to generate new recommendations, and
     # the connection will be closed at the end of the program execution so
     # shouldn't cause issues.
+
+    print(recommendations.get_user_recommendation_summaries(1))
