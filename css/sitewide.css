@@ -150,6 +150,50 @@ header nav ul li.pseudo-last { /* Easy way of removing border on both links. */
   border: none;
 }
 
+header nav.bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Search bar                                                                 */
+/* -------------------------------------------------------------------------- */
+
+header nav div.search {
+  margin-right: 20px;
+  border: 2px solid var(--blue)
+}
+
+header nav form {
+  border: none;
+  
+}
+
+header nav form input {
+  border: none;
+  outline: none;
+  padding: 9px;
+  font-size: 14px;
+  width: 250px;
+}
+
+header nav form button {
+  border: none;
+  background-color: var(--blue);
+  color: white;
+  height: 38px;
+  width: 38px;
+}
+
+header nav form button {
+  font-size: 20px;
+}
+
+header nav form button:hover {
+  background-color: var(--light-blue);
+}
+
 /* -------------------------------------------------------------------------- */
 /* Sign In/Sign Up                                                            */
 /* -------------------------------------------------------------------------- */
