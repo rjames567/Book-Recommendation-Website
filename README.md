@@ -59,3 +59,21 @@ Open the crontab file by running the command:
 Modify the crontab file. Write the following commands to it. They run the scripts at 1:00 am, as it is
 likely to have a low number of clients, so the impact should be minimal. However, to change this, change the timing clause of the cronjob - https://crontab.guru/ can make this easier.
 > 0 1 * * * python3 /absolute/path/to/project/backend/recommendations.py
+
+## Deleting project
+To clear the crontab, run the command
+> sudo crontab -r
+
+Stop the webserver
+> sudo systemctl stop lighttpd
+
+To delete the database - Note that this is non-reversable
+> DROP DATABASE OpenBook;
+
+To delete the project files - Note that this is non-reversible
+> rm -rf path/to/project
+
+To delete the install packages
+> sudo apt remove lighttpd\
+> pip uninstall mysql.connector\
+> sudo apt remove mariadb-server
