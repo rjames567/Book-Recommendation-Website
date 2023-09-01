@@ -2,8 +2,9 @@
 # Project imports
 # -----------------------------------------------------------------------------
 import authors
-import data_structures
 import configuration
+import data_structures
+import recommendations
 import mysql_handler
 
 # -----------------------------------------------------------------------------
@@ -21,7 +22,15 @@ class ListNotFoundError(Exception):
 # Objects
 # -----------------------------------------------------------------------------
 class ReadingLists:
-    def __init__(self, connection, number_summaries_home, genre_required_match, num_display_genres):
+    def __init__(
+            self,
+            connection,
+            number_summaries_home,
+            genre_required_match,
+            num_display_genres,
+            recommendations
+        ):
+        self._recommendations = recommendations
         self._connection = connection
         self._number_summaries_home = number_summaries_home
         self._genre_required_match = genre_required_match
@@ -255,6 +264,7 @@ class ReadingLists:
         ))
 
     def add_entry(self, user_id, list_id, book_id):
+        self._recommendations.remove_stored_recommendation(user_id, book_id)
         self._connection.query("""
             INSERT INTO reading_lists (user_id, book_id, list_id) VALUES 
             ({user_id}, {book_id}, {list_id});
@@ -306,9 +316,11 @@ if __name__ == "__main__":
         host=config.get("mysql host")
     )
 
+    recommendation = recommendations.Recommendations(connection, config.get("books genre_match_threshold"), 10)
     reading_lists = ReadingLists(
         connection,
         8,
         config.get("books genre_match_threshold"),
-        10
+        10,
+        recommendation
     )

@@ -61,7 +61,8 @@ reading_lists = reading_lists_mod.ReadingLists(
     connection,
     number_summaries_home,
     genre_required_match,
-    num_display_genres
+    num_display_genres,
+    recommendations
 )
 books = book_mod.Books(
     connection,
