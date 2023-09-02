@@ -71,6 +71,9 @@ CREATE TABLE book_genres (
 -- -----------------------------------
 -- Recommendations
 -- -----------------------------------
+DROP TABLE IF EXISTS user_genres;
+DROP TABLE IF EXISTS recommendations;
+
 CREATE TABLE user_genres (
     link_id INT NOT NULL AUTO_INCREMENT,
     user_id INT NOT NULL,
