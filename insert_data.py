@@ -41,7 +41,7 @@ with open("data/Original/metadata.json", "r") as f:
             query += ",\n"
         author_lookup[k] = i + 1
         clean_name = "".join([i.lower() for i in k if i.isalnum() or i == " "])
-        query += f'({i + 1}, "{clean_name}", "{k}", "", "")'
+        query += f'({i + 1}, "{clean_name}", "{k}", "", "This author does not have an about")'
 
     for i, line in enumerate(file):
         data = json.loads(line)
