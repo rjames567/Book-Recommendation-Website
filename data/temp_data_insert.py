@@ -51,3 +51,9 @@ query = query[:-2] + ";"
 connection.query(query)
         
 connection.query("""DROP TABLE temp""")
+
+connection.query("""DELETE FROM reviews WHERE book_id NOT IN (SELECT book_id FROM book_genres)""")
+connection.query("""DELETE FROM reading_lists WHERE book_id NOT IN (SELECT book_id FROM book_genres)""")
+connection.query("""DELETE FROM recommendations WHERE book_id NOT IN (SELECT book_id FROM book_genres)""")
+connection.query("""DELETE FROM diary_entries WHERE book_id NOT IN (SELECT book_id FROM book_genres)""")
+connection.query("""DELETE FROM books WHERE book_id NOT IN (SELECT book_id FROM book_genres)""")  # Remove books that do not have genres
