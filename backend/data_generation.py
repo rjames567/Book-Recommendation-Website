@@ -49,7 +49,13 @@ print("Finished object instantiation 2/10")
 # Database clearing
 # -----------------------------------------------------------------------------
 print("Started database clearing 3/10")
-connection.query("source /home/reuben/projects/NEA/MySQL/create_tables.sql")
+
+with open("./MySQL/create_tables.sql", "r") as f:
+    queries = f.read().split(";")
+
+for i in queries:
+    connection.query(i)
+
 print("Finished database clearing 3/10")
 
 # -----------------------------------------------------------------------------
