@@ -1,27 +1,61 @@
+import os
+import sys
+import inspect
+
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0, parentdir)
+
+# -----------------------------------------------------------------------------
+# Imports
+# -----------------------------------------------------------------------------
+print("Started Imports 1/10")
 import json
 import random
 
 from gensim.summarization.summarizer import summarize
 from gensim.summarization import keywords
 
-
-def write_query(string):
-    with open("data/data_insert.sql", "a+") as f:
-        string = string.replace("\\", r"\\\\")
-        f.write(string + "\n\n")
-        f.write("-- " + "--" * 100)
-        f.write("\n\n")
-
-
-with open("data/data_insert.sql", "w+") as f:
-    pass  # Remove existing data
-
-query = "DELETE FROM reading_lists;\nDELETE FROM book_genres;\nDELETE FROM books;\nDELETE FROM authors;\nDELETE FROM reviews;\nDELETE FROM reading_list_names;\nDELETE FROM sessions;\nDELETE FROM users;"
-write_query(query)
+import configuration
+import mysql_handler
+import recommendations
+import accounts
+print("Finished Imports 1/10")
 
 # -----------------------------------------------------------------------------
-# authors
+# Object instantiation
 # -----------------------------------------------------------------------------
+print("Started object instantiation 2/10")
+config = configuration.Configuration("./project_config.conf")
+connection = mysql_handler.Connection(
+    user=config.get("mysql username"),
+    password=config.get("mysql password"),
+    schema=config.get("mysql schema"),
+    host=config.get("mysql host")
+)
+
+accounts = accounts.Accounts(
+        connection,
+        config.get("passwords hashing_algorithm"),
+        config.get("passwords salt"),
+        config.get("passwords number_hash_passes"),
+        None  # Reading lists object is not used, so passing None is safe.
+    )
+
+recommendations = recommendations.Recommendations(connection, config.get("books genre_match_threshold"), config.get("home number_display_genres"))
+print("Finished object instantiation 2/10")
+
+# -----------------------------------------------------------------------------
+# Database clearing
+# -----------------------------------------------------------------------------
+print("Started database clearing 3/10")
+connection.query("source /home/reuben/projects/NEA/MySQL/create_tables.sql")
+print("Finished database clearing 3/10")
+
+# -----------------------------------------------------------------------------
+# Authors
+# -----------------------------------------------------------------------------
+print("Started authors 4/10")
 new_file = ""
 isbn_lookup = dict()
 
@@ -49,7 +83,7 @@ with open("data/Original/metadata.json", "r") as f:
         isbn_lookup[data['item_id']] = i + 1
         new_file += json.dumps(data) + "\n"
     query += ";"
-    write_query(query)
+    connection.query(query)
 
 with open("data/metadata-altered.json", "w+") as f:
     f.write(new_file)
@@ -75,9 +109,12 @@ del f
 del author_lookup
 del file
 
+print("Finished authors 4/10")
+
 # -----------------------------------------------------------------------------
 # books
 # -----------------------------------------------------------------------------
+print("Started books 5/10")
 new_file = ""
 
 with open("data/metadata-altered.json", "r") as f:
@@ -104,7 +141,7 @@ with open("data/metadata-altered.json", "r") as f:
             isbn=data['item_id']
         )
     query += ";"
-    write_query(query)
+    connection.query(query)
 
 with open("data/metadata-altered.json", "w+") as f:
     f.write(new_file)
@@ -112,10 +149,12 @@ with open("data/metadata-altered.json", "w+") as f:
 del query
 del new_file
 del f
+print("Finished books 5/10")
 
 # -----------------------------------------------------------------------------
 # Users
 # -----------------------------------------------------------------------------
+print("Started users 6/10")
 query1 = "INSERT INTO users (user_id, username, password_hash, first_name, surname) VALUES\n"
 query2 = "INSERT INTO reading_list_names (list_id, user_id, list_name) VALUES\n"
 query3 = "INSERT INTO reading_lists (entry_id, list_id, book_id, user_id) VALUES\n"
@@ -153,13 +192,15 @@ for i in range(1, 601):
 query1 += ";"
 query2 += ";"
 query3 = query3[:-2] + ";"
-write_query(query1)
-write_query(query2)
-write_query(query3)
+connection.query(query1)
+connection.query(query2)
+connection.query(query3)
+print("Finished users 6/10")
 
 # -----------------------------------------------------------------------------
 # Reviews
 # -----------------------------------------------------------------------------
+print("Started reviews 7/10")
 query = "INSERT INTO reviews (user_id, book_id, summary, overall_rating, character_rating, plot_rating, rating_body) VALUES\n"
 with open("data/reviews.json", "r") as f:
     # https://www.turing.com/kb/5-powerful-text-summarization-techniques-in-python
@@ -211,4 +252,73 @@ with open("data/reviews.json", "r") as f:
             )
             query += ",\n"
     query = query[:-2] + ";"
-    write_query(query)
+    connection.query(query)
+print("Finished reviews 7/10")
+
+# -----------------------------------------------------------------------------
+# Genres
+# -----------------------------------------------------------------------------
+print("Started genres 8/10")
+with open("data/Original/tags.json", "r") as f:
+    query = "INSERT INTO genres (genre_id, name, about) VALUES\n"
+    for i, line in enumerate(f):
+        if i != 0:
+            query += ",\n"
+        data = json.loads(line)
+        query += '({id}, "{tag}", "This genre does not have an about")'.format(id=data["id"] + 1, tag=data["tag"].replace('"', "'"))
+    query += ";"
+
+connection.query(query)
+
+connection.query("""DROP TABLE IF EXISTS temp;""")
+connection.query("""DELETE FROM book_genres;""")
+connection.query("""CREATE TABLE temp (genre_id INT, score INT, book_id INT);""")
+
+query = "INSERT INTO temp VALUES\n"
+with open("data/survey_answers.json", "r") as f:
+    for i, line in enumerate(f):
+        if i != 0:
+            query += ",\n"
+        data = json.loads(line)
+        query += '({tag}, {score}, {book})'.format(tag=data["tag_id"]+1, score=data["score"], book=data["book_id"]*2)
+query += ";"
+
+connection.query(query)
+
+books = [i[0] for i in connection.query("SELECT book_id FROM books")]
+query = "INSERT INTO book_genres (genre_id, book_id, match_strength) VALUES\n"
+for j, i in enumerate(books):
+    res = connection.query("""SELECT genre_id,
+        AVG(score)/5 AS rating
+        FROM temp
+        WHERE book_id={}
+        GROUP BY genre_id;
+    """.format(i))
+
+    for b, k in enumerate(res):
+        if k[1] > 0:
+            query += f"({k[0]}, {i}, {float(k[1])}),\n"
+query = query[:-2] + ";"
+
+connection.query(query)
+        
+connection.query("""DROP TABLE temp""")
+
+connection.query("""DELETE FROM reviews WHERE book_id NOT IN (SELECT book_id FROM book_genres)""")
+connection.query("""DELETE FROM reading_lists WHERE book_id NOT IN (SELECT book_id FROM book_genres)""")
+connection.query("""DELETE FROM recommendations WHERE book_id NOT IN (SELECT book_id FROM book_genres)""")
+connection.query("""DELETE FROM diary_entries WHERE book_id NOT IN (SELECT book_id FROM book_genres)""")
+connection.query("""DELETE FROM books WHERE book_id NOT IN (SELECT book_id FROM book_genres)""")  # Remove books that do not have genres
+print("Finished genres 8/10")
+
+# -----------------------------------------------------------------------------
+# Recommendations
+# -----------------------------------------------------------------------------
+print("Started user preference generation 9/10")
+recommendations.gen_all_user_data()
+print("Finished user preference generation 9/10")
+
+print("Started user recommendation generation 10/10")
+for i in accounts.get_user_id_list(): 
+        recommendations.recommend_user_books(i)
+print("Finished user recommendation generation 10/10")
