@@ -14,6 +14,7 @@ CREATE TABLE authors (
     surname TINYTEXT,
     alias TINYTEXT,
     about TEXT,
+    clean_name TINYTEXT NOT NULL,
     PRIMARY KEY (author_id)
 );
 
