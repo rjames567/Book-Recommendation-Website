@@ -224,6 +224,7 @@ with open("data/reviews.json", "r") as f:
         else:
             try:
                 summary = summarize(body, word_count=50)
+                body = '"' + body + '"'
             except ValueError:
                 summary = body
                 body = "null"
@@ -241,7 +242,7 @@ with open("data/reviews.json", "r") as f:
                 plot_rating = random.randint(0, 5)
             else:
                 plot_rating = "null"
-            query += '({user_id}, {book_id}, "{summary}", {overall_rating}, {character_rating}, {plot_rating}, "{rating_body}")'.format(
+            query += '({user_id}, {book_id}, "{summary}", {overall_rating}, {character_rating}, {plot_rating}, {rating_body})'.format(
                 user_id=user_id,
                 book_id=data['item_id'],
                 summary=summary,
