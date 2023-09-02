@@ -42,7 +42,6 @@ accounts = accounts.Accounts(
         None  # Reading lists object is not used, so passing None is safe.
     )
 
-recommendations = recommendations.Recommendations(connection, config.get("books genre_match_threshold"), config.get("home number_display_genres"))
 print("Finished object instantiation 2/10")
 
 # -----------------------------------------------------------------------------
@@ -321,6 +320,9 @@ print("Finished genres 8/10")
 # -----------------------------------------------------------------------------
 # Recommendations
 # -----------------------------------------------------------------------------
+recommendations = recommendations.Recommendations(connection, config.get("books genre_match_threshold"), config.get("home number_display_genres"))
+# This needs to be later, as the number of genres would be incorrect if it were done at the start
+
 print("Started user preference generation 9/10")
 recommendations.gen_all_user_data()
 print("Finished user preference generation 9/10")
