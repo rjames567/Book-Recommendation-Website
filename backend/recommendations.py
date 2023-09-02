@@ -192,8 +192,10 @@ class Recommendations:
                 arr = [(int(genre), float(match)) for genre, match in zip(item[1].split(","), item[0].split(","))]
                 book_vectors.append(self.gen_book_vector(book_genres=arr))
 
-            user_vector = sum((vector * rating for vector, rating in zip(book_vectors, ratings)), data_structures.Vector(dimensions=self._available_genres, default_value=0)) / len(items)
-            self.save_user_preference_vector(user, user_vector)
+            if len(items) > 0:
+                user_vector = sum((vector * rating for vector, rating in zip(book_vectors, ratings)), data_structures.Vector(dimensions=self._available_genres, default_value=0)) / len(items)
+                 # If the user has left no reviews, this would break, but this is fine as it will not run if the length of the items is 0 (ie no reviews)
+                self.save_user_preference_vector(user, user_vector)
 
     def recommend_user_books(self, user_id):
         self._connection.query("""
@@ -220,10 +222,14 @@ class Recommendations:
             if (book not in existing_recommendations and  # Prevent duplicate recommendations, which is likely
                 book not in reading_list_items):  # Prevent recommendation of items that are in any of the users lists.
                 data = self.gen_book_vector(book_id=book)
+                if abs(data) and abs(user_preferences):  # Prevent issues with calculating dot product with 0 values (ZeroDivisionError)
+                    cos_sim = user_preferences.cosine_sim(data)
+                else:
+                    cos_sim = 0
                 weightings.append({
-                    "id": book,
-                    "cos_sim": user_preferences.cosine_sim(data)
-                })
+                        "id": book,
+                        "cos_sim": cos_sim
+                    })
 
         new_recommendations = sorted(weightings, key=lambda x: x["cos_sim"], reverse=True)[:self._recommendation_number]
         # Note that this could raise an error, but should not do so, as the amount available books should be greater
