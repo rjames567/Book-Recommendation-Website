@@ -26,7 +26,7 @@ new_file = ""
 isbn_lookup = dict()
 
 with open("data/Original/metadata.json", "r") as f:
-    query = "INSERT INTO authors (author_id, first_name, surname, about) VALUES\n"
+    query = "INSERT INTO authors (author_id, clean_name, first_name, surname, about) VALUES\n"
 
     file = f.readlines()
 
@@ -40,7 +40,8 @@ with open("data/Original/metadata.json", "r") as f:
         if i != 0:
             query += ",\n"
         author_lookup[k] = i + 1
-        query += f'({i + 1}, "{k}", "", "")'
+        clean_name = "".join([i.lower() for i in k if i.isalnum() or i == " "])
+        query += f'({i + 1}, "{clean_name}", "{k}", "", "")'
 
     for i, line in enumerate(file):
         data = json.loads(line)
