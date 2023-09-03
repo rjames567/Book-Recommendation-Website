@@ -43,23 +43,27 @@ class DocumentCollection:
         for k in [i[0] for i in self._connection.query("SELECT clean_title FROM books")]:
             self._documents_dict.append({
                 "type": DocumentType.BOOK,
-                "words": k
+                "words": k,
+                "similarity": 0
             })
             self._documents.append(k)
         
         for k in [i[0] for i in self._connection.query("SELECT clean_name FROM genres")]:
             self._documents_dict.append({
                 "type": DocumentType.GENRE,
-                "words": k
+                "words": k,
+                "similarity": 0
             })
             self._documents.append(k)
-        
+
         for k in [i[0] for i in self._connection.query("SELECT clean_name FROM authors")]:
             self._documents_dict.append({
                 "type": DocumentType.AUTHOR,
-                "words": k
+                "words": k,
+                "similarity": 0
             })
             self._documents.append(k)
+            # print("author")
 
     def gen_unique_words(self):
         words = list(itertools.chain(*[i["words"].split(" ") for i in self._documents_dict]))
@@ -154,6 +158,36 @@ class DocumentCollection:
                 if i in self.idf_values and i in document_words:
                     res[i] = tf[i] * self.idf_values[i]
             return res
+    
+    def search(self, terms):
+        terms = clean_data(terms)
+        term_arr = terms.split(" ")
+
+        search_tfidf = self.gen_tfidf_values(document=terms)
+        result = []
+
+        self.gen_tfidf_values(search_terms=term_arr)
+
+        for count, document in enumerate(self._documents_dict):
+            similarity = a_total = b_total = 0 # These are used to work out the magnitude of the vectors
+            tfidf = document["tfidf"]
+
+            for k in term_arr:
+                # print(search_tfidf[k], tfidf[k])
+                similarity += search_tfidf[k] * tfidf[k]
+                a_total += search_tfidf[k] ** 2
+                b_total += tfidf[k] ** 2
+            
+            if similarity > 0:
+                similarity /= (math.sqrt(a_total) * math.sqrt(b_total))
+                document["similarity"] = similarity
+                result.append({
+                    "title": document["words"],
+                    "type": document["type"],
+                    "similarity": document["similarity"]
+                })
+        
+        return sorted(result, key=lambda x: x["similarity"], reverse=True)
 
 # -----------------------------------------------------------------------------
 # File execution
@@ -168,5 +202,3 @@ if __name__ == "__main__":
     )
 
     document = DocumentCollection(connection)
-
-    document.gen_tfidf_values()
