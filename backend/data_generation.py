@@ -47,6 +47,9 @@ print("Finished object instantiation 2/10")
 # -----------------------------------------------------------------------------
 # Database clearing
 # -----------------------------------------------------------------------------
+# Set the query size limit - https://wp-staging.com/docs/increase-max_allowed_packet-size-in-mysql/#How_to_Set_max_allowed_packet_Temporary
+# SET GLOBAL max_allowed_packet=1073741824; - this does not work through the connector, and must be done as root
+
 print("Started database clearing 3/10")
 
 with open("./MySQL/create_tables.sql", "r") as f:
@@ -218,7 +221,7 @@ with open("data/reviews.json", "r") as f:
             line += f.readline()
         data = json.loads(line)
         # https://pythonguides.com/remove-unicode-characters-in-python/
-        body = data["txt"].encode("ascii", "ignore").decode().replace('"', "'").replace(";", "")
+        body = data["txt"].encode("ascii", "ignore").decode().replace('"', "'").replace(";", "").replace("\\", "")
 
         if data['item_id'] != prev:
             available = list(range(1, 601))
@@ -256,8 +259,8 @@ with open("data/reviews.json", "r") as f:
                 plot_rating=plot_rating,
                 rating_body=body  # .replace("\n", "\\n")
             )
-            query += ",\n"
-    query = query[:-2] + ";"
+            query += ","
+    query = query[:-1] + ";"
     connection.query(query)
 print("Finished reviews 7/10")
 
