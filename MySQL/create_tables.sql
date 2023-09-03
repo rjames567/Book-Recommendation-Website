@@ -205,3 +205,14 @@ CREATE TABLE sessions (
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
  -- Restore original checks and constraint settings --
+
+-- -----------------------------------
+-- Information retrieval
+-- -----------------------------------
+DROP TABLE IF EXISTS unique_words;
+
+CREATE TABLE unique_words (
+    word_id INT NOT NULL AUTO_INCREMENT,
+    word TINYTEXT NOT NULL,
+    PRIMARY KEY (word_id)
+);
