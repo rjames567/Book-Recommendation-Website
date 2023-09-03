@@ -3,6 +3,7 @@
 # -----------------------------------------------------------------------------
 import enum
 import itertools
+import math
 
 # -----------------------------------------------------------------------------
 # Project imports
@@ -76,6 +77,20 @@ class DocumentCollection:
     
     def num_documents_containing(self, string):
         return sum(string in i for i in self._documents)
+
+    def gen_idf_values(self):
+        num_documents = len(self._documents)
+
+        for word_id, word in self._connection.query("SELECT word_id, word FROM unique_words"):
+            self._connection.query("""
+                UPDATE unique_words
+                    SET idf_values={idf}
+                WHERE word_id={word_id}
+            """.format(
+                idf=math.log10(num_documents / self.num_documents_containing(word)),
+                word_id=word_id
+            ))
+
     
 # -----------------------------------------------------------------------------
 # File execution
