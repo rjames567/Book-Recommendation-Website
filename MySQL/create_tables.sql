@@ -53,6 +53,7 @@ CREATE TABLE genres (
     genre_id INT NOT NULL AUTO_INCREMENT,
     name TINYTEXT NOT NULL,
     about TEXT,
+    clean_name TINYTEXT NOT NULL,
     PRIMARY KEY (genre_id)
 );
 -- Name should have a unique constraint, but it is not possible to add a unique
