@@ -90,7 +90,7 @@ class Authors:
                 alias
             FROM authors
             WHERE author_id={}
-        """.format(author_id))
+        """.format(author_id))[0]
 
         return names_to_display(res[0], res[1], res[2])
 
