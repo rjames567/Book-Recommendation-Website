@@ -32,13 +32,32 @@ def clean_data(string):
 class DocumentCollection:
     def __init__(self, connection):
         self._connection = connection
+        self.load_documents()
+
+    def load_documents(self):
+        self._documents = []
+        for k in [i[0] for i in self._connection.query("SELECT clean_title FROM books")]:
+            self._documents.append({
+                "type": DocumentType.BOOK,
+                "words": k
+            })
+        
+        for k in [i[0] for i in self._connection.query("SELECT clean_name FROM genres")]:
+            self._documents.append({
+                "type": DocumentType.GENRE,
+                "words": k
+            })
+        
+        for k in [i[0] for i in self._connection.query("SELECT clean_name FROM authors")]:
+            self._documents.append({
+                "type": DocumentType.AUTHOR,
+                "words": k
+            })
 
     def gen_unique_words(self):
-        words = list(itertools.chain(*[i[0].split(" ") for i in self._connection.query("SELECT clean_title FROM books")]))
-        words.append(list(itertools.chain(*[i[0].split() for i in self._connection.query("SELECT clean_name FROM authors")])))
-        words.append(list(itertools.chain(*[i[0].split() for i in self._connection.query("SELECT clean_name from genres")])))
+        words = list(itertools.chain(*[i["words"].split(" ") for i in self._documents]))
 
-        unique_words = set(list(itertools.chain(*words)))
+        unique_words = set(words)
 
         self._connection.query("DELETE FROM unique_words")
         values = ""
