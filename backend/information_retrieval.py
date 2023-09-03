@@ -131,24 +131,30 @@ class DocumentCollection:
                 self._idf_values[word] = idf
             return self._idf_values
     
-    def gen_tfidf_values(self, search_terms=None):
-        self._connection.query("""
-            SELECT word, idf_values FROM unique_words
-        """)
-        for count, document in enumerate(self._documents_dict):
-            document_words = document["words"].split(" ")
-            if search_terms is None:
-                new_search_terms = document_words
-            else:
-                new_search_terms = search_terms
-            
-            res = {i: 0 for i in new_search_terms}
+    def gen_tfidf_values(self, document=None, search_terms=None):
+        if document is None:
+            for count, document in enumerate(self._documents_dict):
+                document_words = document["words"].split(" ")
+                if search_terms is None:
+                    new_search_terms = document_words
+                else:
+                    new_search_terms = search_terms
+                
+                res = {i: 0 for i in new_search_terms}
+                for i in res.keys():
+                    if i in self.idf_values and i in document_words:
+                        res[i] = document["tf"][i] * self.idf_values[i]
+                
+                self._documents_dict[count]["tfidf"] = res
+        else:
+            document_words = document.split(" ")
+            tf = self.gen_tf_values(document)
+            res = {i: 0 for i in document_words}
             for i in res.keys():
                 if i in self.idf_values and i in document_words:
-                    res[i] = document["tf"][i] * self.idf_values[i]
-            
-            self._documents_dict[count]["tfidf"] = res
-    
+                    res[i] = tf[i] * self.idf_values[i]
+            return res
+
 # -----------------------------------------------------------------------------
 # File execution
 # -----------------------------------------------------------------------------
