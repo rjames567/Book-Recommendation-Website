@@ -262,7 +262,6 @@ class Recommendations:
                 (SELECT GROUP_CONCAT(genres.name) FROM book_genres
                     INNER JOIN genres ON book_genres.genre_id=genres.genre_id
                     WHERE book_genres.book_id=recommendations.book_id
-                        AND book_genres.match_strength>{match_strength}
                     GROUP BY books.book_id) AS genres,
                 (SELECT ROUND(CAST(IFNULL(AVG(reviews.overall_rating), 0) as FLOAT), 2)
                     FROM reviews
@@ -273,12 +272,9 @@ class Recommendations:
             FROM recommendations
             INNER JOIN books ON recommendations.book_id=books.book_id
             INNER JOIN authors ON books.author_id=authors.author_id
-            WHERE recommendations.user_id={user_id}
+            WHERE recommendations.user_id={}
             ORDER BY recommendations.certainty DESC;
-        """.format(
-            match_strength=self._genre_match_threshold,
-            user_id=user_id
-        ))  # ORDER BY does not use calculated certainty for higher accuracy, and avoiding collisions
+        """.format(user_id))  # ORDER BY does not use calculated certainty for higher accuracy, and avoiding collisions
         # IFNULL prevents any null values - replace with 0s.
 
         output_dict = dict()

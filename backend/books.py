@@ -43,9 +43,8 @@ class Books:
                 books.author_id
             FROM book_genres
             INNER JOIN books ON books.book_id=book_genres.book_id
-            WHERE match_strength>{}
             GROUP BY book_id;
-        """.format(self._genre_required_match))  # Match strength is included, as then more are more likely to appear, and
+        """)  # Match strength is included, as then more are more likely to appear, and
         # therefore will impact on the similarity.
 
         genre_dict = dict()

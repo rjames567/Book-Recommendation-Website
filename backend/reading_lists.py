@@ -178,7 +178,6 @@ class ReadingLists:
                     inner join books on book_genres.book_id=books.book_id
                     inner join genres on genres.genre_id=book_genres.genre_id
                     WHERE book_genres.book_id=reading_lists.book_id
-                        AND book_genres.match_strength>{match_strength}
                     GROUP by books.title) AS genres,
                 (SELECT CAST(IFNULL(AVG(reviews.overall_rating), 0) as FLOAT)  # Prevent any null values - replace with 0s.
                     FROM reviews
@@ -197,7 +196,6 @@ class ReadingLists:
                     AND reading_lists.user_id={user_id}
                 ORDER BY reading_lists.date_added DESC, books.title ASC;
             """.format(
-            match_strength=self._genre_required_match,
             list_id=list_id,
             user_id=user_id  # This is not strictly necessary, but helps protect against people being able to view other
             # people's list contents by guessing the list id.
