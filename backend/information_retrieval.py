@@ -160,7 +160,7 @@ class DocumentCollection:
                     res[i] = tf[i] * self.idf_values[i]
             return res
     
-    def search(self, terms):
+    def tfidf_search(self, terms):
         terms = clean_data(terms)
         term_arr = terms.split(" ")
 
