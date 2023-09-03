@@ -232,6 +232,7 @@ with open("data/reviews.json", "r") as f:
         else:
             try:
                 summary = summarize(body, word_count=50)
+                # summary = body
                 body = '"' + body + '"'
             except ValueError:
                 summary = body
@@ -269,12 +270,14 @@ print("Finished reviews 7/10")
 # -----------------------------------------------------------------------------
 print("Started genres 8/10")
 with open("data/Original/tags.json", "r") as f:
-    query = "INSERT INTO genres (genre_id, name, about) VALUES\n"
+    query = "INSERT INTO genres (genre_id, name, clean_name, about) VALUES\n"
     for i, line in enumerate(f):
         if i != 0:
             query += ",\n"
         data = json.loads(line)
-        query += '({id}, "{tag}", "This genre does not have an about")'.format(id=data["id"] + 1, tag=data["tag"].replace('"', "'"))
+        tag = data["tag"].replace('"', "'")
+        clean = "".join([i.lower() for i in tag if i.isalnum() or i == " "])
+        query += '({id}, "{tag}", "{clean}", "This genre does not have an about")'.format(id=data["id"] + 1, tag=tag, clean=clean)
     query += ";"
 
 connection.query(query)
