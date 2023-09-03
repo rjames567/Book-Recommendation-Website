@@ -48,6 +48,33 @@ Create the database with name OpenBook. Remember the credentials used for the us
 > FLUSH PRIVILEGES;\
 > QUIT;
 
+### Generate test data
+This project uses test data from https://grouplens.org/datasets/book-genome/.
+
+Download the ZIP file, and extract it to path/to/project/data/Original.
+
+Note that some of the files are very large, and to reduce the size of these, the following command can be run to cut down
+the file sizes using the following command. Size could be for example 200K, 1G, etc.
+> truncate -s size filename.json
+
+Change the maximum allowed packet temporarily in the database by entering the following commands.
+> sudo mysql -u root -p\
+> USE OpenBook;\
+> SET GLOBAL max_allowed_packet=1073741824;\
+> EXIT;\
+> python3 path/to/project/backend/data_generation.py
+
+The python file will take a long time to execute. On an i5-1135G7, it takes approximately 40 minutes to process and insert
+the entire files into a database. It is also important to note that, as the number of files increases, the load on the
+server will also increase. Running the script on a raspberry pi 4b took significantly longer, and had to be left to run
+overnight - a more accurate time is unknown. When running with this quantitiy of data, it struggled handing more than one 
+or two concurrent users, or many requests in a short space of time. This would cause lighttpd to lock up and not give any
+responses from the FastCGI script. To fix this restart lighttpd.
+
+Note that this will increase the maximum query size to 1GB for all database connections, which may be dangerous. This will
+be reverted when the database is restarted. To do this enter the following command.
+> sudo systemctl restart mariadb
+
 ### Web server
 Make the directory readable
 > chmod a+r /path/to/project/
