@@ -275,9 +275,18 @@ with open("data/Original/tags.json", "r") as f:
         if i != 0:
             query += ",\n"
         data = json.loads(line)
-        tag = data["tag"].replace('"', "'")
-        clean = "".join([i.lower() for i in tag if i.isalnum() or i == " "])
-        query += '({id}, "{tag}", "{clean}", "This genre does not have an about")'.format(id=data["id"] + 1, tag=tag, clean=clean)
+        tag = data["tag"].replace('"', "'").title()
+        newTag = ""
+        for i in tag.split(" "):
+            if len(newTag) > 0:
+                newTag += " "
+            temp = set(list(i.lower()))  # Get all unique values in string
+            if len(temp) == 1 and i[0].lower() == "i":  # If the set has only one item, the first item of i will be that value
+                newTag += i.upper()
+            else:
+                newTag += i  # Ensure that II, will be uppercase, for genres like World War I and World War II
+        clean = "".join([i.lower() for i in newTag if i.isalnum() or i == " "])
+        query += '({id}, "{tag}", "{clean}", "This genre does not have an about")'.format(id=data["id"] + 1, tag=newTag, clean=clean)
     query += ";"
 
 connection.query(query)
