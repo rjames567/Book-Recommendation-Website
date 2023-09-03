@@ -215,5 +215,6 @@ DROP TABLE IF EXISTS unique_words;
 CREATE TABLE unique_words (
     word_id INT NOT NULL AUTO_INCREMENT,
     word TINYTEXT NOT NULL,
+    idf_values FLOAT, -- it can be null as it values need to be inserted, before calculating these.
     PRIMARY KEY (word_id)
 );
