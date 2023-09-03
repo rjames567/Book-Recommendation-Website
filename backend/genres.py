@@ -67,6 +67,12 @@ class Genres:
         }
 
         return output_dict
+    
+    def id_to_name(self, genre_id):
+        return self._connection.query("""
+            SELECT name FROM genres
+            WHERE genre_id={}
+        """.format(genre_id))[0][0]
 
 # -----------------------------------------------------------------------------
 # File execution
