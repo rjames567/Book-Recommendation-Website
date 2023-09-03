@@ -177,7 +177,7 @@ class DocumentCollection:
 
         self.gen_tfidf_values(search_terms=term_arr)
 
-        for count, document in enumerate(self._documents_dict):
+        for document in self._documents_dict:
             similarity = a_total = b_total = 0 # These are used to work out the magnitude of the vectors
             tfidf = document["tfidf"]
 
