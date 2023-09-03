@@ -32,30 +32,34 @@ def clean_data(string):
 class DocumentCollection:
     def __init__(self, connection):
         self._connection = connection
-        self.load_documents()
+        self.load_documents_dict()
 
-    def load_documents(self):
+    def load_documents_dict(self):
+        self._documents_dict = []
         self._documents = []
         for k in [i[0] for i in self._connection.query("SELECT clean_title FROM books")]:
-            self._documents.append({
+            self._documents_dict.append({
                 "type": DocumentType.BOOK,
                 "words": k
             })
+            self._documents.append(k)
         
         for k in [i[0] for i in self._connection.query("SELECT clean_name FROM genres")]:
-            self._documents.append({
+            self._documents_dict.append({
                 "type": DocumentType.GENRE,
                 "words": k
             })
+            self._documents.append(k)
         
         for k in [i[0] for i in self._connection.query("SELECT clean_name FROM authors")]:
-            self._documents.append({
+            self._documents_dict.append({
                 "type": DocumentType.AUTHOR,
                 "words": k
             })
+            self._documents.append(k)
 
     def gen_unique_words(self):
-        words = list(itertools.chain(*[i["words"].split(" ") for i in self._documents]))
+        words = list(itertools.chain(*[i["words"].split(" ") for i in self._documents_dict]))
 
         unique_words = set(words)
 
@@ -69,6 +73,9 @@ class DocumentCollection:
                 values += f'("{i}")'
         
         self._connection.query(x:=f"INSERT INTO unique_words (word) VALUES {values}")
+    
+    def num_documents_containing(self, string):
+        return sum(string in i for i in self._documents)
     
 # -----------------------------------------------------------------------------
 # File execution
