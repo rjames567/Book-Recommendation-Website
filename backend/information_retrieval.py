@@ -34,6 +34,8 @@ class DocumentCollection:
     def __init__(self, connection):
         self._connection = connection
         self.load_documents_dict()
+        self.gen_tf_values()
+        self._idf_values = None
 
     def load_documents_dict(self):
         self._documents_dict = []
@@ -87,25 +89,53 @@ class DocumentCollection:
                     else:
                         tf[i] = one_over_n
             self._documents_dict[count]["tf"] = tf
-
-        print(self._documents_dict)
     
     def num_documents_containing(self, string):
         return sum(string in i for i in self._documents)
 
     def gen_idf_values(self):
         num_documents = len(self._documents)
-
+        self._idf_values = dict()
         for word_id, word in self._connection.query("SELECT word_id, word FROM unique_words"):
+            idf = math.log10(num_documents / self.num_documents_containing(word))
             self._connection.query("""
                 UPDATE unique_words
                     SET idf_values={idf}
                 WHERE word_id={word_id}
             """.format(
-                idf=math.log10(num_documents / self.num_documents_containing(word)),
+                idf=idf,
                 word_id=word_id
             ))
 
+            self._idf_values[word] = idf
+    
+    @property
+    def idf_values(self):
+        if self._idf_values is not None: # Should be faster as it only needs to be fetched from the DB once
+            return self._idf_values
+        else:
+            self._idf_values = dict()
+            for word, idf in self._connection.query("""SELECT word, idf_values FROM unique_words"""):
+                self._idf_values[word] = idf
+            return self._idf_values
+    
+    def gen_tfidf_values(self, search_terms=None):
+        self._connection.query("""
+            SELECT word, idf_values FROM unique_words
+        """)
+        for count, document in enumerate(self._documents_dict):
+            document_words = document["words"].split(" ")
+            if search_terms is None:
+                new_search_terms = document_words
+            else:
+                new_search_terms = search_terms
+            
+            res = {i: 0 for i in new_search_terms}
+            for i in res.keys():
+                if i in self.idf_values and i in document_words:
+                    res[i] = document["tf"][i] * self.idf_values[i]
+            
+            self._documents_dict[count]["tfidf"] = res
     
 # -----------------------------------------------------------------------------
 # File execution
@@ -120,3 +150,5 @@ if __name__ == "__main__":
     )
 
     document = DocumentCollection(connection)
+
+    document.gen_tfidf_values()
