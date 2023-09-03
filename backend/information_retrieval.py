@@ -16,9 +16,10 @@ import mysql_handler
 # Enums
 # -----------------------------------------------------------------------------
 class DocumentType(enum.Enum):
-    AUTHOR = enum.auto
-    GENRE = enum.auto
-    BOOK = enum.auto
+    AUTHOR = 1
+    GENRE = 2
+    BOOK = 3  # for whatever reason, using enum.auto does not work, and they all
+    # appear as DocumentType.AUTHOR
 
 # -----------------------------------------------------------------------------
 # Functions
