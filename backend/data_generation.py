@@ -20,6 +20,7 @@ import configuration
 import mysql_handler
 import recommendations
 import accounts
+import information_retrieval
 print("Finished Imports 1/10")
 
 # -----------------------------------------------------------------------------
@@ -82,7 +83,7 @@ with open("data/Original/metadata.json", "r") as f:
         if i != 0:
             query += ",\n"
         author_lookup[k] = i + 1
-        clean_name = "".join([i.lower() for i in k if i.isalnum() or i == " "])
+        clean_name = information_retrieval.clean_data(k)
         query += f'({i + 1}, "{clean_name}", "{k}", "", "This author does not have an about")'
 
     for i, line in enumerate(file):
@@ -141,7 +142,7 @@ with open("data/metadata-altered.json", "r") as f:
             book_id=i + 1,
             author_id=data['authors'],
             book_title=title,
-            clean_title="".join([i.lower() for i in title if i.isalnum() or i == " "]),
+            clean_title=information_retrieval.clean_data(title),
             synopsis=synopsis.replace('"', "'"),  # .replace("\n", "\\n"),
             cover_image=data['img'],
             link=data['url'],
@@ -285,7 +286,7 @@ with open("data/Original/tags.json", "r") as f:
                 newTag += i.upper()
             else:
                 newTag += i  # Ensure that II, will be uppercase, for genres like World War I and World War II
-        clean = "".join([i.lower() for i in newTag if i.isalnum() or i == " "])
+        clean = information_retrieval.clean_data(newTag)
         query += '({id}, "{tag}", "{clean}", "This genre does not have an about")'.format(id=data["id"] + 1, tag=newTag, clean=clean)
     query += ";"
 
