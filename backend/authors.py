@@ -83,6 +83,17 @@ class Authors:
 
         return output_dict
 
+    def id_to_name(self, author_id)
+        res = self._connection.query("""
+            SELECT first_name,
+                surname,
+                alias
+            FROM authors
+            WHERE author_id={}
+        """.format(author_id))
+
+        return names_to_display(res[0], res[1], res[2])
+
 
 # -----------------------------------------------------------------------------
 # Functions
