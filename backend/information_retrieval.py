@@ -41,30 +41,32 @@ class DocumentCollection:
     def load_documents_dict(self):
         self._documents_dict = []
         self._documents = []
-        for k in [i[0] for i in self._connection.query("SELECT clean_title FROM books")]:
+        for title, book_id in self._connection.query("SELECT clean_title, book_id FROM books"):
             self._documents_dict.append({
                 "type": DocumentType.BOOK,
-                "words": k,
+                "words": title,
+                "id": book_id,
                 "similarity": 0
             })
-            self._documents.append(k)
+            self._documents.append(title)
         
-        for k in [i[0] for i in self._connection.query("SELECT clean_name FROM genres")]:
+        for title, genre_id in self._connection.query("SELECT clean_name, genre_id FROM genres"):
             self._documents_dict.append({
                 "type": DocumentType.GENRE,
-                "words": k,
+                "words": title,
+                "id": genre_id,
                 "similarity": 0
             })
-            self._documents.append(k)
+            self._documents.append(title)
 
-        for k in [i[0] for i in self._connection.query("SELECT clean_name FROM authors")]:
+        for title, author_id in self._connection.query("SELECT clean_name, author_id FROM authors"):
             self._documents_dict.append({
                 "type": DocumentType.AUTHOR,
-                "words": k,
+                "words": title,
+                "id": author_id,
                 "similarity": 0
             })
-            self._documents.append(k)
-            # print("author")
+            self._documents.append(title)
 
     def gen_unique_words(self):
         words = list(itertools.chain(*[i["words"].split(" ") for i in self._documents_dict]))
@@ -80,7 +82,7 @@ class DocumentCollection:
                     values += ","
                 values += f'("{i}")'
         
-        self._connection.query(x:=f"INSERT INTO unique_words (word) VALUES {values}")
+        self._connection.query(f"INSERT INTO unique_words (word) VALUES {values}")
     
     def gen_tf_values(self, term=None):
         if term is None:
@@ -185,7 +187,8 @@ class DocumentCollection:
                 result.append({
                     "title": document["words"],
                     "type": document["type"],
-                    "similarity": document["similarity"]
+                    "similarity": document["similarity"],
+                    "id": document["id"]
                 })
         
         return sorted(result, key=lambda x: x["similarity"], reverse=True)
