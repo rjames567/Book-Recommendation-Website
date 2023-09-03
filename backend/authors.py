@@ -83,7 +83,7 @@ class Authors:
 
         return output_dict
 
-    def id_to_name(self, author_id)
+    def id_to_name(self, author_id):
         res = self._connection.query("""
             SELECT first_name,
                 surname,
