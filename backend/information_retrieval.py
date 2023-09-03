@@ -1,6 +1,7 @@
 # -----------------------------------------------------------------------------
 # Standard Python ibrary imports
 # -----------------------------------------------------------------------------
+import enum
 import itertools
 
 # -----------------------------------------------------------------------------
@@ -8,6 +9,15 @@ import itertools
 # -----------------------------------------------------------------------------
 import configuration
 import mysql_handler
+
+
+# -----------------------------------------------------------------------------
+# Enums
+# -----------------------------------------------------------------------------
+class DocumentType(enum.Enum):
+    AUTHOR = enum.auto
+    GENRE = enum.auto
+    BOOK = enum.auto
 
 # -----------------------------------------------------------------------------
 # Functions
@@ -22,7 +32,7 @@ def clean_data(string):
 class DocumentCollection:
     def __init__(self, connection):
         self._connection = connection
-    
+
     def gen_unique_words(self):
         words = list(itertools.chain(*[i[0].split(" ") for i in self._connection.query("SELECT clean_title FROM books")]))
         words.append(list(itertools.chain(*[i[0].split() for i in self._connection.query("SELECT clean_name FROM authors")])))
@@ -40,7 +50,7 @@ class DocumentCollection:
                 values += f'("{i}")'
         
         self._connection.query(x:=f"INSERT INTO unique_words (word) VALUES {values}")
-
+    
 # -----------------------------------------------------------------------------
 # File execution
 # -----------------------------------------------------------------------------
@@ -54,4 +64,3 @@ if __name__ == "__main__":
     )
 
     document = DocumentCollection(connection)
-    document.gen_unique_words()
