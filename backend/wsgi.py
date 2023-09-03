@@ -13,6 +13,7 @@ import authors as author_mod
 import books as book_mod
 import diaries as diaries_mod
 import genres as genres_mod
+import information_retrieval
 import reading_lists as reading_lists_mod
 import recommendations as recommendations_mod
 
@@ -44,6 +45,7 @@ connection = mysql_handler.Connection(
     schema=config.get("mysql schema"),
     host=config.get("mysql host")
 )
+
 
 # -----------------------------------------------------------------------------
 # Class instantiation
@@ -77,6 +79,12 @@ accounts = accounts_mod.Accounts(
     hashing_salt,
     number_hash_passes,
     reading_lists
+)
+searching = information_retrieval.DocumentCollection(
+    connection,
+    books,
+    authors,
+    genres
 )
 
 
