@@ -75,6 +75,21 @@ class DocumentCollection:
         
         self._connection.query(x:=f"INSERT INTO unique_words (word) VALUES {values}")
     
+    def gen_tf_values(self):
+        for count, document in enumerate(self._documents_dict):
+            tf = dict()
+            arr = document["words"].split(" ")
+            one_over_n = 1 / len(arr)
+            for i in arr:
+                if i != " ":
+                    if i in tf:
+                        tf[i] += one_over_n
+                    else:
+                        tf[i] = one_over_n
+            self._documents_dict[count]["tf"] = tf
+
+        print(self._documents_dict)
+    
     def num_documents_containing(self, string):
         return sum(string in i for i in self._documents)
 
