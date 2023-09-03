@@ -8,7 +8,10 @@ import math
 # -----------------------------------------------------------------------------
 # Project imports
 # -----------------------------------------------------------------------------
+import authors as author_mod
+import books as book_mod
 import configuration
+import genres as genres_mod
 import mysql_handler
 
 
@@ -32,7 +35,10 @@ def clean_data(string):
 # Objects
 # -----------------------------------------------------------------------------
 class DocumentCollection:
-    def __init__(self, connection):
+    def __init__(self, connection, books, authors, genres):
+        self._authors = authors
+        self._genres = genres
+        self._books = books
         self._connection = connection
         self.load_documents_dict()
         self.gen_tf_values()
@@ -185,13 +191,39 @@ class DocumentCollection:
                 similarity /= (math.sqrt(a_total) * math.sqrt(b_total))
                 document["similarity"] = similarity
                 result.append({
-                    "title": document["words"],
                     "type": document["type"],
                     "similarity": document["similarity"],
                     "id": document["id"]
                 })
+            else:
+                result.append({
+                    "type": document["type"],
+                    "similarity": 0,
+                    "id": document["id"]
+                })
         
         return sorted(result, key=lambda x: x["similarity"], reverse=True)
+    
+    def database_search(self, search):
+        search_result = self.tfidf_search(search)
+        output_dict = dict()
+        for count, res in enumerate(search_result):
+            if res["type"] == DocumentType.BOOK:
+                temp = self._books.get_summary(res["id"])
+                temp["type"] = DocumentType.BOOK
+                output_dict[count] = temp
+            elif res["type"] == DocumentType.AUTHOR:
+                temp = {"name": self._authors.id_to_name(res["id"])}
+                temp["type"] = DocumentType.AUTHOR
+                output_dict[count] = temp
+            else:
+                temp = {"name": self._genres.id_to_name(res["id"])}
+                temp["type"] = DocumentType.GENRE
+                output_dict[count] = temp
+            output_dict[count]["certainty"] = res["similarity"]
+        
+        return output_dict
+
 
 # -----------------------------------------------------------------------------
 # File execution
@@ -205,4 +237,14 @@ if __name__ == "__main__":
         host=config.get("mysql host")
     )
 
-    document = DocumentCollection(connection)
+    genres = genres_mod.Genres(connection)
+    authors = author_mod.Authors(connection)
+    books = book_mod.Books(
+        connection,
+        config.get("books genre_match_threshold"),
+        config.get("home number_about_similarities"),
+        config.get("home number_home_summaries"),
+        config.get("home number_display_genres")
+    )
+
+    document = DocumentCollection(connection, books, authors, genres)
