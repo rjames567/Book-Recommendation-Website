@@ -197,7 +197,7 @@ class DocumentCollection:
     def database_search(self, search):
         output_dict = dict()
         if search.isnumeric():
-            output_dict[0] = books.get_summary(isbn=search)
+            output_dict[0] = self._books.get_summary(isbn=search)
             output_dict[0]["type"] = "b"
             output_dict[0]["certainty"] = 100.0  # Set certainty to 100% (1 d.p) as it is an exact match
         else:
