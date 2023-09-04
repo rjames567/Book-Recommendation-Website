@@ -205,22 +205,26 @@ class DocumentCollection:
         return sorted(result, key=lambda x: x["similarity"], reverse=True)
     
     def database_search(self, search):
-        search_result = self.tfidf_search(search)
         output_dict = dict()
-        for count, res in enumerate(search_result):
-            if res["type"] == DocumentType.BOOK:
-                temp = self._books.get_summary(res["id"])
-                temp["type"] = DocumentType.BOOK
-                output_dict[count] = temp
-            elif res["type"] == DocumentType.AUTHOR:
-                temp = {"name": self._authors.id_to_name(res["id"])}
-                temp["type"] = DocumentType.AUTHOR
-                output_dict[count] = temp
-            else:
-                temp = {"name": self._genres.id_to_name(res["id"])}
-                temp["type"] = DocumentType.GENRE
-                output_dict[count] = temp
-            output_dict[count]["certainty"] = res["similarity"]
+        if search.isnumeric():
+            output_dict[0] = books.get_summary(isbn=search)
+            output_dict[0]["type"] = DocumentType.BOOK
+            output_dict[0]["certainty"] = 100.0  # Set certainty to 100% (1 d.p) as it is an exact match
+        else:
+            search_result = self.tfidf_search(search)
+            for count, res in enumerate(search_result):
+                if res["type"] == DocumentType.BOOK:
+                    temp = self._books.get_summary(res["id"])
+                    temp["type"] = DocumentType.BOOK
+                    output_dict[count] = temp
+                elif res["type"] == DocumentType.AUTHOR:
+                    temp = {"name": self._authors.id_to_name(res["id"]), "type": DocumentType.AUTHOR}
+                    output_dict[count] = temp
+                else:
+                    temp = {"name": self._genres.id_to_name(res["id"]), "type": DocumentType.GENRE}
+                    output_dict[count] = temp
+                output_dict[count]["certainty"] = round(res["similarity"] * 100, 1)  # Convert similarity to percentage
+                # (1 d.p)
         
         return output_dict
 
