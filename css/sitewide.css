@@ -246,6 +246,7 @@ header nav form button:hover {
 
 .search-container .row.book .cover img {
   height: 150px;
+  width: auto;
 }
 
 .search-container .row.book a {
