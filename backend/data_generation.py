@@ -9,7 +9,7 @@ sys.path.insert(0, parentdir)
 # -----------------------------------------------------------------------------
 # Imports
 # -----------------------------------------------------------------------------
-print("Started Imports 1/10")
+print("Started Imports 1/11")
 import json
 import random
 
@@ -25,12 +25,12 @@ import information_retrieval
 import configuration
 import mysql_handler
 import recommendations
-print("Finished Imports 1/10")
+print("Finished Imports 1/11")
 
 # -----------------------------------------------------------------------------
 # Object instantiation
 # -----------------------------------------------------------------------------
-print("Started object instantiation 2/10")
+print("Started object instantiation 2/11")
 config = configuration.Configuration("./project_config.conf")
 connection = mysql_handler.Connection(
     user=config.get("mysql username"),
@@ -47,7 +47,7 @@ accounts = accounts.Accounts(
         None  # Reading lists object is not used, so passing None is safe.
     )
 
-print("Finished object instantiation 2/10")
+print("Finished object instantiation 2/11")
 
 # -----------------------------------------------------------------------------
 # Database clearing
@@ -55,7 +55,7 @@ print("Finished object instantiation 2/10")
 # Set the query size limit - https://wp-staging.com/docs/increase-max_allowed_packet-size-in-mysql/#How_to_Set_max_allowed_packet_Temporary
 # SET GLOBAL max_allowed_packet=1073741824; - this does not work through the connector, and must be done as root
 
-print("Started database clearing 3/10")
+print("Started database clearing 3/11")
 
 with open("./MySQL/create_tables.sql", "r") as f:
     queries = f.read().split(";")
@@ -63,12 +63,12 @@ with open("./MySQL/create_tables.sql", "r") as f:
 for i in queries:
     connection.query(i)
 
-print("Finished database clearing 3/10")
+print("Finished database clearing 3/11")
 
 # -----------------------------------------------------------------------------
 # Authors
 # -----------------------------------------------------------------------------
-print("Started authors 4/10")
+print("Started authors 4/11")
 new_file = ""
 isbn_lookup = dict()
 
@@ -122,12 +122,12 @@ del f
 del author_lookup
 del file
 
-print("Finished authors 4/10")
+print("Finished authors 4/11")
 
 # -----------------------------------------------------------------------------
 # books
 # -----------------------------------------------------------------------------
-print("Started books 5/10")
+print("Started books 5/11")
 new_file = ""
 
 with open("data/metadata-altered.json", "r") as f:
@@ -162,12 +162,12 @@ with open("data/metadata-altered.json", "w+") as f:
 del query
 del new_file
 del f
-print("Finished books 5/10")
+print("Finished books 5/11")
 
 # -----------------------------------------------------------------------------
 # Users
 # -----------------------------------------------------------------------------
-print("Started users 6/10")
+print("Started users 6/11")
 query1 = "INSERT INTO users (user_id, username, password_hash, first_name, surname) VALUES\n"
 query2 = "INSERT INTO reading_list_names (list_id, user_id, list_name) VALUES\n"
 query3 = "INSERT INTO reading_lists (entry_id, list_id, book_id, user_id) VALUES\n"
@@ -208,12 +208,12 @@ query3 = query3[:-2] + ";"
 connection.query(query1)
 connection.query(query2)
 connection.query(query3)
-print("Finished users 6/10")
+print("Finished users 6/11")
 
 # -----------------------------------------------------------------------------
 # Reviews
 # -----------------------------------------------------------------------------
-print("Started reviews 7/10")
+print("Started reviews 7/11")
 query = "INSERT INTO reviews (user_id, book_id, summary, overall_rating, character_rating, plot_rating, rating_body) VALUES\n"
 with open("data/reviews.json", "r") as f:
     # https://www.turing.com/kb/5-powerful-text-summarization-techniques-in-python
@@ -268,12 +268,12 @@ with open("data/reviews.json", "r") as f:
             query += ","
     query = query[:-1] + ";"
     connection.query(query)
-print("Finished reviews 7/10")
+print("Finished reviews 7/11")
 
 # -----------------------------------------------------------------------------
 # Genres
 # -----------------------------------------------------------------------------
-print("Started genres 8/10")
+print("Started genres 8/11")
 with open("data/Original/tags.json", "r") as f:
     query = "INSERT INTO genres (genre_id, name, clean_name, about) VALUES\n"
     for i, line in enumerate(f):
@@ -335,7 +335,7 @@ connection.query("""DELETE FROM reading_lists WHERE book_id NOT IN (SELECT book_
 connection.query("""DELETE FROM recommendations WHERE book_id NOT IN (SELECT book_id FROM book_genres)""")
 connection.query("""DELETE FROM diary_entries WHERE book_id NOT IN (SELECT book_id FROM book_genres)""")
 connection.query("""DELETE FROM books WHERE book_id NOT IN (SELECT book_id FROM book_genres)""")  # Remove books that do not have genres
-print("Finished genres 8/10")
+print("Finished genres 8/11")
 
 # -----------------------------------------------------------------------------
 # Recommendations
@@ -343,18 +343,19 @@ print("Finished genres 8/10")
 recommendations = recommendations.Recommendations(connection, config.get("books genre_match_threshold"), config.get("home number_display_genres"))
 # This needs to be later, as the number of genres would be incorrect if it were done at the start
 
-print("Started user preference generation 9/10")
+print("Started user preference generation 9/11")
 recommendations.gen_all_user_data()
-print("Finished user preference generation 9/10")
+print("Finished user preference generation 9/11")
 
-print("Started user recommendation generation 10/10")
+print("Started user recommendation generation 10/11")
 for i in accounts.get_user_id_list(): 
         recommendations.recommend_user_books(i)
-print("Finished user recommendation generation 10/10")
+print("Finished user recommendation generation 10/11")
 
 # -----------------------------------------------------------------------------
 # TF-IDF search
 # -----------------------------------------------------------------------------
+print("Started IDF generation 11/11")
 temp_authors = authors_mod.Authors(connection)
 temp_books = book_mod.Books(
     connection,
@@ -373,3 +374,4 @@ document = information_retrieval.DocumentCollection(
 )
 
 document.gen_idf_values()
+print("Finished IDF generation 11/11")
