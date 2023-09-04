@@ -219,7 +219,7 @@ header nav form button:hover {
 
 .search-container .row:last-child {
   border-bottom: none;
-  margin-top: 0;
+  padding: 0 0 20px 0;
 }
 
 /* -------------------------------------------------------------------------- */
