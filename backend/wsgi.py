@@ -924,6 +924,7 @@ class RecommendationsHandler(Handler):
 
         return response, status, response_headers
 
+
 # -----------------------------------------------------------------------------
 # Searching Handler
 # -----------------------------------------------------------------------------
@@ -931,8 +932,28 @@ class SearchingHandler(Handler):
     def __init__(self, log=None):
         super().__init__(log)
         self._routes = {
-
+            "search": self.search_database
         }
+
+    def search_database(self):
+        query = self.retrieve_get_parameters()["query"]  # Only has one parameter, so this is fine.
+        self._log.output_message("          Query: " + query)
+        result = searching.database_search(query)
+
+        response = json.dumps(result)
+
+        status = "200 OK"
+
+        self._log.output_message("          Response: " + response)
+        self._log.output_message("          Status: " + status)
+
+        response_headers = [
+            ("Content-Type", "application/json"),
+            ("Content-Length", str(len(response)))
+        ]
+
+        return response, status, response_headers
+
 
 # -----------------------------------------------------------------------------
 # Error Handler
