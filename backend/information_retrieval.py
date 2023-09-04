@@ -1,7 +1,6 @@
 # -----------------------------------------------------------------------------
-# Standard Python ibrary imports
+# Standard Python library imports
 # -----------------------------------------------------------------------------
-import enum
 import itertools
 import math
 
@@ -13,16 +12,6 @@ import books as book_mod
 import configuration
 import genres as genres_mod
 import mysql_handler
-
-
-# -----------------------------------------------------------------------------
-# Enums
-# -----------------------------------------------------------------------------
-class DocumentType(enum.Enum):
-    AUTHOR = 1
-    GENRE = 2
-    BOOK = 3  # for whatever reason, using enum.auto does not work, and they all
-    # appear as DocumentType.AUTHOR
 
 # -----------------------------------------------------------------------------
 # Functions
@@ -49,7 +38,7 @@ class DocumentCollection:
         self._documents = []
         for title, book_id in self._connection.query("SELECT clean_title, book_id FROM books"):
             self._documents_dict.append({
-                "type": DocumentType.BOOK,
+                "type": "b",
                 "words": title,
                 "id": book_id,
                 "similarity": 0
@@ -58,7 +47,7 @@ class DocumentCollection:
         
         for title, genre_id in self._connection.query("SELECT clean_name, genre_id FROM genres"):
             self._documents_dict.append({
-                "type": DocumentType.GENRE,
+                "type": "g",
                 "words": title,
                 "id": genre_id,
                 "similarity": 0
@@ -67,7 +56,7 @@ class DocumentCollection:
 
         for title, author_id in self._connection.query("SELECT clean_name, author_id FROM authors"):
             self._documents_dict.append({
-                "type": DocumentType.AUTHOR,
+                "type": "a",
                 "words": title,
                 "id": author_id,
                 "similarity": 0
@@ -208,20 +197,20 @@ class DocumentCollection:
         output_dict = dict()
         if search.isnumeric():
             output_dict[0] = books.get_summary(isbn=search)
-            output_dict[0]["type"] = DocumentType.BOOK
+            output_dict[0]["type"] = "b"
             output_dict[0]["certainty"] = 100.0  # Set certainty to 100% (1 d.p) as it is an exact match
         else:
             search_result = self.tfidf_search(search)
             for count, res in enumerate(search_result):
-                if res["type"] == DocumentType.BOOK:
+                if res["type"] == "b":
                     temp = self._books.get_summary(res["id"])
-                    temp["type"] = DocumentType.BOOK
+                    temp["type"] = "b"
                     output_dict[count] = temp
-                elif res["type"] == DocumentType.AUTHOR:
-                    temp = {"name": self._authors.id_to_name(res["id"]), "type": DocumentType.AUTHOR}
+                elif res["type"] == "a":
+                    temp = {"name": self._authors.id_to_name(res["id"]), "type": "a"}
                     output_dict[count] = temp
                 else:
-                    temp = {"name": self._genres.id_to_name(res["id"]), "type": DocumentType.GENRE}
+                    temp = {"name": self._genres.id_to_name(res["id"]), "type": "g"}
                     output_dict[count] = temp
                 output_dict[count]["certainty"] = round(res["similarity"] * 100, 1)  # Convert similarity to percentage
                 # (1 d.p)
