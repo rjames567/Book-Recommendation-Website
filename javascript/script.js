@@ -1408,6 +1408,23 @@ function assignMoveRecommendationHandlers () {
 }
 
 // -----------------------------------------------------------------------------
+// Search feature
+// -----------------------------------------------------------------------------
+$("header nav.bottom .search form").on("submit", function (event) {
+    event.preventDefault();
+    let query = $(this).find("input[type='search']").val();
+    $.ajax({
+        type: "GET",
+        url: addGetParameter("/cgi-bin/search/search", "query", query),
+        success: function () {console.log("success")},
+        error: function (jqXHR) {
+            console.log(jqXHR.status + " " + jqXHR.responseText);
+        }
+    });
+    console.log(query);
+})
+
+// -----------------------------------------------------------------------------
 // window onload handlers
 // -----------------------------------------------------------------------------
 $(document).ready(function () {
