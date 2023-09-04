@@ -924,6 +924,15 @@ class RecommendationsHandler(Handler):
 
         return response, status, response_headers
 
+# -----------------------------------------------------------------------------
+# Searching Handler
+# -----------------------------------------------------------------------------
+class SearchingHandler(Handler):
+    def __init__(self, log=None):
+        super().__init__(log)
+        self._routes = {
+
+        }
 
 # -----------------------------------------------------------------------------
 # Error Handler
@@ -971,7 +980,8 @@ routes = {
     "authors": AuthorHandler(log),
     "diary": DiaryHandler(log),
     "home": HomeHandler(log),
-    "recommendations": RecommendationsHandler(log)
+    "recommendations": RecommendationsHandler(log),
+    "search": SearchingHandler(log)
     # Objects are persistent, so will the response should be faster and more memory efficient.
 }
 
