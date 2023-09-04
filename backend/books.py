@@ -71,18 +71,31 @@ class Books:
 
         return [self.get_summary(i["book_id"]) for i in result]
 
-    def get_summary(self, book_id):
-        res = self._connection.query("""
-            SELECT books.title,
-                books.book_id,
-                books.cover_image,
-                authors.first_name,
-                authors.surname,
-                authors.alias
-            FROM books
-            INNER JOIN authors ON books.author_id=authors.author_id
-            WHERE books.book_id={}
-        """.format(book_id))
+    def get_summary(self, book_id=None, isbn=None):
+        if book_id is not None:
+            res = self._connection.query("""
+                SELECT books.title,
+                    books.book_id,
+                    books.cover_image,
+                    authors.first_name,
+                    authors.surname,
+                    authors.alias
+                FROM books
+                INNER JOIN authors ON books.author_id=authors.author_id
+                WHERE books.book_id={}
+            """.format(book_id))
+        else:
+            res = self._connection.query("""
+                SELECT books.title,
+                    books.book_id,
+                    books.cover_image,
+                    authors.first_name,
+                    authors.surname,
+                    authors.alias
+                FROM books
+                INNER JOIN authors ON books.author_id=authors.author_id
+                WHERE books.isbn="{}"
+            """.format(isbn))
 
         if len(res) == 0:
             raise BookNotFoundError(book_id)
