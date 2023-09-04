@@ -24,10 +24,11 @@ def clean_data(string):
 # Objects
 # -----------------------------------------------------------------------------
 class DocumentCollection:
-    def __init__(self, connection, books, authors, genres):
+    def __init__(self, connection, books, authors, genres, result_limit):
         self._authors = authors
         self._genres = genres
         self._books = books
+        self._result_limit = result_limit
         self._connection = connection
         self.load_documents_dict()
         self.gen_tf_values()
@@ -201,7 +202,7 @@ class DocumentCollection:
             output_dict[0]["certainty"] = 100.0  # Set certainty to 100% (1 d.p) as it is an exact match
         else:
             search_result = self.tfidf_search(search)
-            for count, res in enumerate(search_result):
+            for count, res in enumerate(search_result[:self._result_limit]):
                 if res["type"] == "b":
                     temp = self._books.get_summary(res["id"])
                     temp["type"] = "b"
@@ -240,4 +241,4 @@ if __name__ == "__main__":
         config.get("home number_display_genres")
     )
 
-    document = DocumentCollection(connection, books, authors, genres)
+    document = DocumentCollection(connection, books, authors, genres, config.get("search number_results"))

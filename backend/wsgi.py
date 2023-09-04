@@ -35,6 +35,7 @@ genre_required_match = config.get("books genre_match_threshold")
 number_summaries_home = config.get("home number_home_summaries")
 number_similarities_about = config.get("home number_about_similarities")
 num_display_genres = config.get("home number_display_genres")
+num_search_results = config.get("search number_results")
 
 # -----------------------------------------------------------------------------
 # Database connection
@@ -84,7 +85,8 @@ searching = information_retrieval.DocumentCollection(
     connection,
     books,
     authors,
-    genres
+    genres,
+    num_search_results
 )
 
 
