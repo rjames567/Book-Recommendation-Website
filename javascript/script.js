@@ -104,6 +104,9 @@ function changePageContent (file, async, elem=null, linkName=null) {
             assignAuthorNavigationHandlers();
             assignBookNavigationHandlers(); // Needs to be in this function as it needs to reassign it based upon the page
             // content.
+            if (linkName != "search") {
+                $("header nav.bottom .search form input[type='search']").val(""); // Clear the search bar on page change
+            }
         },
         async: async
     });
