@@ -225,34 +225,34 @@ header nav form button:hover {
 /* -------------------------------------------------------------------------- */
 /* Search result - Books                                                      */
 /* -------------------------------------------------------------------------- */
-.search-container .row.book-search .main-container {
+.search-container .row.book .main-container {
   display: flex;
   align-items: center;
 }
 
-.search-container .row.book-search .main-content {
+.search-container .row.book .main-content {
   text-align: left;
 }
 
-.search-container .row.book-search .main-content .author-name {
+.search-container .row.book .main-content .author-name {
   margin-top: 8px;
   font-size: 16px;
   color: var(--grey);
 }
 
-.search-container .row.book-search .cover {
+.search-container .row.book .cover {
   margin-right: 20px;
 }
 
-.search-container .row.book-search .cover img {
+.search-container .row.book .cover img {
   height: 150px;
 }
 
-.search-container .row.book-search a {
+.search-container .row.book a {
   display: block;
 }
 
-.search-container .row.book-search a.title {
+.search-container .row.book a.title {
   font-size: 20px;
 }
 
