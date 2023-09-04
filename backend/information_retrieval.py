@@ -208,7 +208,11 @@ class DocumentCollection:
                     temp["type"] = "b"
                     output_dict[count] = temp
                 elif res["type"] == "a":
-                    temp = {"name": self._authors.id_to_name(res["id"]), "type": "a"}
+                    temp = {
+                        "name": self._authors.id_to_name(res["id"]),
+                        "type": "a",
+                        "author_id": res["id"]
+                    }
                     output_dict[count] = temp
                 else:
                     temp = {"name": self._genres.id_to_name(res["id"]), "type": "g"}
