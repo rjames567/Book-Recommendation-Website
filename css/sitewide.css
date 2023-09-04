@@ -159,7 +159,6 @@ header nav.bottom {
 /* -------------------------------------------------------------------------- */
 /* Search bar                                                                 */
 /* -------------------------------------------------------------------------- */
-
 header nav div.search {
   margin-right: 20px;
   border: 2px solid var(--blue)
@@ -192,6 +191,76 @@ header nav form button {
 
 header nav form button:hover {
   background-color: var(--light-blue);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Search result - General                                                    */
+/* -------------------------------------------------------------------------- */
+.search-container .row {
+  display: flex;
+  width: 100%;
+  border-bottom: 1px solid var(--light-grey);
+  padding: 20px 0;
+  align-items: baseline;
+  align-content: flex-start;
+  justify-content: space-between;
+}
+
+.search-container .row .match-strength {
+  margin: 0;
+  font-size: 14px;
+  color: var(--grey);
+}
+
+.search-container .row .author,
+.search-container .row .genre-button {
+  font-size: 20px;
+}
+
+.search-container .row:last-child {
+  border-bottom: none;
+  margin-top: 0;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Search result - Books                                                      */
+/* -------------------------------------------------------------------------- */
+.search-container .row.book-search .main-container {
+  display: flex;
+  align-items: center;
+}
+
+.search-container .row.book-search .main-content {
+  text-align: left;
+}
+
+.search-container .row.book-search .main-content .author-name {
+  margin-top: 8px;
+  font-size: 16px;
+  color: var(--grey);
+}
+
+.search-container .row.book-search .cover {
+  margin-right: 20px;
+}
+
+.search-container .row.book-search .cover img {
+  height: 150px;
+}
+
+.search-container .row.book-search a {
+  display: block;
+}
+
+.search-container .row.book-search a.title {
+  font-size: 20px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Search result - Genres                                                     */
+/* -------------------------------------------------------------------------- */
+.search-container .row .genre-button {
+  margin: 0;
 }
 
 /* -------------------------------------------------------------------------- */
