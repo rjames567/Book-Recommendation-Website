@@ -16,11 +16,15 @@ import random
 from gensim.summarization.summarizer import summarize
 from gensim.summarization import keywords
 
+import accounts
+import authors as authors_mod
+import books as book_mod
+import genres as genre_mod
+import information_retrieval
+
 import configuration
 import mysql_handler
 import recommendations
-import accounts
-import information_retrieval
 print("Finished Imports 1/10")
 
 # -----------------------------------------------------------------------------
@@ -347,3 +351,25 @@ print("Started user recommendation generation 10/10")
 for i in accounts.get_user_id_list(): 
         recommendations.recommend_user_books(i)
 print("Finished user recommendation generation 10/10")
+
+# -----------------------------------------------------------------------------
+# TF-IDF search
+# -----------------------------------------------------------------------------
+temp_authors = authors_mod.Authors(connection)
+temp_books = book_mod.Books(
+    connection,
+    config.get("books genre_match_threshold"),
+    config.get("home number_about_similarities"),
+    config.get("home number_home_summaries"),
+    config.get("home number_display_genres")
+)
+
+document = information_retrieval.DocumentCollection(
+    connection,
+    temp_books,
+    temp_authors,
+    genre_mod.Genres(connection),
+    config.get("search number_results")
+)
+
+document.gen_idf_values()
