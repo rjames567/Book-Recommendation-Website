@@ -46,7 +46,7 @@ function addGetParameter (url, name, value) {
 // -----------------------------------------------------------------------------
 // Page Switching
 // -----------------------------------------------------------------------------
-function switchPageContent (elem, linkName) {
+function switchPageContent (elem, linkName, async=true) {
     // Does not switch elem to link as using links is very slow, as it needs to
     // iterate through all available link names, to find the correct one.
     if (elem) {
@@ -57,7 +57,7 @@ function switchPageContent (elem, linkName) {
         // page.
     }
     let file = "/html/" + linkName.toLowerCase().replace(" ", "_") + ".html";
-    changePageContent(file, true, elem, linkName);
+    changePageContent(file, async, elem, linkName);
     changePageURI(linkName);
 }
 
@@ -1413,6 +1413,7 @@ function assignMoveRecommendationHandlers () {
 $("header nav.bottom .search form").on("submit", function (event) {
     event.preventDefault();
     let query = $(this).find("input[type='search']").val();
+    switchPageContent(null, "search", async=false); // Cannot be async, as it could arrive after the next query
     $.ajax({
         type: "GET",
         url: addGetParameter("/cgi-bin/search/search", "query", query),
