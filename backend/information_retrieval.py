@@ -185,12 +185,6 @@ class DocumentCollection:
                     "similarity": document["similarity"],
                     "id": document["id"]
                 })
-            else:
-                result.append({
-                    "type": document["type"],
-                    "similarity": 0,
-                    "id": document["id"]
-                })
         
         return sorted(result, key=lambda x: x["similarity"], reverse=True)
     
