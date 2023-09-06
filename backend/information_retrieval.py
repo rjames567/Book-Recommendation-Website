@@ -200,7 +200,9 @@ class DocumentCollection:
                     "id": document["id"]
                 })
         
-        return sorted(result, key=lambda x: x["similarity"], reverse=True)
+        return sorted(result, key=lambda x: (-x["similarity"], x["type"]))  # Sort by similarity descending and type ascending.
+        # This puts authors above books if the rating is the same. Order would be authors -> books -> genres, if the certainty
+        # for all of them is the same
     
     def database_search(self, search):
         output_dict = dict()
