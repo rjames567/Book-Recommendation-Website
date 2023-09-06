@@ -326,7 +326,7 @@ class Recommendations:
                 "cover": i[2],
             } for i in res]
     
-    def gen_author_average_preferences(self):
+    def gen_author_average_preferences(self):  # Quite slow - This takes around 1/2 a second
         author_ids = self._authors.get_author_id_list()
 
         author_vectors = [data_structures.Vector(dimensions=self._available_genres, default_value=0) for i in range(len(author_ids))]
@@ -362,7 +362,12 @@ if __name__ == "__main__":
         config.get("passwords number_hash_passes"),
         None  # Reading lists object is not used, so passing None is safe.
     )
-    recommendations = Recommendations(connection, config.get("books genre_match_threshold"), config.get("home number_display_genres"))  # Only runs if this file is
+    recommendations = Recommendations(
+        connection,
+        config.get("books genre_match_threshold"),
+        config.get("home number_display_genres"),
+        authors.Authors(connection)
+    )  # Only runs if this file is
     # run directly so as a scheduled task to generate new recommendations, and
     # the connection will be closed at the end of the program execution so
     # shouldn't cause issues.
