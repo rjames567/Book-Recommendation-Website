@@ -94,7 +94,22 @@ class Authors:
 
         return names_to_display(res[0], res[1], res[2])
 
-    def get_author_id_list(self):
+    def get_author_id_list(self, names=False):
+        if names:
+            res = self._connection.query("""
+                SELECT author_id,
+                    first_name,
+                    surname,
+                    alias
+                FROM authors
+            """)
+            output = []
+            for count, item in enumerate(res):
+                output.append({
+                    "name": names_to_display(item[1], item[2], item[3]),
+                    "id": item[0]
+                })
+            return output
         return [i[0] for i in self._connection.query("SELECT author_id FROM authors")]
 
 
