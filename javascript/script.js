@@ -1413,7 +1413,10 @@ function assignPreferenceSubmissionHandlers () {
         $.ajax({
             type: "POST",
             url: "/cgi-bin/recommendations/set_user_preferences",
-            data: values.toString(),  // Convert the list to a string
+            data: JSON.stringify({
+                "authors": values,
+                "session_id": sessionID
+            }),
             success: function () {reloadCurrentPage()},
             error: function (jqXHR) {
                 console.log(jqXHR.status + " " + jqXHR.responseText);
