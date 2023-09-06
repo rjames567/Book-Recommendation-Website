@@ -4,7 +4,7 @@
 import math
 
 # -----------------------------------------------------------------------------
-# Project imports
+# soject imports
 # -----------------------------------------------------------------------------
 import accounts
 import authors
@@ -153,11 +153,14 @@ class Recommendations:
             WHERE user_id={}
         """.format(user_id))
         values = ""
+        first = True
         for genre, match in enumerate(vector):
             if match == 0:
                 continue  # Prevents matches with strength 0 being inserted - skips to next iteration
-            if genre != 0:
+            if not first:
                 values += ","
+            else:
+                first = False
             values += f"({user_id}, {genre + 1}, {match})"  # Genre id is incremented, as MySQL indexes from 1, python
             # from 0
 
@@ -325,30 +328,22 @@ class Recommendations:
                 "book_id": i[0],
                 "cover": i[2],
             } for i in res]
-    
-    def gen_author_average_preferences(self):  # Quite slow - This takes around 1/2 a second
-        author_ids = self._authors.get_author_id_list()
-
-        author_vectors = [data_structures.Vector(dimensions=self._available_genres, default_value=0) for i in range(len(author_ids))]
-
-        res = self._connection.query("""
-            SELECT books.author_id,
-                books.book_id
-            FROM books
-        """)
-
-        for author_id, book_id in res:
-            author_vectors[author_id - 1] += self.gen_book_vector(book_id)
-
-        return author_vectors
 
     def set_user_initial_preferences(self, user_id, author_ids):
-        author_vectors = self.gen_author_average_preferences()
+        res = self._connection.query("""
+            SELECT book_genres.genre_id,
+                AVG(book_genres.match_strength) as match_strength
+            FROM book_genres
+            INNER JOIN books ON books.book_id=book_genres.book_id
+            INNER JOIN authors ON authors.author_id=books.author_id
+            WHERE authors.author_id IN ({})
+            GROUP BY book_genres.genre_id;
+        """.format(", ".join(str(i) for i in author_ids)))
 
         user_vector = data_structures.Vector(dimensions=self._available_genres, default_value=0)
 
-        for i in author_ids:
-            user_vector += author_vectors[i - 1]  # IDs in MySQL are one-based and Python's lists are zero-based, so the
+        for genre_id, rating in res:
+            user_vector[genre_id - 1] = rating # IDs in MySQL are one-based and Python's lists are zero-based, so the
             # ID needs to be decremented by one to factor this in.
 
         self.save_user_preference_vector(user_id, user_vector)
@@ -383,7 +378,5 @@ if __name__ == "__main__":
     # the connection will be closed at the end of the program execution so
     # shouldn't cause issues.
 
-    recommendations.set_user_initial_preferences(602, [1,2,3,4])
-
-    # for i in account.get_user_id_list():  # Recommend all users a new set of books. Included to be set up as a cron job.
-    #     recommendations.recommend_user_books(i)
+    for i in account.get_user_id_list():  # Recommend all users a new set of books. Included to be set up as a cron job.
+        recommendations.recommend_user_books(i)
