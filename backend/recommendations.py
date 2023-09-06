@@ -342,6 +342,17 @@ class Recommendations:
 
         return author_vectors
 
+    def set_user_initial_preferences(self, user_id, author_ids):
+        author_vectors = self.gen_author_average_preferences()
+
+        user_vector = data_structures.Vector(dimensions=self._available_genres, default_value=0)
+
+        for i in author_ids:
+            user_vector += author_vectors[i - 1]  # IDs in MySQL are one-based and Python's lists are zero-based, so the
+            # ID needs to be decremented by one to factor this in.
+
+        self.save_user_preference_vector(user_id, user_vector)
+
 
 # -----------------------------------------------------------------------------
 # File execution
@@ -372,5 +383,7 @@ if __name__ == "__main__":
     # the connection will be closed at the end of the program execution so
     # shouldn't cause issues.
 
-    for i in account.get_user_id_list():  # Recommend all users a new set of books. Included to be set up as a cron job.
-        recommendations.recommend_user_books(i)
+    recommendations.set_user_initial_preferences(602, [1,2,3,4])
+
+    # for i in account.get_user_id_list():  # Recommend all users a new set of books. Included to be set up as a cron job.
+    #     recommendations.recommend_user_books(i)
