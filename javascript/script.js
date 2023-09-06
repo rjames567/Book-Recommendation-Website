@@ -1368,15 +1368,16 @@ function loadRecommendationsPage () {
                 $(".initial-preference").removeClass("hidden");
                 $(".recommendation-entries").addClass("hidden");
                 let itemPerCol = Math.floor((iterateLength / 3));
-                if (itemPerCol % 3) {
-                    let author = result["data"].slice(-1);
-                    addNewAuthorSelectionBox(author["name"], author["id"], 0);
-                }
                 for (let col = 0; col < 3; col++) {
                     for (let row = 0; row < itemPerCol; row++) {
                         let author = result["data"][(col * itemPerCol) + row];
                         addNewAuthorSelectionBox(author["name"], author["id"], col);
                     }
+                }
+
+                if (!itemPerCol % 3) {
+                    let author = result["data"][result["data"].length - 1];
+                    addNewAuthorSelectionBox(author["name"], author["id"], 0);
                 }
 
                 assignPreferenceSubmissionHandlers();
