@@ -1410,12 +1410,11 @@ function assignPreferenceSubmissionHandlers () {
     $(".initial-preference form.preferences").on("submit", function (event) {
         event.preventDefault();
         // https://stackoverflow.com/a/590040/21124864 (comment by Duvrai)
-        let values = $("input[type=checkbox]:checked").map(function() {return $(this).val()}).get();
         $.ajax({
             type: "POST",
             url: "/cgi-bin/recommendations/set_user_preferences",
             data: JSON.stringify({
-                "authors": values,
+                "authors": $("input[type=checkbox]:checked").map(function() {return $(this).attr("value")}).get(),
                 "session_id": sessionID
             }),
             success: function () {reloadCurrentPage()},
