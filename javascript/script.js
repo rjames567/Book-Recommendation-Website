@@ -1322,7 +1322,7 @@ function loadRecommendationsPage () {
         url: addGetParameter("/cgi-bin/recommendations/get_recommendations", "session_id", sessionID),
         success: function (result) {
             let iterateLength = Object.keys(result["data"]).length
-            if (result["new_user"]) {
+            if (!result["new_user"]) {
                 $(".initial-preference").addClass("hidden");
                 $(".recommendation-entries").removeClass("hidden");
                 for (let i = 0; i < iterateLength; i++) {
