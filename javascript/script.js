@@ -1323,6 +1323,8 @@ function loadRecommendationsPage () {
         success: function (result) {
             let iterateLength = Object.keys(result["data"]).length
             if (result["new_user"]) {
+                $(".initial-preference").addClass("hidden");
+                $(".recommendation-entries").removeClass("hidden");
                 for (let i = 0; i < iterateLength; i++) {
                     let recommendation = result["data"][i];
                     let template = $(".recommendation-entries .book.template").clone().removeClass("template");
@@ -1363,6 +1365,8 @@ function loadRecommendationsPage () {
                 assignDeleteRecommendationHandlers();
                 assignMoveRecommendationHandlers();
             } else {
+                $(".initial-preference").removeClass("hidden");
+                $(".recommendation-entries").addClass("hidden");
                 let itemPerCol = Math.floor((iterateLength / 3));
                 if (itemPerCol % 3) {
                     let author = result["data"].slice(-1);
