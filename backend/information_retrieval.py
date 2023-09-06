@@ -37,14 +37,23 @@ class DocumentCollection:
     def load_documents_dict(self):
         self._documents_dict = []
         self._documents = []
-        for title, book_id in self._connection.query("SELECT clean_title, book_id FROM books"):
+        res = self._connection.query("""
+            SELECT books.clean_title,
+                books.book_id,
+                authors.clean_name
+            FROM books
+            INNER JOIN authors ON authors.author_id=books.author_id
+        """)
+        for title, book_id, author_name in res:
+            new_title = title + " " + author_name
             self._documents_dict.append({
                 "type": "b",
-                "words": title,
+                "words": new_title,
                 "id": book_id,
                 "similarity": 0
             })
-            self._documents.append(title)
+
+            self._documents.append(new_title)
         
         for title, genre_id in self._connection.query("SELECT clean_name, genre_id FROM genres"):
             self._documents_dict.append({
@@ -172,7 +181,6 @@ class DocumentCollection:
             tfidf = document["tfidf"]
 
             for k in term_arr:
-                # print(search_tfidf[k], tfidf[k])
                 similarity += search_tfidf[k] * tfidf[k]
                 a_total += search_tfidf[k] ** 2
                 b_total += tfidf[k] ** 2
@@ -186,7 +194,9 @@ class DocumentCollection:
                     "id": document["id"]
                 })
         
-        return sorted(result, key=lambda x: x["similarity"], reverse=True)
+        return sorted(result, key=lambda x: (-x["similarity"], x["type"]))  # Sort by similarity descending and type ascending.
+        # This puts authors above books if the rating is the same. Order would be authors -> books -> genres, if the certainty
+        # for all of them is the same
     
     def database_search(self, search):
         output_dict = dict()
