@@ -1321,50 +1321,81 @@ function loadRecommendationsPage () {
         type: "GET",
         url: addGetParameter("/cgi-bin/recommendations/get_recommendations", "session_id", sessionID),
         success: function (result) {
-            for (let i = 0; i < Object.keys(result).length - 1; i++) { // Have to minus 1, as it includes the list id.
-                let recommendation = result[i];
-                let template = $(".recommendation-entries .book.template").clone().removeClass("template");
-                
-                $(template).find(".cover img").attr("src", recommendation["cover_image"]);
+            let iterateLength = Object.keys(result["data"]).length
+            if (result["new_user"]) {
+                for (let i = 0; i < iterateLength; i++) {
+                    let recommendation = result["data"][i];
+                    let template = $(".recommendation-entries .book.template").clone().removeClass("template");
 
-                $(template).find(".title-container a.title").html(recommendation["title"]);
-                $(template).data("id", recommendation["book_id"]);
+                    $(template).find(".cover img").attr("src", recommendation["cover_image"]);
 
-                $(template).find(".title-container a.author").html(recommendation["author_name"]);
-                $(template).find(".title-container a.author").data("id", recommendation["author_id"]);
+                    $(template).find(".title-container a.title").html(recommendation["title"]);
+                    $(template).data("id", recommendation["book_id"]);
 
-                let averageReview = recommendation["average_rating"];
-                $(template).find(".rating-container .average-review").html(averageReview);
-                changeElemStars($(template).find(".rating-container .rating i"), averageReview);
-                $(template).find(".rating-container .num-review").html(recommendation["number_ratings"]);
+                    $(template).find(".title-container a.author").html(recommendation["author_name"]);
+                    $(template).find(".title-container a.author").data("id", recommendation["author_id"]);
 
-                $(template).find(".synopsis").html(recommendation["synopsis"])
+                    let averageReview = recommendation["average_rating"];
+                    $(template).find(".rating-container .average-review").html(averageReview);
+                    changeElemStars($(template).find(".rating-container .rating i"), averageReview);
+                    $(template).find(".rating-container .num-review").html(recommendation["number_ratings"]);
 
-                $(template).find(".book-info .date-added").html(recommendation["date_added"]);
-                $(template).find(".book-info .match-strength").html(recommendation["certainty"]);
-                
-                $(template).find(".actions button.read").data("id", result["list_id"]);
+                    $(template).find(".synopsis").html(recommendation["synopsis"])
 
-                let genres = recommendation["genres"];
-                for (let k = 0; k < Object.keys(genres).length; k++) {
-                    let genreTemplate = $(template).find(".book-genres ol li.template").clone().removeClass("template");
-                    $(genreTemplate).find("a").html(genres[k]);
-                    $(genreTemplate).appendTo($(template).find(".book-genres ol"));
+                    $(template).find(".book-info .date-added").html(recommendation["date_added"]);
+                    $(template).find(".book-info .match-strength").html(recommendation["certainty"]);
+
+                    $(template).find(".actions button.read").data("id", result["list_id"]);
+
+                    let genres = recommendation["genres"];
+                    for (let k = 0; k < Object.keys(genres).length; k++) {
+                        let genreTemplate = $(template).find(".book-genres ol li.template").clone().removeClass("template");
+                        $(genreTemplate).find("a").html(genres[k]);
+                        $(genreTemplate).appendTo($(template).find(".book-genres ol"));
+                    }
+
+                    $(template).appendTo(".recommendation-entries");
                 }
 
-                $(template).appendTo(".recommendation-entries");
+                assignAuthorNavigationHandlers();
+                assignGenreNavigationHandlers();
+                assignBookNavigationHandlers();
+                assignDeleteRecommendationHandlers();
+                assignMoveRecommendationHandlers();
+            } else {
+                let itemPerCol = Math.floor((iterateLength / 3));
+                if (itemPerCol % 3) {
+                    let author = result["data"].slice(-1);
+                    addNewAuthorSelectionBox(author["name"], author["id"], 0);
+                }
+                for (let col = 0; col < 3; col++) {
+                    for (let row = 0; row < itemPerCol; row++) {
+                        let author = result["data"][(col * itemPerCol) + row];
+                        addNewAuthorSelectionBox(author["name"], author["id"], col);
+                    }
+                }
             }
-
-            assignAuthorNavigationHandlers();
-            assignGenreNavigationHandlers();
-            assignBookNavigationHandlers();
-            assignDeleteRecommendationHandlers();
-            assignMoveRecommendationHandlers();
         },
         error: function (jqXHR) {
             console.log(jqXHR.status + " " + jqXHR.responseText);
         }
     });
+}
+
+function addNewAuthorSelectionBox (authorName, authorID, columnNum) {
+    // https://www.techiedelight.com/dynamically-create-checkbox-with-javascript/
+    $(".initial-preference form.preferences .column").eq(columnNum).append(
+        $(document.createElement("input")).prop({
+            id: authorID,
+            name: authorName,
+            value: authorID,
+            type: "checkbox"
+        })
+    ).append(
+        $(document.createElement("label")).prop({
+            for: authorID
+        }).html(authorName)
+    )
 }
 
 function assignDeleteRecommendationHandlers () {
