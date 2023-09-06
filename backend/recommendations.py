@@ -357,6 +357,8 @@ class Recommendations:
             user_vector[genre_id - 1] = rating # IDs in MySQL are one-based and Python's lists are zero-based, so the
             # ID needs to be decremented by one to factor this in.
 
+        # Do not need to divide by the number of authors, as the average is handled within the MySQL query.
+
         self.save_user_preference_vector(user_id, user_vector)
 
 
