@@ -941,7 +941,7 @@ class RecommendationsHandler(Handler):
         self._log.output_message("          Session ID: " + session_id)
         user_id = sessions.get_user_id(session_id)
         self._log.output_message("          User ID: " + str(user_id))
-        recommendations.set_user_initial_preferences([int(i) for i in author_ids])  # author_ids is returned as a list
+        recommendations.set_user_initial_preferences(user_id, [int(i) for i in author_ids])  # author_ids is returned as a list
         # of strings.
         recommendations.recommend_user_books(user_id)
 
