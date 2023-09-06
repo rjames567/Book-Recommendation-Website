@@ -1041,11 +1041,6 @@ main .container {
   margin-bottom: 0;
 }
 
-.diary-entry .ratings .character-rating,
-.book-about .character-rating {
-  margin-bottom: 25px;
-}
-
 /* -------------------------------------------------------------------------- */
 /* Book Pages - Book Review Summary                                           */
 /* -------------------------------------------------------------------------- */
@@ -1140,6 +1135,10 @@ main .container {
 
 .book-about .reviews .user-reviews .review .review-main .review-body p:last-child {
   margin-bottom: 0; /* Prevent the margin on the p tag effecting the spacing to the next review */
+}
+
+.book-about .reviews .user-reviews .review .review-main .summary {
+  margin-top: 10px;
 }
 
 /* TODO Remove gap between review without body or summary */
