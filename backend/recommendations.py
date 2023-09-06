@@ -16,9 +16,9 @@ import mysql_handler
 # -----------------------------------------------------------------------------
 # Project imports
 # -----------------------------------------------------------------------------
-class NoUserRecommendationsError(Exception):
+class NoUserPreferencesError(Exception):
     def __init__(self, user_id):
-        message = f"User with id {user_id}, has no recommendations"
+        message = f"User with id {user_id}, has no preferences"
         super().__init__(message)
 
 # -----------------------------------------------------------------------------
@@ -294,7 +294,7 @@ class Recommendations:
             if count:  # Just ensures that there are no preferences stored either, so it must be a new user
                 self.recommend_user_books(user_id)  # If there are preferences, generate new recommendations
             else:
-                raise NoUserRecommendationsError(user_id)
+                raise NoUserPreferencesError(user_id)
 
         output_dict = dict()
         for i, k in enumerate(items):
