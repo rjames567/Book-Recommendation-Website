@@ -37,14 +37,24 @@ class DocumentCollection:
     def load_documents_dict(self):
         self._documents_dict = []
         self._documents = []
-        for title, book_id in self._connection.query("SELECT clean_title, book_id FROM books"):
+        res = self._connection.query("""
+            SELECT books.clean_title,
+                books.book_id,
+                authors.clean_name
+            FROM books
+            INNER JOIN authors ON authors.author_id=books.author_id
+        """)
+        for title, book_id, author_name in res:
+            new_title = title + " " + author_name
+            print(new_title)
             self._documents_dict.append({
                 "type": "b",
-                "words": title,
+                "words": new_title,
                 "id": book_id,
                 "similarity": 0
             })
-            self._documents.append(title)
+
+            self._documents.append(new_title)
         
         for title, genre_id in self._connection.query("SELECT clean_name, genre_id FROM genres"):
             self._documents_dict.append({
@@ -163,6 +173,7 @@ class DocumentCollection:
         term_arr = terms.split(" ")
 
         search_tfidf = self.gen_tfidf_values(document=terms)
+        print(search_tfidf)
         result = []
 
         self.gen_tfidf_values(search_terms=term_arr)
@@ -170,6 +181,9 @@ class DocumentCollection:
         for document in self._documents_dict:
             similarity = a_total = b_total = 0 # These are used to work out the magnitude of the vectors
             tfidf = document["tfidf"]
+
+            if document["type"] == "b":
+                print(document)
 
             for k in term_arr:
                 # print(search_tfidf[k], tfidf[k])
