@@ -937,12 +937,12 @@ class RecommendationsHandler(Handler):
         json_response = self.retrieve_post_parameters()
         params = json.loads(json_response)
         session_id = params["session_id"]
-        authors = params["authors"]
-        self._log.output_message(type(authors))
+        author_ids = params["authors"]
+        self._log.output_message(type(author_ids))
         self._log.output_message("          Session ID: " + session_id)
         user_id = sessions.get_user_id(session_id)
         self._log.output_message("          User ID: " + str(user_id))
-        recommendations.set_user_initial_preferences(authors)
+        recommendations.set_user_initial_preferences(author_ids)
         recommendations.recommend_user_books(user_id)
 
         response = "true"  # The response does not matter - here for completeness only
