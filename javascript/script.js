@@ -1378,6 +1378,8 @@ function loadRecommendationsPage () {
                         addNewAuthorSelectionBox(author["name"], author["id"], col);
                     }
                 }
+
+                assignPreferenceSubmissionHandlers();
             }
         },
         error: function (jqXHR) {
@@ -1400,6 +1402,25 @@ function addNewAuthorSelectionBox (authorName, authorID, columnNum) {
             for: authorID
         }).html(authorName)
     )
+}
+
+function assignPreferenceSubmissionHandlers () {
+    $(".initial-preference form.preferences").off("submit");
+    $(".initial-preference form.preferences").on("submit", function (event) {
+        event.preventDefault();
+        // https://stackoverflow.com/a/590040/21124864 (comment by Duvrai)
+        let values = $("input[type=checkbox]:checked").map(function() {return $(this).val()}).get();
+        $.ajax({
+            type: "POST",
+            url: "/cgi-bin/recommendations/set_user_preferences",
+            data: values.toString(),  // Convert the list to a string
+            success: function () {reloadCurrentPage()},
+            error: function (jqXHR) {
+                console.log(jqXHR.status + " " + jqXHR.responseText);
+            },
+            async: false  // Means that it waits for recommendations to be generated before reloading
+        });
+    });
 }
 
 function assignDeleteRecommendationHandlers () {
