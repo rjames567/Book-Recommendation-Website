@@ -4,7 +4,7 @@
 import math
 
 # -----------------------------------------------------------------------------
-# soject imports
+# Project imports
 # -----------------------------------------------------------------------------
 import accounts
 import authors
@@ -12,6 +12,14 @@ import configuration
 import data_structures
 import mysql_handler
 
+
+# -----------------------------------------------------------------------------
+# Project imports
+# -----------------------------------------------------------------------------
+class NoUserRecommendationsError(Exception):
+    def __init__(self, user_id):
+        message = f"User with id {user_id}, has no recommendations"
+        super().__init__(message)
 
 # -----------------------------------------------------------------------------
 # Recommendations
@@ -280,6 +288,9 @@ class Recommendations:
             ORDER BY recommendations.certainty DESC;
         """.format(user_id))  # ORDER BY does not use calculated certainty for higher accuracy, and avoiding collisions
         # IFNULL prevents any null values - replace with 0s.
+
+        if len(items) == 0:
+            raise NoUserRecommendationsError(user_id)
 
         output_dict = dict()
         for i, k in enumerate(items):
