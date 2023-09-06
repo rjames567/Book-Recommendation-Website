@@ -17,7 +17,8 @@ import mysql_handler
 # Recommendations
 # -----------------------------------------------------------------------------
 class Recommendations:
-    def __init__(self, connection, genre_match_threshold, num_display_genres):
+    def __init__(self, connection, genre_match_threshold, num_display_genres, authors):
+        self._authors = authors
         self._connection = connection
         self._num_display_genres = num_display_genres
         self._genre_match_threshold = genre_match_threshold
@@ -324,6 +325,22 @@ class Recommendations:
                 "book_id": i[0],
                 "cover": i[2],
             } for i in res]
+    
+    def gen_author_average_preferences(self):
+        author_ids = self._authors.get_author_id_list()
+
+        author_vectors = [data_structures.Vector(dimensions=self._available_genres, default_value=0) for i in range(len(author_ids))]
+
+        res = self._connection.query("""
+            SELECT books.author_id,
+                books.book_id
+            FROM books
+        """)
+
+        for author_id, book_id in res:
+            author_vectors[author_id - 1] += self.gen_book_vector(book_id)
+
+        return author_vectors
 
 
 # -----------------------------------------------------------------------------
