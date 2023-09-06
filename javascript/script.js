@@ -1401,7 +1401,7 @@ function addNewAuthorSelectionBox (authorName, authorID, columnNum) {
         $(document.createElement("label")).prop({
             for: authorID
         }).html(authorName)
-    )
+    ).append(document.createElement('br'));
 }
 
 function assignPreferenceSubmissionHandlers () {
