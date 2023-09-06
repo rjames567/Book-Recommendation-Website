@@ -46,7 +46,6 @@ class DocumentCollection:
         """)
         for title, book_id, author_name in res:
             new_title = title + " " + author_name
-            print(new_title)
             self._documents_dict.append({
                 "type": "b",
                 "words": new_title,
@@ -173,7 +172,6 @@ class DocumentCollection:
         term_arr = terms.split(" ")
 
         search_tfidf = self.gen_tfidf_values(document=terms)
-        print(search_tfidf)
         result = []
 
         self.gen_tfidf_values(search_terms=term_arr)
@@ -182,11 +180,7 @@ class DocumentCollection:
             similarity = a_total = b_total = 0 # These are used to work out the magnitude of the vectors
             tfidf = document["tfidf"]
 
-            if document["type"] == "b":
-                print(document)
-
             for k in term_arr:
-                # print(search_tfidf[k], tfidf[k])
                 similarity += search_tfidf[k] * tfidf[k]
                 a_total += search_tfidf[k] ** 2
                 b_total += tfidf[k] ** 2
