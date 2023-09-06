@@ -51,15 +51,16 @@ connection = mysql_handler.Connection(
 # -----------------------------------------------------------------------------
 # Class instantiation
 # -----------------------------------------------------------------------------
-recommendations = recommendations_mod.Recommendations(
-    connection,
-    genre_required_match,
-    num_display_genres
-)
 diaries = diaries_mod.Diaries(connection)
 genres = genres_mod.Genres(connection)
 sessions = accounts_mod.Sessions(connection, token_size)
 authors = author_mod.Authors(connection)
+recommendations = recommendations_mod.Recommendations(
+    connection,
+    genre_required_match,
+    num_display_genres,
+    authors
+)
 reading_lists = reading_lists_mod.ReadingLists(
     connection,
     number_summaries_home,
