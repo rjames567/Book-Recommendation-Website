@@ -1006,6 +1006,7 @@ main .container {
 /* -------------------------------------------------------------------------- */
 /* Book Pages - Submit                                                        */
 /* -------------------------------------------------------------------------- */
+.initial-preference button,
 .new-diary-entry .new-entry button.submit-entry,
 .book-about .user-review button.submit-review {
   margin: 10px 30px 0 0;
@@ -1016,6 +1017,7 @@ main .container {
   color: white;
 }
 
+.initial-preference button:hover,
 .book-about .user-review button.submit-review:hover {
   background-color: var(--light-blue);
 }
@@ -1412,4 +1414,25 @@ button.new-entry i {
 
 .row .books {
   margin-bottom: 10px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Recommendations preferences                                                */
+/* -------------------------------------------------------------------------- */
+.initial-preference {
+  margin: 20px 0;
+}
+.initial-preference form.preferences .selection-container {
+  display: flex;
+  justify-content: space-around;
+}
+
+.initial-preference input[type=checkbox] {
+  margin: 0 10px 10px 0;
+  accent-color: var(--blue);
+}
+
+.initial-preference button {
+  float: right;
+  margin: 20px 20px 0 0;
 }
