@@ -290,7 +290,11 @@ class Recommendations:
         # IFNULL prevents any null values - replace with 0s.
 
         if len(items) == 0:
-            raise NoUserRecommendationsError(user_id)
+            count = len(self._connection.query("SELECT genre_id FROM user_genres WHERE user_id={}".format(user_id)))
+            if count:  # Just ensures that there are no preferences stored either, so it must be a new user
+                self.recommend_user_books(user_id)  # If there are preferences, generate new recommendations
+            else:
+                raise NoUserRecommendationsError(user_id)
 
         output_dict = dict()
         for i, k in enumerate(items):
@@ -359,7 +363,8 @@ class Recommendations:
 
         # Do not need to divide by the number of authors, as the average is handled within the MySQL query.
 
-        self.save_user_preference_vector(user_id, user_vector)
+        self.save_user_preference_vector(user_id, user_vector)  # This will delete any existing values anyway, so it will
+        # not lead to duplicate values in the table.
 
 
 # -----------------------------------------------------------------------------
