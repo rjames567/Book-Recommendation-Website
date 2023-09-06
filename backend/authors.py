@@ -94,6 +94,9 @@ class Authors:
 
         return names_to_display(res[0], res[1], res[2])
 
+    def get_author_id_list(self):
+        return [i[0] for i in self._connection.query("SELECT author_id FROM authors")]
+
 
 # -----------------------------------------------------------------------------
 # Functions
