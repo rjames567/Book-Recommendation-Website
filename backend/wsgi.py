@@ -853,9 +853,14 @@ class RecommendationsHandler(Handler):
         self._log.output_message("          User ID: " + str(user_id))
 
         result = dict()
-        result["data"] = recommendations.get_user_recommendations(user_id)
-        result["list_id"] = reading_lists.get_list_id("Want to Read", user_id)
-        result["new_user"] = False
+        try:
+            result["data"] = recommendations.get_user_recommendations(user_id)
+            result["new_user"] = False
+            result["list_id"] = reading_lists.get_list_id("Want to Read", user_id)  # This is not needed if it
+            # is a new user.
+        except recommendations_mod.NoUserRecommendationsError:
+            result["data"] = authors.get_author_id_list(names=True)
+            result["new_user"] = True
 
         response = json.dumps(result)
 
