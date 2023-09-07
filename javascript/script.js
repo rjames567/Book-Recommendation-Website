@@ -875,7 +875,7 @@ $(window).click(function (event) {
 });
 
 function assignAuthorFollowHandlers () {
-    $(".book-about .author-about .follow-author").click(function () {
+    $(".author-about .follow-author").click(function () {
         // Can only follow a user if an account is known, so prompts if not signed in.
         if (sessionID) {
             $.ajax({
@@ -883,30 +883,30 @@ function assignAuthorFollowHandlers () {
                 url: "/cgi-bin/authors/follow_author",
                 data: JSON.stringify({
                     "session_id": sessionID,
-                    "author_id": $(".book-about .author").data("id")
+                    "author_id": $(".author").data("id")
                 }),
                 success: function (result) {
-                    $(".book-about .author-about .follow-author").addClass("hidden");
-                    $(".book-about .author-about .unfollow-author").removeClass("hidden");
-                    $(".book-about .author-about .num-followers").html(result); // Update number of followers
+                    $(".author-about .follow-author").addClass("hidden");
+                    $(".author-about .unfollow-author").removeClass("hidden");
+                    $(".author-about .num-followers").html(result); // Update number of followers
                 }
             });
         } else {
             showSignInPopup();
         }
     });
-    $(".book-about .author-about .unfollow-author").click(function () {
+    $(".author-about .unfollow-author").click(function () {
         $.ajax({ // This cannot be shown if not signed in, so does not check
             type: "POST",
             url: "/cgi-bin/authors/unfollow_author",
             data: JSON.stringify({
                 "session_id": sessionID,
-                "author_id": $(".book-about .author").data("id")
+                "author_id": $(".author").data("id")
             }),
             success: function (result) {
-                $(".book-about .author-about .unfollow-author").addClass("hidden");
-                $(".book-about .author-about .follow-author").removeClass("hidden");
-                $(".book-about .author-about .num-followers").html(result); // Update number of followers
+                $(".author-about .follow-author").removeClass("hidden");
+                $(".author-about .unfollow-author").addClass("hidden");
+                $(".author-about .num-followers").html(result); // Update number of followers
             }
         });
     });
@@ -1015,6 +1015,7 @@ function switchAuthorPage (authorID) {
             // population of the template the request supplies may fail, as it may not arrive in time.
             $(".name h1 a").html(result["name"]);
             $(".about").html(result["about"]);
+            $(".author").data("id", result["author_id"]);
             let books = result["books"];
             for (let i = 0; i < Object.keys(books).length; i++) {
                 let summary = $(".book-summary.template").clone().removeClass("template");
@@ -1024,6 +1025,7 @@ function switchAuthorPage (authorID) {
                 $(summary).data("id", books[i]["id"]);
                 $(summary).appendTo(".author-book-items");
             }
+            assignAuthorFollowHandlers();
             assignBookNavigationHandlers();
         },
         error: function (jqXHR) {
