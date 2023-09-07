@@ -64,7 +64,7 @@ class Authors:
         output_dict = {
             "name": author,
             "about": "</p><p>".join(("<p>" + about + "</p>").split("\n")),
-            "author_id": author_id
+            "author_id": int(author_id)
         }
 
         books = self._connection.query("""
