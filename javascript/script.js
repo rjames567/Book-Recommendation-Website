@@ -1013,7 +1013,7 @@ function switchAuthorPage (authorID) {
         success: function (result) {
             changePageContent("/html/author.html", false);  // Must be synchronous, otherwise subsequent
             // population of the template the request supplies may fail, as it may not arrive in time.
-            $(".name h1 a").html(result["name"]);
+            $(".name h1").html(result["name"]);
             $(".about").html(result["about"]);
             $(".author").data("id", result["author_id"]);
             let books = result["books"];
