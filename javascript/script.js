@@ -1027,8 +1027,16 @@ function switchAuthorPage (authorID) {
                 $(summary).appendTo(".author-book-items");
             }
 
+            let genres = result["genres"];
+            for (let i = 0; i < Object.keys(genres).length; i++) {
+                let template = $(".author-genre-items .genre-button.template").clone().removeClass("template");
+                $(template).html(genres[i]);
+                $(template).appendTo(".author-genre-items");
+            }
+
             assignAuthorFollowHandlers();
             assignBookNavigationHandlers();
+            assignGenreNavigationHandlers();
         },
         error: function (jqXHR) {
             $("main").html(jqXHR.responseText); // Fills in the main body with 404 error message
