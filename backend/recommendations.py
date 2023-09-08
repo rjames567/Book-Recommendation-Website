@@ -390,7 +390,7 @@ if __name__ == "__main__":
         connection,
         config.get("books genre_match_threshold"),
         config.get("home number_display_genres"),
-        authors.Authors(connection)
+        authors.Authors(connection, config.get("books genre_match_threshold"))
     )  # Only runs if this file is
     # run directly so as a scheduled task to generate new recommendations, and
     # the connection will be closed at the end of the program execution so

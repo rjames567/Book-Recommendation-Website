@@ -22,7 +22,8 @@ class AuthorNotFoundError(Exception):
 # Objects
 # -----------------------------------------------------------------------------
 class Authors:
-    def __init__(self, connection):
+    def __init__(self, connection, required_genre_match):
+        self._required_genre_match = required_genre_match
         self._connection = connection
 
     def follow(self, user_id, author_id):
@@ -47,10 +48,18 @@ class Authors:
         # name.
 
     def get_about_data(self, author_id):
-        res = self._connection.query("""
-            SELECT first_name, surname, alias, about FROM authors
-            WHERE author_id={};
+        res = self._connection.query(x:="""
+            SELECT authors.first_name,
+            authors.surname,
+            authors.alias,
+            authors.about,
+            (SELECT count(author_followers.user_id) FROM author_followers
+                WHERE author_followers.author_id=authors.author_id) AS followers 
+            FROM authors
+            WHERE authors.author_id={};
         """.format(author_id))
+
+        print(x)
 
         if len(res) == 0:
             raise AuthorNotFoundError(
@@ -59,12 +68,13 @@ class Authors:
         else:
             res = res[0]
 
-        first_name, surname, alias, about = res  # res is a 4 element tuple, so this unpacks it
+        first_name, surname, alias, about, followers = res  # res is a 4 element tuple, so this unpacks it
         author = names_to_display(first_name, surname, alias)
         output_dict = {
             "name": author,
             "about": "</p><p>".join(("<p>" + about + "</p>").split("\n")),
-            "author_id": int(author_id)
+            "author_id": int(author_id),
+            "num_followers": followers
         }
 
         books = self._connection.query("""
@@ -81,6 +91,18 @@ class Authors:
             })  # Author name can be done implicitly from other sent data - reduce amount of data sent for speed
 
         output_dict["books"] = book_arr
+
+        genres = self._connection.query("""
+            SELECT genres.name
+            FROM genres
+            INNER JOIN book_genres ON book_genres.genre_id=genres.genre_id
+            INNER JOIN books ON books.book_id=book_genres.book_id
+            INNER JOIN authors ON authors.author_id=books.author_id
+            WHERE authors.author_id={author_id}
+                AND book_genres.match_strength>{match_strength}
+        """.format(author_id=author_id, match_strength=self._required_genre_match))
+
+        output_dict["genres"] = [i[0] for i in genres]
 
         return output_dict
 
@@ -141,4 +163,4 @@ if __name__ == "__main__":
         host=config.get("mysql host")
     )
 
-    authors = Authors(connection)
+    authors = Authors(connection, config.get("books genre_match_threshold"))

@@ -54,7 +54,7 @@ connection = mysql_handler.Connection(
 diaries = diaries_mod.Diaries(connection)
 genres = genres_mod.Genres(connection)
 sessions = accounts_mod.Sessions(connection, token_size)
-authors = author_mod.Authors(connection)
+authors = author_mod.Authors(connection, config.get("books genre_match_threshold"))
 recommendations = recommendations_mod.Recommendations(
     connection,
     genre_required_match,

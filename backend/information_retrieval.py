@@ -240,7 +240,7 @@ if __name__ == "__main__":
     )
 
     genres = genres_mod.Genres(connection)
-    authors = author_mod.Authors(connection)
+    authors = author_mod.Authors(connection, config.get("books genre_match_threshold"))
     books = book_mod.Books(
         connection,
         config.get("books genre_match_threshold"),
