@@ -1016,6 +1016,7 @@ function switchAuthorPage (authorID) {
             $(".name h1").html(result["name"]);
             $(".about").html(result["about"]);
             $(".author").data("id", result["author_id"]);
+            $(".num-followers").html(result["num_followers"]);
             let books = result["books"];
             for (let i = 0; i < Object.keys(books).length; i++) {
                 let summary = $(".book-summary.template").clone().removeClass("template");
@@ -1025,6 +1026,7 @@ function switchAuthorPage (authorID) {
                 $(summary).data("id", books[i]["id"]);
                 $(summary).appendTo(".author-book-items");
             }
+
             assignAuthorFollowHandlers();
             assignBookNavigationHandlers();
         },
