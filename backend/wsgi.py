@@ -1017,7 +1017,8 @@ class SearchingHandler(Handler):
             book_id = reading_lists.get_newest_addition(user_id)
             if book_id is not None:
                 result["because_added"] = books.get_similar_items(book_id)
-        
+            result["favourite_authors"] = authors.get_author_favourite_data(user_id)
+            
         response = json.dumps(result)
 
         status = "200 OK"
