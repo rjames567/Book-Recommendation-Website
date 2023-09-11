@@ -311,7 +311,8 @@ class ReadingLists:
     
     def get_most_recent_read(self, user_id):
         res = self._connection.query("""
-            SELECT books.book_id
+            SELECT books.book_id,
+                books.title
             FROM reading_lists
             INNER JOIN reading_list_names ON reading_lists.list_id=reading_list_names.list_id
             INNER JOIN books ON books.book_id=reading_lists.book_id
@@ -322,12 +323,13 @@ class ReadingLists:
         """.format(user_id))
 
         if len(res) > 0:
-            return res[0][0]
+            return res[0]
         return None
     
     def get_newest_addition(self, user_id):
         res = self._connection.query("""
-            SELECT books.book_id
+            SELECT books.book_id,
+                books.title
             FROM reading_lists
             INNER JOIN reading_list_names ON reading_lists.list_id=reading_list_names.list_id
             INNER JOIN books ON books.book_id=reading_lists.book_id
@@ -338,7 +340,7 @@ class ReadingLists:
         """.format(user_id))
 
         if len(res) > 0:
-            return res[0][0]
+            return res[0]
         return None
 
 
