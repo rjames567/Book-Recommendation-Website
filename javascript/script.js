@@ -1029,9 +1029,9 @@ function switchAuthorPage (authorID) {
 
             let genres = result["genres"];
             for (let i = 0; i < Object.keys(genres).length; i++) {
-                let template = $(".author-genre-items .genre-button.template").clone().removeClass("template");
-                $(template).html(genres[i]);
-                $(template).appendTo(".author-genre-items");
+                let template = $(".author-genre-items .template").clone().removeClass("template");
+                $(template).find(".genre-button").html(genres[i]);
+                $(template).appendTo(".author-genre-items ol");
             }
 
             assignAuthorFollowHandlers();
