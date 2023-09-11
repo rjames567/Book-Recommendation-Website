@@ -363,19 +363,20 @@ class Books:
     
     def get_highly_rated(self):
         res = self._connection.query("""
-            SELECT books.book_id,
-            books.title,
-            books.cover_image,
-            authors.first_name,
-            authors.surname,
-            authors.alias,
+            SELECT books.title,
+                books.book_id,
+                books.cover_image,
+                authors.first_name,
+                authors.surname,
+                authors.alias,
                 AVG(reviews.overall_rating) AS average_rating
             FROM books
             INNER JOIN authors ON books.author_id=authors.author_id
             INNER JOIN reviews ON reviews.book_id=books.book_id
             GROUP BY books.book_id
             ORDER BY average_rating DESC;
-        """)
+        """)[:self._number_summaries_home]  # The number of summaries on the genre
+        # page should be the same as the layout is the same
 
         output_dict = dict()
         for i, k in enumerate(res):
@@ -386,8 +387,7 @@ class Books:
                 "cover": k[2],
             }
 
-        return output_dict[:self._number_summaries_home]  # The number of summaries on the genre
-        # page should be the same as the layout is the same
+        return output_dict
 
 
 # -----------------------------------------------------------------------------
