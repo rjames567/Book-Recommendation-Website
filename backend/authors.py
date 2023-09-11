@@ -102,6 +102,18 @@ class Authors:
 
         output_dict["genres"] = [i[0] for i in genres]
 
+        avg_rating = self._connection.query("""
+            SELECT AVG(reviews.overall_rating) AS average,
+                   COUNT(reviews.overall_rating) AS number
+            FROM reviews
+            INNER JOIN books ON books.book_id=reviews.book_id
+            INNER JOIN authors ON authors.author_id=books.author_id
+            WHERE authors.author_id={}
+        """.format(author_id))[0]  # Get first (only) tuple from result
+
+        output_dict["average_rating"] = float(avg_rating[0])
+        output_dict["num_ratings"] = avg_rating[1]
+
         return output_dict
 
     def id_to_name(self, author_id):
