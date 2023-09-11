@@ -1027,6 +1027,10 @@ function switchAuthorPage (authorID) {
                 $(summary).appendTo(".author-book-items");
             }
 
+            $(".author-rating-container .about-review .average-review").html(result["average_rating"]);
+            $(".author-rating-container .about-review .num-review").html(result["num_ratings"]);
+            changeElemStars($(".author-rating-container .rating i"), result["average_rating"]);
+
             let genres = result["genres"];
             for (let i = 0; i < Object.keys(genres).length; i++) {
                 let template = $(".author-genre-items .template").clone().removeClass("template");
