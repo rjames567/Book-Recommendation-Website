@@ -103,7 +103,7 @@ class Authors:
         output_dict["genres"] = [i[0] for i in genres]
 
         avg_rating = self._connection.query("""
-            SELECT AVG(reviews.overall_rating) AS average,
+            SELECT ROUND(AVG(reviews.overall_rating), 2) AS average,
                    COUNT(reviews.overall_rating) AS number
             FROM reviews
             INNER JOIN books ON books.book_id=reviews.book_id
