@@ -1584,6 +1584,17 @@ function loadBrowsePage () {
                 addHomePageDetails(becauseRead, "because-read");
             }
 
+            let favouriteAuthors = result["favourite_authors"];
+            if (favouriteAuthors == null) { // Will only be null if there is no user, so all user specifics can
+                // be hidden.
+                $(".row#author-following").hide(); // Remove so the hr disappears. These will reappear on sign in
+            } else if (favouriteAuthors.length == 0) {
+                $(".row#author-following").hide();
+            } else {
+                $(".row#author-following").show();
+                addHomePageDetails(favouriteAuthors, "author-following");
+            }
+
             changeNumVisibleSummaries(); // Needs to run once, as resize will not trigger by this point
             assignBookNavigationHandlers();
         }
