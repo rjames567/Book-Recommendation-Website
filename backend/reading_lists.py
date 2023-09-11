@@ -354,7 +354,8 @@ if __name__ == "__main__":
         host=config.get("mysql host")
     )
 
-    recommendation = recommendations.Recommendations(connection, config.get("books genre_match_threshold"), 10)
+    author = authors.Authors(connection, config.get("books genre_match_threshold"), config.get("home number_home_summaries"))
+    recommendation = recommendations.Recommendations(connection, config.get("books genre_match_threshold"), config.get("home number_display_genres"), author)
     reading_lists = ReadingLists(
         connection,
         config.get("home number_home_summaries"),
@@ -362,3 +363,4 @@ if __name__ == "__main__":
         config.get("home number_display_genres"),
         recommendation
     )
+    
