@@ -22,7 +22,8 @@ class AuthorNotFoundError(Exception):
 # Objects
 # -----------------------------------------------------------------------------
 class Authors:
-    def __init__(self, connection, required_genre_match):
+    def __init__(self, connection, required_genre_match, number_summaries_home):
+        self.__number_summaries_home = number_summaries_home
         self._required_genre_match = required_genre_match
         self._connection = connection
 
@@ -145,6 +146,26 @@ class Authors:
             return output
         return [i[0] for i in self._connection.query("SELECT author_id FROM authors")]
 
+    def get_author_favourite_data(self, user_id):
+        res = self._connection.query("""
+            SELECT books.title,
+                books.book_id,
+                books.cover_image,
+                authors.first_name,
+                authors.surname,
+                authors.alias,
+                authors.author_id,
+                AVG(reviews.overall_rating) AS average_rating
+            FROM books
+            INNER JOIN authors ON books.author_id=authors.author_id
+            LEFT OUTER JOIN reviews ON reviews.book_id=books.book_id
+            WHERE books.author_id IN (SELECT author_followers.author_id
+                FROM author_followers
+                WHERE author_followers.user_id={})
+            GROUP BY books.book_id
+            ORDER BY average_rating DESC;        
+        """.format(user_id))[:self._number_summaries_home]
+
 
 # -----------------------------------------------------------------------------
 # Functions
@@ -173,4 +194,4 @@ if __name__ == "__main__":
         host=config.get("mysql host")
     )
 
-    authors = Authors(connection, config.get("books genre_match_threshold"))
+    authors = Authors(connection, config.get("books genre_match_threshold"), config.get("home number_home_summaries"))

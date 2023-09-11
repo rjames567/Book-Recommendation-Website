@@ -406,7 +406,7 @@ if __name__ == "__main__":
         connection,
         config.get("books genre_match_threshold"),
         config.get("home number_display_genres"),
-        authors_mod.Authors(connection, config.get("books genre_match_threshold"))
+        authors_mod.Authors(connection, config.get("books genre_match_threshold"), config.get("home number_home_summaries"))
     )
     reading_lists = reading_lists_mod.ReadingLists(
         connection,
