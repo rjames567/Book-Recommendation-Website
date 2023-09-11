@@ -324,6 +324,22 @@ class ReadingLists:
         if len(res) > 0:
             return res[0][0]
         return None
+    
+    def get_newest_addition(self, user_id):
+        res = self._connection.query("""
+            SELECT books.book_id
+            FROM reading_lists
+            INNER JOIN reading_list_names ON reading_lists.list_id=reading_list_names.list_id
+            INNER JOIN books ON books.book_id=reading_lists.book_id
+            WHERE reading_lists.user_id={}
+                AND reading_list_names.list_name!="Have Read"
+            ORDER BY reading_lists.date_added DESC
+            LIMIT 1;
+        """.format(user_id))
+
+        if len(res) > 0:
+            return res[0][0]
+        return None
 
 
 # -----------------------------------------------------------------------------
