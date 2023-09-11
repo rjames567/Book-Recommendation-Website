@@ -6,7 +6,9 @@ import re
 # -----------------------------------------------------------------------------
 # Project imports
 # -----------------------------------------------------------------------------
-import authors
+import authors as authors_mod
+import recommendations as recommendations_mod
+import reading_lists as reading_lists_mod
 import configuration
 import data_structures
 import ml_utilities
@@ -29,7 +31,8 @@ class BookNotFoundError(Exception):
 # Objects
 # -----------------------------------------------------------------------------
 class Books:
-    def __init__(self, connection, genre_required_match, number_similarities_about, number_summaries_home, num_display_genres):
+    def __init__(self, connection, reading_lists, genre_required_match, number_similarities_about, number_summaries_home, num_display_genres):
+        self._reading_lists = reading_lists
         self._num_display_genres = num_display_genres
         self._number_summaries_home = number_summaries_home
         self._number_similarities_about = number_similarities_about
@@ -103,7 +106,7 @@ class Books:
         res = res[0]
 
         return {
-            "author": authors.names_to_display(res[3], res[4], res[5]),
+            "author": authors_mod.names_to_display(res[3], res[4], res[5]),
             "title": res[0],
             "book_id": res[1],
             "cover": res[2],
@@ -125,7 +128,7 @@ class Books:
         output_dict = dict()
         for i, k in enumerate(res):
             output_dict[i] = {
-                "author": authors.names_to_display(k[3], k[4], k[5]),
+                "author": authors_mod.names_to_display(k[3], k[4], k[5]),
                 "title": k[0],
                 "book_id": k[1],
                 "cover": k[2],
@@ -171,7 +174,7 @@ class Books:
         else:
             res = res[0]
 
-        author = authors.names_to_display(res[6], res[7], res[8])
+        author = authors_mod.names_to_display(res[6], res[7], res[8])
 
         genres = [i[0] for i in self._connection.query("""
             SELECT genres.name FROM genres
@@ -335,7 +338,7 @@ class Books:
 
         return res  # overall rating, book id
 
-    def leave_review(self, user_id, book_id, overall_rating, plot_rating, character_rating, summary, thoughts):
+    def leave_review(self, user_id, book_id, overall_rating, plot_rating, character_rating, summary, thoughts, list_id):
         params = locals()
         params = {i: "null" if k is None else k for i, k in zip(params.keys(), params.values())}
         #  Convert all None parameters to null for insertion into query.
@@ -356,6 +359,8 @@ class Books:
             summary=params["summary"],
             rating_body=params["thoughts"]
         ))
+        self._reading_lists.add_entry(user_id, list_id, book_id)
+
 
 # -----------------------------------------------------------------------------
 # File execution
@@ -369,8 +374,23 @@ if __name__ == "__main__":
         host=config.get("mysql host")
     )
 
+    recommendations = recommendations_mod.Recommendations(
+        connection,
+        config.get("books genre_match_threshold"),
+        config.get("home number_display_genres"),
+        authors_mod.Authors(connection, config.get("books genre_match_threshold"))
+    )
+    reading_lists = reading_lists_mod.ReadingLists(
+        connection,
+        config.get("home number_home_summaries"),
+        config.get("books genre_match_threshold"),
+        config.get("home number_display_genres"),
+        recommendations
+    )
+
     books = Books(
         connection,
+        reading_lists,
         config.get("books genre_match_threshold"),
         config.get("home number_about_similarities"),
         config.get("home number_home_summaries"),

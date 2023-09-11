@@ -70,6 +70,7 @@ reading_lists = reading_lists_mod.ReadingLists(
 )
 books = book_mod.Books(
     connection,
+    reading_lists,
     genre_required_match,
     number_similarities_about,
     number_summaries_home,
@@ -587,7 +588,8 @@ class BookHandler(Handler):
             params["plot_rating"],
             params["character_rating"],
             params["summary"],
-            params["thoughts"]
+            params["thoughts"],
+            params["list_id"]
         )
 
         recommendations.update_user_data_increment(user_id, book_id, params["overall_rating"])
