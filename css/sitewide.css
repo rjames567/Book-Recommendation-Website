@@ -551,6 +551,7 @@ main .container {
   padding: 0;
 }
 
+.author-rating-container .rating,
 .diary-entry .rating,
 .book .rating {
   font-size: 20px;
@@ -1458,4 +1459,17 @@ button.new-entry i {
 .author-genre-items ol li {
   display: inline-block;
   padding: 10px 30px 10px 0;
+}
+
+.author-rating-container {
+  margin: 16px 0;
+}
+
+.author-rating-container .about-review {
+  display: inline-block;
+  float: right;
+}
+
+.author-rating-container .rating-container {
+  display: inline-block;
 }
