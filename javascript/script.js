@@ -1242,8 +1242,8 @@ $(window).click(function (event) {
 // -----------------------------------------------------------------------------
 // Home page
 // -----------------------------------------------------------------------------
-function addHomePageDetails (json) {
-    let trending = json["trending"]
+function addHomePageDetails2 (json) {
+    let trending = json["trending"];
     for (let i = 0; i < Object.keys(trending).length; i++) {
         let summary = $(".book-summary.template").clone().removeClass("template");
         $(summary).find("img").attr("src", trending[i]["cover"]);
@@ -1261,8 +1261,17 @@ function addHomePageDetails (json) {
         $(summary).data("id", newestAdditions[i]["book_id"]);
         $(summary).appendTo(".row#newest .books");
     }
-    changeNumVisibleSummaries(); // Needs to run once, as resize will not trigger by this point
-    assignBookNavigationHandlers();
+}
+
+function addHomePageDetails (json, divID) {
+    for (let i = 0; i < Object.keys(json).length; i++) {
+        let summary = $(".book-summary.template").clone().removeClass("template");
+        $(summary).find("img").attr("src", json[i]["cover"]);
+        $(summary).find(".author").html(json[i]["author"]);
+        $(summary).find(".title").html(json[i]["title"]);
+        $(summary).data("id", json[i]["book_id"]);
+        $(summary).appendTo(".row#" + divID + " .books");
+    }
 }
 
 function loadHomePage () {
@@ -1270,58 +1279,44 @@ function loadHomePage () {
         type: "GET",
         url: addGetParameter("/cgi-bin/home/get_data", "session_id", sessionID),
         success: function (result) {
-            addHomePageDetails(result); // This is in a function as the browse page uses similar information
+            addHomePageDetails(result["trending"], "trending");
+            addHomePageDetails(result["newest_additions"], "newest");
             
             let currentlyReading = result["currently_reading"];
             if (currentlyReading == null) { // Will only be null if there is no user, so all user specifics can
                 // be hidden.
-                $(".row#want-read").hide(); // Remove so the hr disappears. These will reappear on sign in
+                $(".row#reading").hide(); // Remove so the hr disappears. These will reappear on sign in
             } else if (currentlyReading.length == 0) {
-                $(".row#want-read").hide();
-            } else {
-                $(".row#want-read").show();
-                for (let i = 0; i < currentlyReading.length; i++) {
-                    let summary = $(".book-summary.template").clone().removeClass("template");
-                    $(summary).find("img").attr("src", currentlyReading[i]["cover"]);
-                    $(summary).find(".author").html(currentlyReading[i]["author"]);
-                    $(summary).find(".title").html(currentlyReading[i]["title"]);
-                    $(summary).data("id", currentlyReading[i]["book_id"]);
-                    $(summary).appendTo(".row#reading .books");
-                }
-            }
-            let wantRead = result["want_read"];
-            if (wantRead == null) {
-                $(".row#reading").hide();
-            } else if (wantRead.length == 0) {
                 $(".row#reading").hide();
             } else {
                 $(".row#reading").show();
-                for (let i = 0; i < wantRead.length; i++) {
-                    let summary = $(".book-summary.template").clone().removeClass("template");
-                    $(summary).find("img").attr("src", wantRead[i]["cover"]);
-                    $(summary).find(".author").html(wantRead[i]["author"]);
-                    $(summary).find(".title").html(wantRead[i]["title"]);
-                    $(summary).data("id", wantRead[i]["book_id"]);
-                    $(summary).appendTo(".row#want-read .books");
-                }
+                addHomePageDetails(currentlyReading, "reading");
+            }
+
+            let wantRead = result["want_read"];
+            if (wantRead == null) { // Will only be null if there is no user, so all user specifics can
+                // be hidden.
+                $(".row#want-read").hide(); // Remove so the hr disappears. These will reappear on sign in
+            } else if (wantRead.length == 0) {
+                $(".row#want-read").hide();
+            } else {
+                $(".row#want-read").show();
+                addHomePageDetails(wantRead, "want-read");
             }
 
             let recommended = result["recommended"];
-            if (recommended == null) {
-                $(".row#recommended").hide();
+            if (recommended == null) { // Will only be null if there is no user, so all user specifics can
+                // be hidden.
+                $(".row#recommended").hide(); // Remove so the hr disappears. These will reappear on sign in
             } else if (recommended.length == 0) {
                 $(".row#recommended").hide();
             } else {
                 $(".row#recommended").show();
-                for (let i = 0; i < recommended.length; i++) {
-                    let summary = $(".book-summary.template").clone().removeClass("template");
-                    $(summary).find("img").attr("src", recommended[i]["cover"]);
-                    $(summary).find(".author").html(recommended[i]["author"]);
-                    $(summary).find(".title").html(recommended[i]["title"]);
-                    $(summary).data("id", recommended[i]["book_id"]);
-                    $(summary).appendTo(".row#recommended .books");
-                }
+                addHomePageDetails(recommended, "recommended");
             }
+
+            changeNumVisibleSummaries(); // Needs to run once, as resize will not trigger by this point
+            assignBookNavigationHandlers();
         },
         error: function (jqXHR) {
             console.log(jqXHR.status + " " + jqXHR.responseText);
@@ -1563,11 +1558,37 @@ function loadBrowsePage () {
         url: addGetParameter("/cgi-bin/search/get_browse_data", "session_id", sessionID), // Using search does not make sense as the
         // page is called browse, but semantically, and search is used for the search feature, so is logical
         success: function (result) {
-            addHomePageDetails(result);
+            addHomePageDetails(result["trending"], "trending");
+            addHomePageDetails(result["newest_additions"], "newest");
+            addHomePageDetails(result["highly_rated"], "highly-rated");  // These will always have a value.
+
+            let becauseAdded = result["because_added"];
+            if (becauseAdded == null) { // Will only be null if there is no user, so all user specifics can
+                // be hidden.
+                $(".row#because-added").hide(); // Remove so the hr disappears. These will reappear on sign in
+            } else if (becauseAdded.length == 0) {
+                $(".row#because-added").hide();
+            } else {
+                $(".row#because-added").show();
+                addHomePageDetails(becauseAdded, "because-added");
+            }
+
+            let becauseRead = result["because_read"];
+            if (becauseRead == null) { // Will only be null if there is no user, so all user specifics can
+                // be hidden.
+                $(".row#because-read").hide(); // Remove so the hr disappears. These will reappear on sign in
+            } else if (becauseRead.length == 0) {
+                $(".row#because-read").hide();
+            } else {
+                $(".row#because-read").show();
+                addHomePageDetails(becauseRead, "because-read");
+            }
+
+            changeNumVisibleSummaries(); // Needs to run once, as resize will not trigger by this point
+            assignBookNavigationHandlers();
         }
     })
 }
-
 
 // -----------------------------------------------------------------------------
 // window onload handlers
