@@ -969,7 +969,8 @@ class SearchingHandler(Handler):
     def __init__(self, log=None):
         super().__init__(log)
         self._routes = {
-            "search": self.search_database
+            "search": self.search_database,
+            "get_browse_data": self.get_browse_data
         }
 
     def search_database(self):
@@ -977,6 +978,46 @@ class SearchingHandler(Handler):
         self._log.output_message("          Query: " + query)
         result = searching.database_search(query)
 
+        response = json.dumps(result)
+
+        status = "200 OK"
+
+        self._log.output_message("          Response: " + response)
+        self._log.output_message("          Status: " + status)
+
+        response_headers = [
+            ("Content-Type", "application/json"),
+            ("Content-Length", str(len(response)))
+        ]
+
+        return response, status, response_headers
+    
+    def get_browse_data(self):
+        session_id = self.retrieve_get_parameters()["session_id"]
+        self._log.output_message("          Session ID: " + session_id)
+        try:
+            user_id = sessions.get_user_id(session_id)
+            self._log.output_message("          User ID: " + str(user_id))
+        except accounts_mod.SessionExpiredError:
+            user_id = None
+            self._log.output_message("          User ID: #N/A")
+        
+        result = {
+            "trending": reading_lists.get_popular(),
+            "newest_additions": books.get_newest(),
+            "highly_rated": books.get_highly_rated()
+        }  # This is not user specific
+
+        result["because_read"] = result["because_added"] = None
+
+        if user_id is not None:
+            book_id = reading_lists.get_most_recent_read(user_id)
+            if book_id is not None:
+                result["because_read"] = books.get_similar_items(book_id)
+            book_id = reading_lists.get_newest_addition(user_id)
+            if book_id is not None:
+                result["because_added"] = books.get_similar_items(book_id)
+        
         response = json.dumps(result)
 
         status = "200 OK"
