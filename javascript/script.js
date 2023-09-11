@@ -140,6 +140,9 @@ function currentPageFunction (link) {
         case "Recommendations":
             loadRecommendationsPage();
             break;
+        case "Browse":
+            loadBrowsePage();
+            break;
     }
 }
 
@@ -1239,29 +1242,36 @@ $(window).click(function (event) {
 // -----------------------------------------------------------------------------
 // Home page
 // -----------------------------------------------------------------------------
+function addHomePageDetails (json) {
+    let trending = json["trending"]
+    for (let i = 0; i < Object.keys(trending).length; i++) {
+        let summary = $(".book-summary.template").clone().removeClass("template");
+        $(summary).find("img").attr("src", trending[i]["cover"]);
+        $(summary).find(".author").html(trending[i]["author"]);
+        $(summary).find(".title").html(trending[i]["title"]);
+        $(summary).data("id", trending[i]["book_id"]);
+        $(summary).appendTo(".row#trending .books");
+    }
+    let newestAdditions = json["newest_additions"];
+    for (let i = 0; i < Object.keys(newestAdditions).length; i++) {
+        let summary = $(".book-summary.template").clone().removeClass("template");
+        $(summary).find("img").attr("src", newestAdditions[i]["cover"]);
+        $(summary).find(".author").html(newestAdditions[i]["author"]);
+        $(summary).find(".title").html(newestAdditions[i]["title"]);
+        $(summary).data("id", newestAdditions[i]["book_id"]);
+        $(summary).appendTo(".row#newest .books");
+    }
+    changeNumVisibleSummaries(); // Needs to run once, as resize will not trigger by this point
+    assignBookNavigationHandlers();
+}
+
 function loadHomePage () {
     $.ajax({
         type: "GET",
         url: addGetParameter("/cgi-bin/home/get_data", "session_id", sessionID),
         success: function (result) {
-            let trending = result["trending"]
-            for (let i = 0; i < Object.keys(trending).length; i++) {
-                let summary = $(".book-summary.template").clone().removeClass("template");
-                $(summary).find("img").attr("src", trending[i]["cover"]);
-                $(summary).find(".author").html(trending[i]["author"]);
-                $(summary).find(".title").html(trending[i]["title"]);
-                $(summary).data("id", trending[i]["book_id"]);
-                $(summary).appendTo(".row#trending .books");
-            }
-            let newestAdditions = result["newest_additions"];
-            for (let i = 0; i < Object.keys(newestAdditions).length; i++) {
-                let summary = $(".book-summary.template").clone().removeClass("template");
-                $(summary).find("img").attr("src", newestAdditions[i]["cover"]);
-                $(summary).find(".author").html(newestAdditions[i]["author"]);
-                $(summary).find(".title").html(newestAdditions[i]["title"]);
-                $(summary).data("id", newestAdditions[i]["book_id"]);
-                $(summary).appendTo(".row#newest .books");
-            }
+            addHomePageDetails(result); // This is in a function as the browse page uses similar information
+            
             let currentlyReading = result["currently_reading"];
             if (currentlyReading == null) { // Will only be null if there is no user, so all user specifics can
                 // be hidden.
@@ -1295,6 +1305,7 @@ function loadHomePage () {
                     $(summary).appendTo(".row#want-read .books");
                 }
             }
+
             let recommended = result["recommended"];
             if (recommended == null) {
                 $(".row#recommended").hide();
@@ -1311,8 +1322,6 @@ function loadHomePage () {
                     $(summary).appendTo(".row#recommended .books");
                 }
             }
-            changeNumVisibleHomeSummaries(); // Needs to run once, as resize will not trigger by this point
-            assignBookNavigationHandlers();
         },
         error: function (jqXHR) {
             console.log(jqXHR.status + " " + jqXHR.responseText);
@@ -1320,8 +1329,8 @@ function loadHomePage () {
     });
 }
 
-function changeNumVisibleHomeSummaries () {
-    if (currentPage == "Home") {
+function changeNumVisibleSummaries () {
+    if (currentPage == "Home" || currentPage == "Browse") {
         let summaries = $(".row .book-summary");
         let windowWidth = $(".row").width();
         let summaryWidth = 250;
@@ -1336,7 +1345,7 @@ function changeNumVisibleHomeSummaries () {
     }
 }
 
-$(window).resize($.debounce(300, changeNumVisibleHomeSummaries));  // Runs every 300ms. Reduces load as this will run
+$(window).resize($.debounce(300, changeNumVisibleSummaries));  // Runs every 300ms. Reduces load as this will run
 // frequently
 
 // -----------------------------------------------------------------------------
@@ -1507,7 +1516,6 @@ $("header nav.bottom .search form").on("submit", function (event) {
         type: "GET",
         url: addGetParameter("/cgi-bin/search/search", "query", query),
         success: function (result) {
-
             let length = Object.keys(result).length;
             if (length > 0) {
                 $(".search-container .alert").addClass("hidden");
@@ -1547,6 +1555,21 @@ $("header nav.bottom .search form").on("submit", function (event) {
 })
 
 // -----------------------------------------------------------------------------
+// Browse Page
+// -----------------------------------------------------------------------------
+function loadBrowsePage () {
+    $.ajax({
+        type: "GET",
+        url: addGetParameter("/cgi-bin/search/get_browse_data", "session_id", sessionID), // Using search does not make sense as the
+        // page is called browse, but semantically, and search is used for the search feature, so is logical
+        success: function (result) {
+            addHomePageDetails(result);
+        }
+    })
+}
+
+
+// -----------------------------------------------------------------------------
 // window onload handlers
 // -----------------------------------------------------------------------------
 $(document).ready(function () {
@@ -1555,5 +1578,4 @@ $(document).ready(function () {
 
 // TODO display meta if reading list is empty
 // FIXME Update book statistics on addition of book to list.
-// TODO make author link buttons neater
 // TODO add message if there is not any diary entries
