@@ -1444,9 +1444,18 @@ button.new-entry i {
 }
 
 /* -------------------------------------------------------------------------- */
-/* Author pages                                                               */
+/* Author Pages                                                               */
 /* -------------------------------------------------------------------------- */
 .author-about h1 {
   font-weight: bold;
   margin: 20px 0 0 0;
+}
+
+.author-genre-items ol {
+  text-align: center;
+}
+
+.author-genre-items ol li {
+  display: inline-block;
+  padding: 10px 30px 10px 0;
 }
