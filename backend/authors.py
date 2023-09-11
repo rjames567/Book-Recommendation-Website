@@ -154,7 +154,6 @@ class Authors:
                 authors.first_name,
                 authors.surname,
                 authors.alias,
-                authors.author_id,
                 AVG(reviews.overall_rating) AS average_rating
             FROM books
             INNER JOIN authors ON books.author_id=authors.author_id
@@ -165,6 +164,20 @@ class Authors:
             GROUP BY books.book_id
             ORDER BY average_rating DESC;        
         """.format(user_id))[:self._number_summaries_home]
+
+        if len(res) == 0:
+            return None
+        
+        output_dict = dict()
+        for i, k in enumerate(res):
+            output_dict[i] = {
+                "author": names_to_display(k[3], k[4], k[5]),
+                "title": k[0],
+                "book_id": k[1],
+                "cover": k[2],
+            }
+        
+        return output_dict
 
 
 # -----------------------------------------------------------------------------
