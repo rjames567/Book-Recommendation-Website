@@ -308,6 +308,18 @@ class ReadingLists:
             INSERT INTO reading_list_names (user_id, list_name) VALUES
             ({user_id}, "{list_name}")
         """.format(user_id=user_id, list_name=list_name))
+    
+    def get_most_recent_read(self, user_id):
+        return self._connection.query("""
+            SELECT books.book_id
+            FROM reading_lists
+            INNER JOIN reading_list_names ON reading_lists.list_id=reading_list_names.list_id
+            INNER JOIN books ON books.book_id=reading_lists.book_id
+            WHERE reading_lists.user_id={}
+                AND reading_list_names.list_name="Have Read"
+            ORDER BY reading_lists.date_added DESC
+            LIMIT 1;
+        """.format(user_id))[0][0]
 
 
 # -----------------------------------------------------------------------------
