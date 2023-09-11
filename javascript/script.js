@@ -1562,6 +1562,7 @@ function loadBrowsePage () {
             addHomePageDetails(result["newest_additions"], "newest");
             addHomePageDetails(result["highly_rated"], "highly-rated");  // These will always have a value.
 
+            $(".row#because-added .added-name").html(result["because_added_title"]);
             let becauseAdded = result["because_added"];
             if (becauseAdded == null) { // Will only be null if there is no user, so all user specifics can
                 // be hidden.
@@ -1573,6 +1574,7 @@ function loadBrowsePage () {
                 addHomePageDetails(becauseAdded, "because-added");
             }
 
+            $(".row#because-read .read-name").html(result["because_read_title"]);
             let becauseRead = result["because_read"];
             if (becauseRead == null) { // Will only be null if there is no user, so all user specifics can
                 // be hidden.
