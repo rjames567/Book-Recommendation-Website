@@ -960,7 +960,8 @@ function assignReviewSubmissionHandlers (bookID) {
                         "plot_rating": $(".leave-review .plot-rating-entry .rating-entry-container").data("rating"),
                         "character_rating": $(".leave-review .character-rating-entry .rating-entry-container").data("rating"),
                         "summary": summary,
-                        "thoughts": thoughts
+                        "thoughts": thoughts,
+                        "list_id": $(".book-about .user-review").data("list_id")
                     }),
                     success: function () {
                         reloadCurrentPage(); // Just reloads the page
