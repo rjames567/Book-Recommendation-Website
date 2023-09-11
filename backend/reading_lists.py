@@ -310,7 +310,7 @@ class ReadingLists:
         """.format(user_id=user_id, list_name=list_name))
     
     def get_most_recent_read(self, user_id):
-        return self._connection.query("""
+        res = self._connection.query("""
             SELECT books.book_id
             FROM reading_lists
             INNER JOIN reading_list_names ON reading_lists.list_id=reading_list_names.list_id
@@ -319,7 +319,11 @@ class ReadingLists:
                 AND reading_list_names.list_name="Have Read"
             ORDER BY reading_lists.date_added DESC
             LIMIT 1;
-        """.format(user_id))[0][0]
+        """.format(user_id))
+
+        if len(res) > 0:
+            return res[0][0]
+        return None
 
 
 # -----------------------------------------------------------------------------
