@@ -23,7 +23,7 @@ class AuthorNotFoundError(Exception):
 # -----------------------------------------------------------------------------
 class Authors:
     def __init__(self, connection, required_genre_match, number_summaries_home):
-        self.__number_summaries_home = number_summaries_home
+        self._number_summaries_home = number_summaries_home
         self._required_genre_match = required_genre_match
         self._connection = connection
 
