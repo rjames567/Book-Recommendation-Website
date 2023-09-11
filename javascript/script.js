@@ -544,6 +544,9 @@ function switchGenrePage (genre) {
         success: function (result) {
             changePageContent("/html/genre.html", false); // Must be synchronous, otherwise subsequent
             // population of the template the request supplies may fail, as it may not arrive in time.
+            
+            changeActiveLink(null, "Browse"); // Change page to browse page
+
             $(".genre-name").html(result["name"]);
             $(".about").html(result["about"]);
             let books = result["books"];
@@ -607,6 +610,8 @@ function switchBookPage (bookID) {
         success: function (result) {
             changePageContent("/html/book.html", false); // Must be synchronous, otherwise subsequent
             // population of the template the request supplies may fail, as it may not arrive in time.
+
+            changeActiveLink(null, "Browse");
 
             let url = addGetParameter("/cgi-bin/my_books/get_lists_book_target", "session_id", sessionID);
             url = addGetParameter(url, "book_id", bookID);
@@ -1017,6 +1022,7 @@ function switchAuthorPage (authorID) {
         success: function (result) {
             changePageContent("/html/author.html", false);  // Must be synchronous, otherwise subsequent
             // population of the template the request supplies may fail, as it may not arrive in time.
+            changeActiveLink(null, "Browse"); // Change page to browse page
             $(".name h1").html(result["name"]);
             $(".about").html(result["about"]);
             $(".author").data("id", result["author_id"]);
@@ -1496,10 +1502,12 @@ $("header nav.bottom .search form").on("submit", function (event) {
     event.preventDefault();
     let query = $(this).find("input[type='search']").val();
     switchPageContent(null, "search", async=false); // Cannot be async, as it could arrive after the next query
+    changeActiveLink(null, "Browse"); // Change page to browse page
     $.ajax({
         type: "GET",
         url: addGetParameter("/cgi-bin/search/search", "query", query),
         success: function (result) {
+
             let length = Object.keys(result).length;
             if (length > 0) {
                 $(".search-container .alert").addClass("hidden");
