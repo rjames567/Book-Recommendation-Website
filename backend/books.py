@@ -294,6 +294,17 @@ class Books:
                 "username": i[7],
             })
 
+        res = self._connection.query("""
+            SELECT list_id FROM reading_list_names
+            WHERE user_id={}
+                AND list_name="Have Read"
+        """.format(user_id))
+
+        if len(res) == 0:  # Add have read list id to response, so leaving a review will mark it as read
+            output_dict["list_id"] = None
+        else:
+            output_dict["list_id"] = res[0][0]  # List of one, single element tuple
+
         output_dict["reviews"] = review_arr
 
         output_dict["author_following"] = bool(len(self._connection.query("""
