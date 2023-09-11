@@ -757,6 +757,7 @@ function switchBookPage (bookID) {
                 $(template).appendTo(".book-about .user-reviews");
             }
 
+            $(".book-about .user-review").data("list_id", result["list_id"]);
             let currentUserReview = result["current_user_review"];
             if (currentUserReview != null) {
                 let existingReview = $(".book-about .user-review .existing-review").removeClass("hidden");
