@@ -48,7 +48,7 @@ class Authors:
         # name.
 
     def get_about_data(self, author_id):
-        res = self._connection.query(x:="""
+        res = self._connection.query("""
             SELECT authors.first_name,
             authors.surname,
             authors.alias,
@@ -58,8 +58,6 @@ class Authors:
             FROM authors
             WHERE authors.author_id={};
         """.format(author_id))
-
-        print(x)
 
         if len(res) == 0:
             raise AuthorNotFoundError(
