@@ -162,9 +162,11 @@ function checkSignInNecessary (link) {
 function hideAllSignPopups () { // Needed so cancel buttons and click-off can be
     // generalised for both.
     if (!disablePopupCancel) {
-        $(".account-popups .window").hide()
-        hideSignUpAlert(); // Hide popup first then alert to improve perceived
-        // responsiveness
+        if ((["My Books", "Recommendations", "Diary"].includes(currentPage) && !sessionID)) {
+            switchPageContent(null, "");  // Redirect to home page if cancelled, and sign in is required.
+        }
+        $(".account-popups .window").hide();
+        hideSignUpAlert(); // Hide popup first then alert to improve perceived responsiveness
         $(".account-popups .page-sign-notice").hide();
     }
 }
