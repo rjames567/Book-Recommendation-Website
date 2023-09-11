@@ -1285,33 +1285,33 @@ function loadHomePage () {
             let currentlyReading = result["currently_reading"];
             if (currentlyReading == null) { // Will only be null if there is no user, so all user specifics can
                 // be hidden.
-                $(".row#reading").hide(); // Remove so the hr disappears. These will reappear on sign in
+                $(".row#reading").addClass("hidden"); // Remove so the hr disappears. These will reappear on sign in
             } else if (currentlyReading.length == 0) {
-                $(".row#reading").hide();
+                $(".row#reading").addClass("hidden");
             } else {
-                $(".row#reading").show();
+                $(".row#reading").removeClass("template");
                 addHomePageDetails(currentlyReading, "reading");
             }
 
             let wantRead = result["want_read"];
             if (wantRead == null) { // Will only be null if there is no user, so all user specifics can
                 // be hidden.
-                $(".row#want-read").hide(); // Remove so the hr disappears. These will reappear on sign in
+                $(".row#want-read").addClass("hidden"); // Remove so the hr disappears. These will reappear on sign in
             } else if (wantRead.length == 0) {
-                $(".row#want-read").hide();
+                $(".row#want-read").addClass("hidden");
             } else {
-                $(".row#want-read").show();
+                $(".row#want-read").removeClass("template");
                 addHomePageDetails(wantRead, "want-read");
             }
 
             let recommended = result["recommended"];
             if (recommended == null) { // Will only be null if there is no user, so all user specifics can
                 // be hidden.
-                $(".row#recommended").hide(); // Remove so the hr disappears. These will reappear on sign in
+                $(".row#recommended").addClass("hidden"); // Remove so the hr disappears. These will reappear on sign in
             } else if (recommended.length == 0) {
-                $(".row#recommended").hide();
+                $(".row#recommended").addClass("hidden");
             } else {
-                $(".row#recommended").show();
+                $(".row#recommended").removeClass("template");
                 addHomePageDetails(recommended, "recommended");
             }
 
@@ -1566,11 +1566,11 @@ function loadBrowsePage () {
             let becauseAdded = result["because_added"];
             if (becauseAdded == null) { // Will only be null if there is no user, so all user specifics can
                 // be hidden.
-                $(".row#because-added").hide(); // Remove so the hr disappears. These will reappear on sign in
+                $(".row#because-added").addClass("hidden"); // Remove so the hr disappears. These will reappear on sign in
             } else if (becauseAdded.length == 0) {
-                $(".row#because-added").hide();
+                $(".row#because-added").addClass("hidden");
             } else {
-                $(".row#because-added").show();
+                $(".row#because-added").removeClass("template");
                 addHomePageDetails(becauseAdded, "because-added");
             }
 
@@ -1578,22 +1578,22 @@ function loadBrowsePage () {
             let becauseRead = result["because_read"];
             if (becauseRead == null) { // Will only be null if there is no user, so all user specifics can
                 // be hidden.
-                $(".row#because-read").hide(); // Remove so the hr disappears. These will reappear on sign in
+                $(".row#because-read").addClass("hidden"); // Remove so the hr disappears. These will reappear on sign in
             } else if (becauseRead.length == 0) {
-                $(".row#because-read").hide();
+                $(".row#because-read").addClass("hidden");
             } else {
-                $(".row#because-read").show();
+                $(".row#because-read").removeClass("template");
                 addHomePageDetails(becauseRead, "because-read");
             }
 
             let favouriteAuthors = result["favourite_authors"];
             if (favouriteAuthors == null) { // Will only be null if there is no user, so all user specifics can
                 // be hidden.
-                $(".row#author-following").hide(); // Remove so the hr disappears. These will reappear on sign in
+                $(".row#author-following").addClass("hidden"); // Remove so the hr disappears. These will reappear on sign in
             } else if (favouriteAuthors.length == 0) {
-                $(".row#author-following").hide();
+                $(".row#author-following").addClass("hidden");
             } else {
-                $(".row#author-following").show();
+                $(".row#author-following").removeClass("template");
                 addHomePageDetails(favouriteAuthors, "author-following");
             }
 
