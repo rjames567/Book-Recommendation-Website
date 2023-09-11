@@ -1462,7 +1462,11 @@ button.new-entry i {
 }
 
 .author-rating-container {
-  margin: 16px 0;
+  margin: 16px;
+}
+
+.author-rating-container .rating {
+  display: inline-block;
 }
 
 .author-rating-container .about-review {
