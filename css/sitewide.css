@@ -1400,8 +1400,8 @@ button.new-entry i {
   padding: 5px 0 10px 0;
 }
 
-.new-diary-entry label {
-  display: block;
+.new-diary-entry input[name=review] {
+  margin-left: 10%;
 }
 
 .new-diary-entry input[type=checkbox] {
