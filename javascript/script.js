@@ -1179,6 +1179,8 @@ function assignDiaryEntrySubmissionHandlers () {
         let thoughts = $(form).find("textarea").val();
         let pagesRead = $(form).find("input[name=pages-read]").val();
         let bookID = $(form).find("select").val();
+        let completed = Boolean($(".new-diary-entry form input[type=checkbox]:checked").val());
+
         if (summary == "") {
             summary = null; // It must be null for the server it is left empty
         }
@@ -1205,7 +1207,8 @@ function assignDiaryEntrySubmissionHandlers () {
                     "character_rating": $(form).find(".character-rating-entry .rating-entry-container").data("rating"),
                     "pages_read": pagesRead,
                     "summary": summary,
-                    "thoughts": thoughts
+                    "thoughts": thoughts,
+                    "book_completed": completed
                 }),
                 success: function () {
                     reloadCurrentPage(); // Just reloads the page
