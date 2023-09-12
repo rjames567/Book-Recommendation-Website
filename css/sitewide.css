@@ -762,6 +762,11 @@ main .container {
   padding-right: 20px;
 }
 
+.book-details {
+  color: var(--grey);
+  font-size: 15px;
+}
+
 .book-about .rating {
   margin: 0 20px 0 auto;
   color: var(--yellow);
