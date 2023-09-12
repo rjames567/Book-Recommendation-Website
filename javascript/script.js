@@ -1289,7 +1289,7 @@ function loadHomePage () {
             } else if (currentlyReading.length == 0) {
                 $(".row#reading").addClass("hidden");
             } else {
-                $(".row#reading").removeClass("template");
+                $(".row#reading").removeClass("hidden");
                 addHomePageDetails(currentlyReading, "reading");
             }
 
@@ -1300,7 +1300,7 @@ function loadHomePage () {
             } else if (wantRead.length == 0) {
                 $(".row#want-read").addClass("hidden");
             } else {
-                $(".row#want-read").removeClass("template");
+                $(".row#want-read").removeClass("hidden");
                 addHomePageDetails(wantRead, "want-read");
             }
 
@@ -1311,7 +1311,7 @@ function loadHomePage () {
             } else if (recommended.length == 0) {
                 $(".row#recommended").addClass("hidden");
             } else {
-                $(".row#recommended").removeClass("template");
+                $(".row#recommended").removeClass("hidden");
                 addHomePageDetails(recommended, "recommended");
             }
 
@@ -1571,7 +1571,7 @@ function loadBrowsePage () {
             } else if (becauseAdded.length == 0) {
                 $(".row#because-added").addClass("hidden");
             } else {
-                $(".row#because-added").removeClass("template");
+                $(".row#because-added").removeClass("hidden");
                 addHomePageDetails(becauseAdded, "because-added");
             }
 
@@ -1583,7 +1583,7 @@ function loadBrowsePage () {
             } else if (becauseRead.length == 0) {
                 $(".row#because-read").addClass("hidden");
             } else {
-                $(".row#because-read").removeClass("template");
+                $(".row#because-read").removeClass("hidden");
                 addHomePageDetails(becauseRead, "because-read");
             }
 
@@ -1594,7 +1594,7 @@ function loadBrowsePage () {
             } else if (favouriteAuthors.length == 0) {
                 $(".row#author-following").addClass("hidden");
             } else {
-                $(".row#author-following").removeClass("template");
+                $(".row#author-following").removeClass("hidden");
                 addHomePageDetails(favouriteAuthors, "author-following");
             }
 
