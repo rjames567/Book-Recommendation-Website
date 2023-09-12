@@ -1327,14 +1327,15 @@ function loadHomePage () {
 function changeNumVisibleSummaries () {
     if (currentPage == "Home" || currentPage == "Browse") {
         let summaries = $(".row .book-summary");
-        let windowWidth = $(".row").width();
+        let windowWidth = $(".row:not('.hidden')").width(); // Must be not hidden, otherwise it can give 0, if the div is hidden.
         let summaryWidth = 250;
         let num = Math.floor(windowWidth / summaryWidth); // Gets number of summaries to show
         $(summaries).addClass("hidden");
         $(".row").each(function () {
             let summaries = $(this).find(".book-summary");
             for (let i = 0; i < num; i++) {
-                $(summaries).eq(i).removeClass("hidden")
+                console.log(i);
+                $(summaries).eq(i).removeClass("hidden");
             }
         });
     }
