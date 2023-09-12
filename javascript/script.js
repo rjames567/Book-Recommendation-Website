@@ -968,8 +968,7 @@ function assignReviewSubmissionHandlers (bookID) {
                         "plot_rating": $(".leave-review .plot-rating-entry .rating-entry-container").data("rating"),
                         "character_rating": $(".leave-review .character-rating-entry .rating-entry-container").data("rating"),
                         "summary": summary,
-                        "thoughts": thoughts,
-                        "list_id": $(".book-about .user-review").data("list_id")
+                        "thoughts": thoughts
                     }),
                     success: function () {
                         reloadCurrentPage(); // Just reloads the page
@@ -1396,8 +1395,6 @@ function loadRecommendationsPage () {
 
                     $(template).find(".book-info .date-added").html(recommendation["date_added"]);
                     $(template).find(".book-info .match-strength").html(recommendation["certainty"]);
-
-                    $(template).find(".actions button.read").data("id", result["list_id"]);
 
                     let genres = recommendation["genres"];
                     for (let k = 0; k < Object.keys(genres).length; k++) {

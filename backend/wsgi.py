@@ -588,9 +588,11 @@ class BookHandler(Handler):
             params["plot_rating"],
             params["character_rating"],
             params["summary"],
-            params["thoughts"],
-            params["list_id"]
+            params["thoughts"]
         )
+
+        list_id = reading_lists.get_list_id("Have Read", user_id)
+        reading_lists.add_entry(user_id, list_id, book_id)
 
         recommendations.update_user_data_increment(user_id, book_id, params["overall_rating"])
 

@@ -297,17 +297,6 @@ class Books:
                 "username": i[7],
             })
 
-        res = self._connection.query("""
-            SELECT list_id FROM reading_list_names
-            WHERE user_id={}
-                AND list_name="Have Read"
-        """.format(user_id))
-
-        if len(res) == 0:  # Add have read list id to response, so leaving a review will mark it as read
-            output_dict["list_id"] = None
-        else:
-            output_dict["list_id"] = res[0][0]  # List of one, single element tuple
-
         output_dict["reviews"] = review_arr
 
         output_dict["author_following"] = bool(len(self._connection.query("""
@@ -338,7 +327,7 @@ class Books:
 
         return res  # overall rating, book id
 
-    def leave_review(self, user_id, book_id, overall_rating, plot_rating, character_rating, summary, thoughts, list_id):
+    def leave_review(self, user_id, book_id, overall_rating, plot_rating, character_rating, summary, thoughts,):
         params = locals()
         params = {i: "null" if k is None else k for i, k in zip(params.keys(), params.values())}
         #  Convert all None parameters to null for insertion into query.
@@ -359,7 +348,6 @@ class Books:
             summary=params["summary"],
             rating_body=params["thoughts"]
         ))
-        self._reading_lists.add_entry(user_id, list_id, book_id)
     
     def get_highly_rated(self):
         res = self._connection.query("""
