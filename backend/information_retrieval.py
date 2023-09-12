@@ -200,29 +200,34 @@ class DocumentCollection:
     
     def database_search(self, search):
         output_dict = dict()
+        addition = 0  # If an isbn result is added, the initial value will be one larger, so would need to be increased by 1
         if search.isnumeric():
-            output_dict[0] = self._books.get_summary(isbn=search)
-            output_dict[0]["type"] = "b"
-            output_dict[0]["certainty"] = 100.0  # Set certainty to 100% (1 d.p) as it is an exact match
-        else:
-            search_result = self.tfidf_search(search)
-            for count, res in enumerate(search_result[:self._result_limit]):
-                if res["type"] == "b":
-                    temp = self._books.get_summary(res["id"])
-                    temp["type"] = "b"
-                    output_dict[count] = temp
-                elif res["type"] == "a":
-                    temp = {
-                        "name": self._authors.id_to_name(res["id"]),
-                        "type": "a",
-                        "author_id": res["id"]
-                    }
-                    output_dict[count] = temp
-                else:
-                    temp = {"name": self._genres.id_to_name(res["id"]), "type": "g"}
-                    output_dict[count] = temp
-                output_dict[count]["certainty"] = round(res["similarity"] * 100, 1)  # Convert similarity to percentage
-                # (1 d.p)
+            try:
+                output_dict[0] = self._books.get_summary(isbn=search)
+                output_dict[0]["type"] = "b"
+                output_dict[0]["certainty"] = 100.0  # Set certainty to 100% (1 d.p) as it is an exact match
+                addition = 1
+            except book_mod.BookNotFoundError:
+                pass
+    
+        search_result = self.tfidf_search(search)
+        for count, res in enumerate(search_result[:self._result_limit]):
+            if res["type"] == "b":
+                temp = self._books.get_summary(res["id"])
+                temp["type"] = "b"
+                output_dict[count + addition] = temp
+            elif res["type"] == "a":
+                temp = {
+                    "name": self._authors.id_to_name(res["id"]),
+                    "type": "a",
+                    "author_id": res["id"]
+                }
+                output_dict[count + addition] = temp
+            else:
+                temp = {"name": self._genres.id_to_name(res["id"]), "type": "g"}
+                output_dict[count + addition] = temp
+            output_dict[count + addition]["certainty"] = round(res["similarity"] * 100, 1)  # Convert similarity to percentage
+            # (1 d.p)
         
         return output_dict
 
