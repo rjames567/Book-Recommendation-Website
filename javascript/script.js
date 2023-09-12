@@ -1138,6 +1138,20 @@ function loadDiary () {
             $(".entry-management .new-entry").click(function () {
                 $(".new-diary-entry").removeClass("hidden"); // Show form on click
             });
+
+            $(".new-diary-entry form input[name=complete]").click(function () {
+                let form = $(".new-diary-entry form");
+                let label = $(form).find("input[name=review]").closest("label");
+                if (Boolean($(form).find("input[name=complete]:checked").val())) {
+                    $(label).removeClass("hidden")
+                } else {
+                    $(label).addClass("hidden");
+                    $(form).find("input[name=review]").prop("checked", false); // Unselect publish as review button
+                    // so that if the user clicks on complete, then review, then unselects complete, it is NOT 
+                    // published as a review.
+                }
+            });
+
             assignDiaryEntrySubmissionHandlers();
             assignBookNavigationHandlers();
             assignAuthorNavigationHandlers();
