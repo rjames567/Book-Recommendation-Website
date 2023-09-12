@@ -23,7 +23,7 @@ body, html {
 }
 
 /* -------------------------------------------------------------------------- */
-/* Site-wide classes                                                           */
+/* Site-wide classes                                                          */
 /* -------------------------------------------------------------------------- */
 .hidden, .template{
   display: none !important;
@@ -1398,6 +1398,14 @@ button.new-entry i {
   font-size: 16px;
   width: calc(100% - 20px);
   padding: 5px 0 10px 0;
+}
+
+.new-diary-entry label {
+  display: block;
+}
+
+.new-diary-entry input[type=checkbox] {
+  margin-right: 10px;
 }
 
 .new-diary-entry input[type=text]:focus,
