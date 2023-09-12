@@ -776,6 +776,10 @@ class DiaryHandler(Handler):
             params["pages_read"]
         )
 
+        if params["book_completed"]:
+            list_id = reading_lists.get_list_id("Have Read", user_id)
+            reading_lists.add_entry(user_id, list_id, book_id)
+
         response = "true" # The response does not matter - here for completeness only
 
         status = "200 OK"
