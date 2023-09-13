@@ -868,6 +868,9 @@ function assignChangeReadingListHandler (bookID) {
                 "session_id": sessionID,
                 "book_id": bookID
             }),
+            success: function () {
+                reloadCurrentPage();
+            },
             complete: function () {
                 hideReadingListPopup();
             }
