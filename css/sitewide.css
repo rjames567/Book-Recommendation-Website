@@ -1147,8 +1147,6 @@ main .container {
   margin-top: 10px;
 }
 
-/* TODO Remove gap between review without body or summary */
-
 /* -------------------------------------------------------------------------- */
 /* Book Pages - Purchase Button                                               */
 /* -------------------------------------------------------------------------- */
@@ -1339,6 +1337,10 @@ button.new-entry i {
 
 .diary-entry .book {
   padding: 10px 0 5px 0;
+}
+
+.diary-entry .ratings {
+  margin-bottom: 10px;
 }
 
 /* -------------------------------------------------------------------------- */
