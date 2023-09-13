@@ -782,6 +782,17 @@ class DiaryHandler(Handler):
             list_id = reading_lists.get_list_id("Have Read", user_id)
             reading_lists.add_entry(user_id, list_id, book_id)
 
+            if params["as_review"]:
+                books.leave_review(
+                    user_id,
+                    book_id,
+                    params["overall_rating"],
+                    params["plot_rating"],
+                    params["character_rating"],
+                    params["summary"],
+                    params["thoughts"]
+                )
+
         response = "true" # The response does not matter - here for completeness only
 
         status = "200 OK"
