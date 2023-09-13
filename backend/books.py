@@ -327,7 +327,7 @@ class Books:
 
         return res  # overall rating, book id
 
-    def leave_review(self, user_id, book_id, overall_rating, plot_rating, character_rating, summary, thoughts,):
+    def leave_review(self, user_id, book_id, overall_rating, plot_rating, character_rating, summary, thoughts):
         params = locals()
         params = {i: "null" if k is None else k for i, k in zip(params.keys(), params.values())}
         #  Convert all None parameters to null for insertion into query.
@@ -336,7 +336,7 @@ class Books:
             params["summary"] = '"' + params[
                 "summary"] + '"'  # There is a check to ensure that 'thoughts' cannot be given
             # without 'summary'.
-            
+
         self._connection.query("""
             DELETE FROM reviews
             WHERE book_id={book_id}
