@@ -1,5 +1,5 @@
 # Open Book
-This is a project for AQA A-level Computer Science coursework. It is a website that provides all the users in the system with unique, personalised recommendations, and reading lists to allow them to store books that they have read, want to read, and are currently reading, as well as create collections of their own.  It aso provides each user with a reading diary, where they can record their thoughts and feelings about each book/part of the book they have read each day. Finally, users are able to leave revies for books, and then view these on about pages for the book.
+This is a project for AQA A-level Computer Science coursework. It is a website that provides all the users in the system with unique, personalised recommendations, and reading lists to allow them to store books that they have read, want to read, and are currently reading, as well as create collections of their own.  It also provides each user with a reading diary, where they can record their thoughts and feelings about each book/part of the book they have read each day. Finally, users are able to leave revies for books, and then view these on about pages for the book.
 
 ## Setup
 Having cloned this repo, to set up this repository, the following commands need to be executed in the Linux terminal/files need to be created.
