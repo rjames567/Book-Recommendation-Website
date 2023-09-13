@@ -336,6 +336,13 @@ class Books:
             params["summary"] = '"' + params[
                 "summary"] + '"'  # There is a check to ensure that 'thoughts' cannot be given
             # without 'summary'.
+            
+        self._connection.query("""
+            DELETE FROM reviews
+            WHERE book_id={book_id}
+                AND user_id={user_id}
+        """.format(book_id=book_id, user_id=user_id))  # This will remove any existing reviews, so there will only ever be one review per book per user
+
         self._connection.query("""
             INSERT INTO reviews (user_id, book_id, overall_rating, plot_rating, character_rating, summary, rating_body) VALUES
             ({user_id}, {book_id}, {overall_rating}, {plot_rating}, {character_rating}, {summary}, {rating_body});
