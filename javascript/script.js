@@ -227,6 +227,9 @@ $(".account-popups .window#sign-up form").on("submit", function (event) {
     disablePopupCancel = true;
     let password1 = $(".account-popups #sign-up input[name=password]").val();
     let password2 = $(".account-popups #sign-up input[name=password-repeat]").val();
+
+    let remember = Boolean($(".account-popups #sign-up input[name=remember]:checked").val());
+
     if (password1 != password2) {
         signUpAlert("Passwords do not match");
         disablePopupCancel = false;
@@ -249,6 +252,10 @@ $(".account-popups .window#sign-up form").on("submit", function (event) {
                     // appear smoother
                     hideAllSignPopups();
                     reloadCurrentPage();
+
+                    if (remember) {
+                        $.cookie.set("sessionID", sessionID, {expires: 7});
+                    }
                 } else {
                     signUpAlert(result["message"]);
                 }
@@ -283,6 +290,9 @@ function showSignInPopup () {
 $(".account-popups .window#sign-in form").on("submit", function (event) {
     event.preventDefault();
     disablePopupCancel = true;
+
+    let remember = Boolean($(".account-popups #sign-in input[name=remember]:checked").val());
+
     $.ajax({
         type: "POST",
         url: "/cgi-bin/account/sign_in",
@@ -301,6 +311,10 @@ $(".account-popups .window#sign-in form").on("submit", function (event) {
                 reloadCurrentPage();
             } else {
                 signUpAlert(result["message"]);
+            }
+
+            if (remember) {
+                $.cookie.set("sessionID", sessionID, {expires: 7});
             }
         },
         error: function () {
@@ -333,6 +347,7 @@ $("header a#sign-out-button").click(function () {
     // maintainability, any non-cleared sessions will be deleted through a
     // maintenance script
     reloadCurrentPage(); // This will be slower, so is done last. This removes any user-specific page content.
+    $.cookie.remove("sessionID");
 });
 
 // -----------------------------------------------------------------------------
