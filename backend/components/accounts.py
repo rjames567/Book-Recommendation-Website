@@ -262,7 +262,7 @@ class Sessions:
         else:
             res = res[0]  # Gets first element result from list - should only be
             # one result
-        expiry_datetime = res[1] + datetime.timedelta(days=1)
+        expiry_datetime = res[1] + datetime.timedelta(days=7)
         # Set expiry date to one day after it has been last used
 
         if datetime.datetime.now() > expiry_datetime:
