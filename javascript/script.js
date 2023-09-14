@@ -1370,7 +1370,6 @@ function changeNumVisibleSummaries () {
         $(".row").each(function () {
             let summaries = $(this).find(".book-summary");
             for (let i = 0; i < num; i++) {
-                console.log(i);
                 $(summaries).eq(i).removeClass("hidden");
             }
         });
