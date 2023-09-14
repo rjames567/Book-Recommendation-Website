@@ -2,17 +2,16 @@
 # Standard Python library imports
 # -----------------------------------------------------------------------------
 import re
+import sys
 
 # -----------------------------------------------------------------------------
 # Project imports
 # -----------------------------------------------------------------------------
-import authors as authors_mod
-import recommendations as recommendations_mod
-import reading_lists as reading_lists_mod
-import configuration
+import components.authors
+
+sys.path.append("../backend")
 import data_structures
 import ml_utilities
-import mysql_handler
 
 
 # -----------------------------------------------------------------------------
@@ -106,7 +105,7 @@ class Books:
         res = res[0]
 
         return {
-            "author": authors_mod.names_to_display(res[3], res[4], res[5]),
+            "author": components.authors.names_to_display(res[3], res[4], res[5]),
             "title": res[0],
             "book_id": res[1],
             "cover": res[2],
@@ -128,7 +127,7 @@ class Books:
         output_dict = dict()
         for i, k in enumerate(res):
             output_dict[i] = {
-                "author": authors_mod.names_to_display(k[3], k[4], k[5]),
+                "author": components.authors.names_to_display(k[3], k[4], k[5]),
                 "title": k[0],
                 "book_id": k[1],
                 "cover": k[2],
@@ -174,7 +173,7 @@ class Books:
         else:
             res = res[0]
 
-        author = authors_mod.names_to_display(res[6], res[7], res[8])
+        author = components.authors.names_to_display(res[6], res[7], res[8])
 
         genres = [i[0] for i in self._connection.query("""
             SELECT genres.name FROM genres
@@ -376,46 +375,10 @@ class Books:
         output_dict = dict()
         for i, k in enumerate(res):
             output_dict[i] = {
-                "author": authors_mod.names_to_display(k[3], k[4], k[5]),
+                "author": components.authors.names_to_display(k[3], k[4], k[5]),
                 "title": k[0],
                 "book_id": k[1],
                 "cover": k[2],
             }
 
         return output_dict
-
-
-# -----------------------------------------------------------------------------
-# File execution
-# -----------------------------------------------------------------------------
-if __name__ == "__main__":
-    config = configuration.Configuration("./project_config.conf")
-    connection = mysql_handler.Connection(
-        user=config.get("mysql username"),
-        password=config.get("mysql password"),
-        schema=config.get("mysql schema"),
-        host=config.get("mysql host")
-    )
-
-    recommendations = recommendations_mod.Recommendations(
-        connection,
-        config.get("books genre_match_threshold"),
-        config.get("home number_display_genres"),
-        authors_mod.Authors(connection, config.get("books genre_match_threshold"), config.get("home number_home_summaries"))
-    )
-    reading_lists = reading_lists_mod.ReadingLists(
-        connection,
-        config.get("home number_home_summaries"),
-        config.get("books genre_match_threshold"),
-        config.get("home number_display_genres"),
-        recommendations
-    )
-
-    books = Books(
-        connection,
-        reading_lists,
-        config.get("books genre_match_threshold"),
-        config.get("home number_about_similarities"),
-        config.get("home number_home_summaries"),
-        config.get("home number_display_genres")
-    )

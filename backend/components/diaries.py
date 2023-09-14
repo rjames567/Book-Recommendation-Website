@@ -6,10 +6,7 @@ import re
 # -----------------------------------------------------------------------------
 # Project imports
 # -----------------------------------------------------------------------------
-import authors
-import configuration
-import mysql_handler
-
+import components.authors
 
 # -----------------------------------------------------------------------------
 # Objects
@@ -81,7 +78,7 @@ class Diaries:
 
         output_dict = dict()
         for i, k in enumerate(res):
-            author = authors.names_to_display(k[12], k[13], k[14])
+            author = components.authors.names_to_display(k[12], k[13], k[14])
 
             thoughts = k[6]
             if thoughts is not None:
@@ -105,17 +102,3 @@ class Diaries:
             }
 
         return output_dict
-
-# -----------------------------------------------------------------------------
-# File execution
-# -----------------------------------------------------------------------------
-if __name__ == "__main__":
-    config = configuration.Configuration("./project_config.conf")
-    connection = mysql_handler.Connection(
-        user=config.get("mysql username"),
-        password=config.get("mysql password"),
-        schema=config.get("mysql schema"),
-        host=config.get("mysql host")
-    )
-
-    diaries = Diaries(connection)

@@ -1,11 +1,4 @@
 # -----------------------------------------------------------------------------
-# Project imports
-# -----------------------------------------------------------------------------
-import configuration
-import mysql_handler
-
-
-# -----------------------------------------------------------------------------
 # Exceptions
 # -----------------------------------------------------------------------------
 class AuthorNotFoundError(Exception):
@@ -193,18 +186,3 @@ def names_to_display(first_name, surname, alias):
     else:
         author = f"{first_name} {surname}"
     return author
-
-
-# -----------------------------------------------------------------------------
-# File execution
-# -----------------------------------------------------------------------------
-if __name__ == "__main__":
-    config = configuration.Configuration("./project_config.conf")
-    connection = mysql_handler.Connection(
-        user=config.get("mysql username"),
-        password=config.get("mysql password"),
-        schema=config.get("mysql schema"),
-        host=config.get("mysql host")
-    )
-
-    authors = Authors(connection, config.get("books genre_match_threshold"), config.get("home number_home_summaries"))

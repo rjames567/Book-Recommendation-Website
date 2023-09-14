@@ -7,15 +7,14 @@ import urllib.parse
 # -----------------------------------------------------------------------------
 # Project imports
 # -----------------------------------------------------------------------------
-import accounts as accounts_mod  # Can't use standard name, as it is the logical
-# name for the class instance.
-import authors as author_mod
-import books as book_mod
-import diaries as diaries_mod
-import genres as genres_mod
-import information_retrieval
-import reading_lists as reading_lists_mod
-import recommendations as recommendations_mod
+import components.accounts
+import components.authors
+import components.books
+import components.diaries
+import components.genres
+import components.information_retrieval
+import components.reading_lists
+import components.recommendations
 
 import configuration
 import environ_manipulation
@@ -51,24 +50,24 @@ connection = mysql_handler.Connection(
 # -----------------------------------------------------------------------------
 # Class instantiation
 # -----------------------------------------------------------------------------
-diaries = diaries_mod.Diaries(connection)
-genres = genres_mod.Genres(connection)
-sessions = accounts_mod.Sessions(connection, token_size)
-authors = author_mod.Authors(connection, genre_required_match, number_summaries_home)
-recommendations = recommendations_mod.Recommendations(
+diaries = components.diaries.Diaries(connection)
+genres = components.genres.Genres(connection)
+sessions = components.accounts.Sessions(connection, token_size)
+authors = components.authors.Authors(connection, genre_required_match, number_summaries_home)
+recommendations = components.recommendations.Recommendations(
     connection,
     genre_required_match,
     num_display_genres,
     authors
 )
-reading_lists = reading_lists_mod.ReadingLists(
+reading_lists = components.reading_lists.ReadingLists(
     connection,
     number_summaries_home,
     genre_required_match,
     num_display_genres,
     recommendations
 )
-books = book_mod.Books(
+books = components.books.Books(
     connection,
     reading_lists,
     genre_required_match,
@@ -76,14 +75,14 @@ books = book_mod.Books(
     number_summaries_home,
     num_display_genres
 )
-accounts = accounts_mod.Accounts(
+accounts = components.accounts.Accounts(
     connection,
     hashing_algorithm,
     hashing_salt,
     number_hash_passes,
     reading_lists
 )
-searching = information_retrieval.DocumentCollection(
+information_retrieval = components.information_retrieval.DocumentCollection(
     connection,
     books,
     authors,
@@ -175,7 +174,7 @@ class AccountHandler(Handler):
             message = "Signed in successfully"
             self._log.output_message("          Signed into account     Username: " + username)
             self._log.output_message("          Session id: " + session_id)
-        except accounts_mod.InvalidUserCredentialsError:
+        except components.accounts.InvalidUserCredentialsError:
             self._log.output_message("          Failed to sign into account     Username: " + username)
             message = "Invalid username or password"
             session_id = None
@@ -225,7 +224,7 @@ class AccountHandler(Handler):
             session_id = sessions.create_session(user_id)
             message = "Account created successfully"
             self._log.output_message("          Created account     Username: " + username)
-        except accounts_mod.UserExistsError:
+        except components.accounts.UserExistsError:
             self._log.output_message("          Failed to create account - username is taken     Username: " + username)
             message = "Username is already taken."
             session_id = None  # json.dumps converts this to null automatically
@@ -494,7 +493,7 @@ class GenreHandler(Handler):
 
             return response, status, response_headers
 
-        except genres_mod.GenreNotFoundError:
+        except components.genres.GenreNotFoundError:
             status = "404 Not Found"
             self._log.output_message("          Status: " + status)
             return ErrorHandler("404 Not Found").error_response()  # Return the content for a 404 error
@@ -541,7 +540,7 @@ class BookHandler(Handler):
 
             return response, status, response_headers
 
-        except book_mod.BookNotFoundError:
+        except components.books.BookNotFoundError:
             status = "404 Not Found"
             self._log.output_message("          Status: " + status)
             return ErrorHandler("404 Not Found").error_response()  # Return the content for a 404 error
@@ -688,7 +687,7 @@ class AuthorHandler(Handler):
 
             return response, status, response_headers
 
-        except author_mod.AuthorNotFoundError:
+        except components.authors.AuthorNotFoundError:
             status = "404 Not Found"
             self._log.output_message("          Status: " + status)
             return ErrorHandler("404 Not Found").error_response()  # Return the content for a 404 error
@@ -878,7 +877,7 @@ class RecommendationsHandler(Handler):
             result["new_user"] = False
             result["list_id"] = reading_lists.get_list_id("Want to Read", user_id)  # This is not needed if it
             # is a new user.
-        except recommendations_mod.NoUserPreferencesError:
+        except components.recommendations.NoUserPreferencesError:
             result["data"] = authors.get_author_id_list(names=True)
             result["new_user"] = True
 
@@ -993,7 +992,7 @@ class SearchingHandler(Handler):
     def search_database(self):
         query = self.retrieve_get_parameters()["query"]  # Only has one parameter, so this is fine.
         self._log.output_message("          Query: " + query)
-        result = searching.database_search(query)
+        result = information_retrieval.database_search(query)
 
         response = json.dumps(result)
 
@@ -1015,7 +1014,7 @@ class SearchingHandler(Handler):
         try:
             user_id = sessions.get_user_id(session_id)
             self._log.output_message("          User ID: " + str(user_id))
-        except accounts_mod.SessionExpiredError:
+        except components.accounts.SessionExpiredError:
             user_id = None
             self._log.output_message("          User ID: #N/A")
         

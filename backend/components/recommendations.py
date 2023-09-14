@@ -6,11 +6,12 @@ import math
 # -----------------------------------------------------------------------------
 # Project imports
 # -----------------------------------------------------------------------------
-import accounts
-import authors
-import configuration
+import components.authors
+
+import sys
+sys.path.append("../backend")
+
 import data_structures
-import mysql_handler
 
 
 # -----------------------------------------------------------------------------
@@ -298,7 +299,7 @@ class Recommendations:
 
         output_dict = dict()
         for i, k in enumerate(items):
-            author = authors.names_to_display(k[6], k[7], k[8])
+            author = components.authors.names_to_display(k[6], k[7], k[8])
 
             output_dict[i] = {
                 "book_id": k[0],
@@ -338,7 +339,7 @@ class Recommendations:
             ORDER BY recommendations.certainty DESC;
         """.format(user_id))
         return [{
-                "author": authors.names_to_display(i[3], i[4], i[5]),
+                "author": components.authors.names_to_display(i[3], i[4], i[5]),
                 "title": i[1],
                 "book_id": i[0],
                 "cover": i[2],
@@ -365,36 +366,3 @@ class Recommendations:
 
         self.save_user_preference_vector(user_id, user_vector)  # This will delete any existing values anyway, so it will
         # not lead to duplicate values in the table.
-
-
-# -----------------------------------------------------------------------------
-# File execution
-# -----------------------------------------------------------------------------
-if __name__ == "__main__":
-    config = configuration.Configuration("./project_config.conf")
-    connection = mysql_handler.Connection(
-        user=config.get("mysql username"),
-        password=config.get("mysql password"),
-        schema=config.get("mysql schema"),
-        host=config.get("mysql host")
-    )
-
-    account = accounts.Accounts(
-        connection,
-        config.get("passwords hashing_algorithm"),
-        config.get("passwords salt"),
-        config.get("passwords number_hash_passes"),
-        None  # Reading lists object is not used, so passing None is safe.
-    )
-    recommendations = Recommendations(
-        connection,
-        config.get("books genre_match_threshold"),
-        config.get("home number_display_genres"),
-        authors.Authors(connection, config.get("books genre_match_threshold"))
-    )  # Only runs if this file is
-    # run directly so as a scheduled task to generate new recommendations, and
-    # the connection will be closed at the end of the program execution so
-    # shouldn't cause issues.
-
-    for i in account.get_user_id_list():  # Recommend all users a new set of books. Included to be set up as a cron job.
-        recommendations.recommend_user_books(i)

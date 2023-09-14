@@ -1,9 +1,7 @@
 # -----------------------------------------------------------------------------
 # Project imports
 # -----------------------------------------------------------------------------
-import authors
-import configuration
-import mysql_handler
+import components.authors
 
 
 # -----------------------------------------------------------------------------
@@ -50,7 +48,7 @@ class Genres:
         book_dict = dict()
         for i, k in enumerate(db_books):
             book_id, title, cover, first_name, surname, alias = k
-            author = authors.names_to_display(first_name, surname, alias)
+            author = components.authors.names_to_display(first_name, surname, alias)
 
             book_dict[i] = {
                 "id": book_id,
@@ -73,17 +71,3 @@ class Genres:
             SELECT name FROM genres
             WHERE genre_id={}
         """.format(genre_id))[0][0]
-
-# -----------------------------------------------------------------------------
-# File execution
-# -----------------------------------------------------------------------------
-if __name__ == "__main__":
-    config = configuration.Configuration("./project_config.conf")
-    connection = mysql_handler.Connection(
-        user=config.get("mysql username"),
-        password=config.get("mysql password"),
-        schema=config.get("mysql schema"),
-        host=config.get("mysql host")
-    )
-
-    genres = Genres(connection)

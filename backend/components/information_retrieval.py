@@ -7,11 +7,7 @@ import math
 # -----------------------------------------------------------------------------
 # Project imports
 # -----------------------------------------------------------------------------
-import authors as author_mod
-import books as book_mod
-import configuration
-import genres as genres_mod
-import mysql_handler
+import components.books
 
 # -----------------------------------------------------------------------------
 # Functions
@@ -207,7 +203,7 @@ class DocumentCollection:
                 output_dict[0]["type"] = "b"
                 output_dict[0]["certainty"] = 100.0  # Set certainty to 100% (1 d.p) as it is an exact match
                 addition = 1
-            except book_mod.BookNotFoundError:
+            except components.books.BookNotFoundError:
                 pass
     
         search_result = self.tfidf_search(search)
@@ -230,28 +226,3 @@ class DocumentCollection:
             # (1 d.p)
         
         return output_dict
-
-
-# -----------------------------------------------------------------------------
-# File execution
-# -----------------------------------------------------------------------------
-if __name__ == "__main__":
-    config = configuration.Configuration("./project_config.conf")
-    connection = mysql_handler.Connection(
-        user=config.get("mysql username"),
-        password=config.get("mysql password"),
-        schema=config.get("mysql schema"),
-        host=config.get("mysql host")
-    )
-
-    genres = genres_mod.Genres(connection)
-    authors = author_mod.Authors(connection, config.get("books genre_match_threshold"))
-    books = book_mod.Books(
-        connection,
-        config.get("books genre_match_threshold"),
-        config.get("home number_about_similarities"),
-        config.get("home number_home_summaries"),
-        config.get("home number_display_genres")
-    )
-
-    document = DocumentCollection(connection, books, authors, genres, config.get("search number_results"))

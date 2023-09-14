@@ -1,11 +1,12 @@
 # -----------------------------------------------------------------------------
 # Project imports
 # -----------------------------------------------------------------------------
-import authors
-import configuration
+import components.authors
+
+import sys
+sys.path.append("../backend")
+
 import data_structures
-import recommendations
-import mysql_handler
 
 # -----------------------------------------------------------------------------
 # Exceptions
@@ -57,7 +58,7 @@ class ReadingLists:
         output_dict = dict()
         for i, k in enumerate(res):
             output_dict[i] = {
-                "author": authors.names_to_display(k[3], k[4], k[5]),
+                "author": components.authors.names_to_display(k[3], k[4], k[5]),
                 "title": k[1],
                 "book_id": k[0],
                 "cover": k[2],
@@ -110,7 +111,7 @@ class ReadingLists:
                 AND reading_list_names.user_id={};
         """.format(user_id))
         return [{
-                "author": authors.names_to_display(i[3], i[4], i[5]),
+                "author": components.authors.names_to_display(i[3], i[4], i[5]),
                 "title": i[1],
                 "book_id": i[0],
                 "cover": i[2],
@@ -132,7 +133,7 @@ class ReadingLists:
                 AND reading_list_names.user_id={};
         """.format(user_id))
         return [{
-                "author": authors.names_to_display(i[3], i[4], i[5]),
+                "author": components.authors.names_to_display(i[3], i[4], i[5]),
                 "title": i[1],
                 "book_id": i[0],
                 "cover": i[2],
@@ -204,7 +205,7 @@ class ReadingLists:
 
         output_queue = data_structures.Queue()
         for i in res:
-            author = authors.names_to_display(i[4], i[5], i[6])
+            author = components.authors.names_to_display(i[4], i[5], i[6])
 
             synopsis = "</p><p>".join(("<p>" + i[3] + "</p>").split("\n"))
             # Change new lines to new paragraphs
@@ -342,27 +343,3 @@ class ReadingLists:
         if len(res) > 0:
             return res[0]
         return None
-
-
-# -----------------------------------------------------------------------------
-# File execution
-# -----------------------------------------------------------------------------
-if __name__ == "__main__":
-    config = configuration.Configuration("./project_config.conf")
-    connection = mysql_handler.Connection(
-        user=config.get("mysql username"),
-        password=config.get("mysql password"),
-        schema=config.get("mysql schema"),
-        host=config.get("mysql host")
-    )
-
-    author = authors.Authors(connection, config.get("books genre_match_threshold"), config.get("home number_home_summaries"))
-    recommendation = recommendations.Recommendations(connection, config.get("books genre_match_threshold"), config.get("home number_display_genres"), author)
-    reading_lists = ReadingLists(
-        connection,
-        config.get("home number_home_summaries"),
-        config.get("books genre_match_threshold"),
-        config.get("home number_display_genres"),
-        recommendation
-    )
-    

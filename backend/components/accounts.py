@@ -6,14 +6,6 @@ import hashlib
 import secrets
 import time
 
-# -----------------------------------------------------------------------------
-# Project imports
-# -----------------------------------------------------------------------------
-import authors
-import configuration
-import reading_lists
-import mysql_handler
-
 
 # -----------------------------------------------------------------------------
 # Exceptions
@@ -299,30 +291,3 @@ class Sessions:
             WHERE client_id="{}";
             """.format(session_id)
         )
-
-# -----------------------------------------------------------------------------
-# File execution
-# -----------------------------------------------------------------------------
-if __name__ == "__main__":
-    config = configuration.Configuration("./project_config.conf")
-    connection = mysql_handler.Connection(
-        user=config.get("mysql username"),
-        password=config.get("mysql password"),
-        schema=config.get("mysql schema"),
-        host=config.get("mysql host")
-    )
-
-    sessions = Sessions(connection, config.get("session_id_length"))
-    reading_lists = reading_lists.ReadingLists(
-        connection,
-        config.get("home number_home_summaries"),
-        config.get("books genre_match_threshold"),
-        config.get("home number_display_genres")
-    )
-    accounts = Accounts(
-        connection,
-        config.get("passwords hashing_algorithm"),
-        config.get("passwords salt"),
-        config.get("passwords number_hash_passes"),
-        reading_lists
-    )
