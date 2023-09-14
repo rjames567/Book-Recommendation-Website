@@ -1469,6 +1469,8 @@ button.new-entry i {
 
 .author-genre-items ol {
   text-align: center;
+  padding-bottom: 16px; /* Changing the margin has no effect, and already adds 16px to the top, so this fices the
+  padding at the bottom of the page */
 }
 
 .author-genre-items ol li {
