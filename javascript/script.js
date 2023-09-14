@@ -1642,6 +1642,11 @@ function loadBrowsePage () {
 // window onload handlers
 // -----------------------------------------------------------------------------
 $(document).ready(function () {
+    let cookie = $.cookie.get("sessionID");
+    if (cookie) {
+        sessionID = cookie;
+        changeAccountButtons();
+    }
     reloadCurrentPage();
 })
 
