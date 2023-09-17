@@ -17,6 +17,16 @@ class QueueUnderflowError(Exception):
         super().__init__("Tried to get a value from an empty queue")
 
 
+class StackOverflowError(Exception):
+    def __init__(self):
+        super().__init__("Tried to push too many items into the stack")
+
+
+class StackUnderflowError(Exception):
+    def __init__(self):
+        super().__init__("Tried to get a value from an empty stack")
+
+
 # ------------------------------------------------------------------------------
 # Queue
 # ------------------------------------------------------------------------------
@@ -47,6 +57,31 @@ class Queue:
 
 
 # ------------------------------------------------------------------------------
+# Stack
+# ------------------------------------------------------------------------------
+class Stack:
+    def __init__(self, max_length=None):
+        self._items = []
+        self._max_length = max_length
+
+    def push(self, item):
+        if self._max_length is not None and self.size + 1 > self._max_length:
+            raise StackOverflowError()
+        self._items.append(item)
+
+    def pop(self):
+        if not self.size:
+            raise StackUnderflowError()
+        return self._items.pop(-1)
+
+    def peek(self):
+        return self._items[-1]
+
+    @property
+    def size(self):
+        return len(self._items)
+
+# ------------------------------------------------------------------------------
 # Binary Tree
 # ------------------------------------------------------------------------------
 # https://www.tutorialspoint.com/python_data_structure/python_binary_tree.htm
@@ -58,7 +93,7 @@ class BinaryTree:
             self.access_function = lambda x: x
         else:
             self.access_function = access_function
-    
+
     def insert(self, value):
         if self.value is None:
             self.value = value
@@ -73,7 +108,7 @@ class BinaryTree:
                     self.right.insert(value)
                 else:
                     self.right = BinaryTree(value, self.access_function)
-    
+
     def in_order_traversal(self, root=""):
         if root == "":  # Cannot be None, and an empty string cannot be used.
             root = self
