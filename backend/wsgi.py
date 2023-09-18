@@ -264,18 +264,27 @@ class MyBooksHandler(Handler):
     def get_list_names(self):
         session_id = self.retrieve_get_parameters()["session_id"]
         self._log.output_message("          Session id: " + session_id)
-        user_id = sessions.get_user_id(session_id)
-        self._log.output_message("          User id: " + str(user_id))
+        try:
+            user_id = sessions.get_user_id(session_id)
+            self._log.output_message("          User id: " + str(user_id))
 
-        names = reading_lists.get_names(user_id)
-        response = json.dumps({i: names.pop() for i in range(names.size)})
+            names = reading_lists.get_names(user_id)
+            response = json.dumps({i: names.pop() for i in range(names.size)})
 
-        status = "200 OK"
+            status = "200 OK"
 
-        response_headers = [
-            ("Content-Type", "application/json"),
-            ("Content-Length", str(len(response)))
-        ]
+            response_headers = [
+                ("Content-Type", "application/json"),
+                ("Content-Length", str(len(response)))
+            ]
+        except components.accounts.SessionExpiredError:
+            response = "false"
+
+            status = "403 fobidden"
+
+            response_headers = [
+                ("Content-Type", "text/plain")
+            ]
 
         return response, status, response_headers
 
@@ -283,30 +292,39 @@ class MyBooksHandler(Handler):
         response_dict = self.retrieve_get_parameters()
 
         session_id = response_dict["session_id"]
-        self._log.output_message("          Session id: " + session_id)
-        user_id = sessions.get_user_id(session_id)
-        self._log.output_message("          User id: " + str(user_id))
+        try:
+            self._log.output_message("          Session id: " + session_id)
+            user_id = sessions.get_user_id(session_id)
+            self._log.output_message("          User id: " + str(user_id))
 
-        list_id = response_dict["list_id"]
-        self._log.output_message("          List ID: " + str(list_id))
+            list_id = response_dict["list_id"]
+            self._log.output_message("          List ID: " + str(list_id))
 
-        result = dict()
+            result = dict()
 
-        result["books"], result["button"], result["move_target_id"] = reading_lists.get_values(list_id, user_id)
+            result["books"], result["button"], result["move_target_id"] = reading_lists.get_values(list_id, user_id)
 
-        if not len(result["books"]):
-            result["meta"] = "You have no books in this list"
-        else:
-            result["meta"] = None
+            if not len(result["books"]):
+                result["meta"] = "You have no books in this list"
+            else:
+                result["meta"] = None
 
-        response = json.dumps(result)  # Logging this will be slow – remove debug for production from config.
+            response = json.dumps(result)  # Logging this will be slow – remove debug for production from config.
 
-        status = "200 OK"
+            status = "200 OK"
 
-        response_headers = [
-            ("Content-Type", "application/json"),
-            ("Content-Length", str(len(response)))
-        ]
+            response_headers = [
+                ("Content-Type", "application/json"),
+                ("Content-Length", str(len(response)))
+            ]
+        except components.accounts.SessionExpiredError:
+            response = "false"
+
+            status = "403 fobidden"
+
+            response_headers = [
+                ("Content-Type", "text/plain")
+            ]
 
         return response, status, response_headers
 
@@ -317,22 +335,32 @@ class MyBooksHandler(Handler):
         list_id = response_dict["list_id"]
         book_id = response_dict["book_id"]  # Replace ampersand code with character
 
-        self._log.output_message("          Session id: " + session_id)
-        user_id = sessions.get_user_id(session_id)
-        self._log.output_message("          User id: " + str(user_id))
+        try:
+            self._log.output_message("          Session id: " + session_id)
+            user_id = sessions.get_user_id(session_id)
+            self._log.output_message("          User id: " + str(user_id))
 
-        self._log.output_message("          List ID: " + str(list_id))
-        self._log.output_message("          Book ID: " + str(book_id))
+            self._log.output_message("          List ID: " + str(list_id))
+            self._log.output_message("          Book ID: " + str(book_id))
 
-        reading_lists.remove_entry(user_id, list_id, book_id)
-        response = "true"  # A response is needed to use this result, but does not impact the client at all.
+            reading_lists.remove_entry(user_id, list_id, book_id)
+            response = "true"  # A response is needed to use this result, but does not impact the client at all.
 
-        status = "200 OK"
+            status = "200 OK"
 
-        response_headers = [
-            ("Content-Type", "text/plain"),
-            ("Content-Length", str(len(response)))
-        ]
+            response_headers = [
+                ("Content-Type", "text/plain"),
+                ("Content-Length", str(len(response)))
+            ]
+
+        except components.accounts.SessionExpiredError:
+            response = "false"
+
+            status = "403 fobidden"
+
+            response_headers = [
+                ("Content-Type", "text/plain")
+            ]
 
         return response, status, response_headers
 
@@ -343,26 +371,35 @@ class MyBooksHandler(Handler):
         list_id = response_dict["list_id"]
         book_id = response_dict["book_id"]
 
-        self._log.output_message("          Session id: " + session_id)
-        user_id = sessions.get_user_id(session_id)
-        self._log.output_message("          User id: " + str(user_id))
+        try:
+            self._log.output_message("          Session id: " + session_id)
+            user_id = sessions.get_user_id(session_id)
+            self._log.output_message("          User id: " + str(user_id))
 
-        self._log.output_message("          List ID: " + str(list_id))
-        self._log.output_message("          Book ID: " + str(book_id))
+            self._log.output_message("          List ID: " + str(list_id))
+            self._log.output_message("          Book ID: " + str(book_id))
 
-        target_list_id = response_dict["target_list_id"]
-        self._log.output_message("          Target list ID: " + str(target_list_id))
+            target_list_id = response_dict["target_list_id"]
+            self._log.output_message("          Target list ID: " + str(target_list_id))
 
-        reading_lists.move_entry(user_id, list_id, target_list_id, book_id)
+            reading_lists.move_entry(user_id, list_id, target_list_id, book_id)
 
-        response = "true"  # A response is needed to use this result, but does not impact the client at all.
+            response = "true"  # A response is needed to use this result, but does not impact the client at all.
 
-        status = "200 OK"
+            status = "200 OK"
 
-        response_headers = [
-            ("Content-Type", "text/plain"),
-            ("Content-Length", str(len(response)))
-        ]
+            response_headers = [
+                ("Content-Type", "text/plain"),
+                ("Content-Length", str(len(response)))
+            ]
+        except components.accounts.SessionExpiredError:
+            response = "false"
+
+            status = "403 fobidden"
+
+            response_headers = [
+                ("Content-Type", "text/plain")
+            ]
 
         return response, status, response_headers
 
@@ -372,21 +409,30 @@ class MyBooksHandler(Handler):
         session_id = response_dict["session_id"]
         list_id = response_dict["list_id"]
 
-        self._log.output_message("          Session id: " + session_id)
-        user_id = sessions.get_user_id(session_id)
-        self._log.output_message("          User id: " + str(user_id))
-        self._log.output_message("          List ID: " + str(list_id))
+        try:
+            self._log.output_message("          Session id: " + session_id)
+            user_id = sessions.get_user_id(session_id)
+            self._log.output_message("          User id: " + str(user_id))
+            self._log.output_message("          List ID: " + str(list_id))
 
-        reading_lists.remove_list(user_id, list_id)
+            reading_lists.remove_list(user_id, list_id)
 
-        response = "true"  # A response is needed to use this result, but does not impact the client at all.
+            response = "true"  # A response is needed to use this result, but does not impact the client at all.
 
-        status = "200 OK"
+            status = "200 OK"
 
-        response_headers = [
-            ("Content-Type", "text/plain"),
-            ("Content-Length", str(len(response)))
-        ]
+            response_headers = [
+                ("Content-Type", "text/plain"),
+                ("Content-Length", str(len(response)))
+            ]
+        except components.accounts.SessionExpiredError:
+            response = "false"
+
+            status = "403 fobidden"
+
+            response_headers = [
+                ("Content-Type", "text/plain")
+            ]
 
         return response, status, response_headers
 
@@ -396,43 +442,61 @@ class MyBooksHandler(Handler):
         session_id = response_dict["session_id"]
         list_name = response_dict["list_name"]
 
-        self._log.output_message("          Session id: " + session_id)
-        user_id = sessions.get_user_id(session_id)
-        self._log.output_message("          User id: " + str(user_id))
-        self._log.output_message("          List name: " + list_name)
+        try:
+            self._log.output_message("          Session id: " + session_id)
+            user_id = sessions.get_user_id(session_id)
+            self._log.output_message("          User id: " + str(user_id))
+            self._log.output_message("          List name: " + list_name)
 
-        reading_lists.create_list(user_id, list_name)
+            reading_lists.create_list(user_id, list_name)
 
-        response = "true"  # A response is needed to use this result, but does not impact the client at all.
+            response = "true"  # A response is needed to use this result, but does not impact the client at all.
 
-        status = "200 OK"
+            status = "200 OK"
 
-        response_headers = [
-            ("Content-Type", "text/plain"),
-            ("Content-Length", str(len(response)))
-        ]
+            response_headers = [
+                ("Content-Type", "text/plain"),
+                ("Content-Length", str(len(response)))
+            ]
+        except components.accounts.SessionExpiredError:
+            response = "false"
+
+            status = "403 fobidden"
+
+            response_headers = [
+                ("Content-Type", "text/plain")
+            ]
 
         return response, status, response_headers
 
     def get_list_names_include_book(self):
         params = self.retrieve_get_parameters()
         session_id = params["session_id"]
-        self._log.output_message("          Session id: " + session_id)
-        user_id = sessions.get_user_id(session_id)
-        self._log.output_message("          User id: " + str(user_id))
-        book_id = params["book_id"]
-        self._log.output_message("          Book id: " + str(book_id))
+        try:
+            self._log.output_message("          Session id: " + session_id)
+            user_id = sessions.get_user_id(session_id)
+            self._log.output_message("          User id: " + str(user_id))
+            book_id = params["book_id"]
+            self._log.output_message("          Book id: " + str(book_id))
 
-        result = reading_lists.get_names_check_book_in(user_id, book_id)
+            result = reading_lists.get_names_check_book_in(user_id, book_id)
 
-        response = json.dumps(result)
+            response = json.dumps(result)
 
-        status = "200 OK"
+            status = "200 OK"
 
-        response_headers = [
-            ("Content-Type", "application/json"),
-            ("Content-Length", str(len(response)))
-        ]
+            response_headers = [
+                ("Content-Type", "application/json"),
+                ("Content-Length", str(len(response)))
+            ]
+        except components.accounts.SessionExpiredError:
+            response = "false"
+
+            status = "403 fobidden"
+
+            response_headers = [
+                ("Content-Type", "text/plain")
+            ]
 
         return response, status, response_headers
 
@@ -440,24 +504,33 @@ class MyBooksHandler(Handler):
         params = self.retrieve_post_parameters()
         params = json.loads(params)
         session_id = params["session_id"]
-        self._log.output_message("          Session id: " + session_id)
-        user_id = sessions.get_user_id(session_id)
-        self._log.output_message("          User id: " + str(user_id))
-        book_id = params["book_id"]
-        self._log.output_message("          Book id: " + str(book_id))
-        list_id = params["list_id"]
-        self._log.output_message("          List id: " + str(list_id))
+        try:
+            self._log.output_message("          Session id: " + session_id)
+            user_id = sessions.get_user_id(session_id)
+            self._log.output_message("          User id: " + str(user_id))
+            book_id = params["book_id"]
+            self._log.output_message("          Book id: " + str(book_id))
+            list_id = params["list_id"]
+            self._log.output_message("          List id: " + str(list_id))
 
-        reading_lists.add_entry(user_id, list_id, book_id)
+            reading_lists.add_entry(user_id, list_id, book_id)
 
-        response = "true"  # Response does not matter to the client
+            response = "true"  # Response does not matter to the client
 
-        status = "200 OK"
+            status = "200 OK"
 
-        response_headers = [
-            ("Content-Type", "text/plain"),
-            ("Content-Length", str(len(response)))
-        ]
+            response_headers = [
+                ("Content-Type", "text/plain"),
+                ("Content-Length", str(len(response)))
+            ]
+        except components.accounts.SessionExpiredError:
+            response = "false"
+
+            status = "403 fobidden"
+
+            response_headers = [
+                ("Content-Type", "text/plain")
+            ]
 
         return response, status, response_headers
 
@@ -513,35 +586,44 @@ class BookHandler(Handler):
         get_params = self.retrieve_get_parameters()
         session_id = get_params["session_id"]
         book_id = get_params["book_id"]
-        self._log.output_message("          Book ID: " + book_id)
-        self._log.output_message("          Session ID: " + session_id)
-        if session_id != "null":
-            user_id = sessions.get_user_id(session_id)
-        else:
-            user_id = None
-        self._log.output_message("          User ID: " + str(user_id))
         try:
-            result = books.get_about_data(book_id, user_id)
+            self._log.output_message("          Book ID: " + book_id)
+            self._log.output_message("          Session ID: " + session_id)
+            if session_id != "null":
+                user_id = sessions.get_user_id(session_id)
+            else:
+                user_id = None
+            self._log.output_message("          User ID: " + str(user_id))
+            try:
+                result = books.get_about_data(book_id, user_id)
 
-            result["similar_books"] = books.get_similar_items(int(book_id))
-            status = "200 OK"
-            self._log.output_message("          Success")
+                result["similar_books"] = books.get_similar_items(int(book_id))
+                status = "200 OK"
+                self._log.output_message("          Success")
 
-            response = json.dumps(result)
-            # self._log.output_message("          Response: " + response)
-            self._log.output_message("          Status: " + status)
+                response = json.dumps(result)
+                # self._log.output_message("          Response: " + response)
+                self._log.output_message("          Status: " + status)
+
+                response_headers = [
+                    ("Content-Type", "application/json"),
+                    ("Content-Length", str(len(response)))
+                ]
+
+                return response, status, response_headers
+
+            except components.books.BookNotFoundError:
+                status = "404 Not Found"
+                self._log.output_message("          Status: " + status)
+                return ErrorHandler("404 Not Found").error_response()  # Return the content for a 404 error
+        except components.accounts.SessionExpiredError:
+            response = "false"
+
+            status = "403 fobidden"
 
             response_headers = [
-                ("Content-Type", "application/json"),
-                ("Content-Length", str(len(response)))
+                ("Content-Type", "text/plain")
             ]
-
-            return response, status, response_headers
-
-        except components.books.BookNotFoundError:
-            status = "404 Not Found"
-            self._log.output_message("          Status: " + status)
-            return ErrorHandler("404 Not Found").error_response()  # Return the content for a 404 error
 
     def delete_review(self):
         json_response = self.retrieve_post_parameters()
@@ -549,58 +631,75 @@ class BookHandler(Handler):
         session_id = params["session_id"]
         review_id = params["review_id"]
         self._log.output_message("          Review ID: " + str(review_id))
-        self._log.output_message("          Session ID: " + session_id)
-        user_id = sessions.get_user_id(session_id)
-        self._log.output_message("          User ID: " + str(user_id))
+        try:
+            self._log.output_message("          Session ID: " + session_id)
+            user_id = sessions.get_user_id(session_id)
+            self._log.output_message("          User ID: " + str(user_id))
 
-        rating, book_id = books.delete_review(review_id, user_id)
-        recommendations.update_user_data_decrement(user_id, book_id, rating)
+            rating, book_id = books.delete_review(review_id, user_id)
+            recommendations.update_user_data_decrement(user_id, book_id, rating)
 
-        response = "true"  # A response is needed to use this result, but does not impact the client at all.
+            response = "true"  # A response is needed to use this result, but does not impact the client at all.
 
-        status = "200 OK"
+            status = "200 OK"
 
-        response_headers = [
-            ("Content-Type", "text/plain"),
-            ("Content-Length", str(len(response)))
-        ]
+            response_headers = [
+                ("Content-Type", "text/plain"),
+                ("Content-Length", str(len(response)))
+            ]
+        except components.accounts.SessionExpiredError:
+            response = "false"
+
+            status = "403 fobidden"
+
+            response_headers = [
+                ("Content-Type", "text/plain")
+            ]
 
         return response, status, response_headers
 
     def leave_review(self):
         json_response = self.retrieve_post_parameters()
         params = json.loads(json_response)
-        self._log.output_message(params)
-        session_id = params["session_id"]
-        self._log.output_message("          Session ID: " + session_id)
-        user_id = sessions.get_user_id(session_id)
-        self._log.output_message("          User ID: " + str(user_id))
-        book_id = params["book_id"]
-        self._log.output_message("          Book ID: " + str(book_id))
+        try:
+            session_id = params["session_id"]
+            self._log.output_message("          Session ID: " + session_id)
+            user_id = sessions.get_user_id(session_id)
+            self._log.output_message("          User ID: " + str(user_id))
+            book_id = params["book_id"]
+            self._log.output_message("          Book ID: " + str(book_id))
 
-        books.leave_review(
-            user_id,
-            book_id,
-            params["overall_rating"],
-            params["plot_rating"],
-            params["character_rating"],
-            params["summary"],
-            params["thoughts"]
-        )
+            books.leave_review(
+                user_id,
+                book_id,
+                params["overall_rating"],
+                params["plot_rating"],
+                params["character_rating"],
+                params["summary"],
+                params["thoughts"]
+            )
 
-        list_id = reading_lists.get_list_id("Have Read", user_id)
-        reading_lists.add_entry(user_id, list_id, book_id)
+            list_id = reading_lists.get_list_id("Have Read", user_id)
+            reading_lists.add_entry(user_id, list_id, book_id)
 
-        recommendations.update_user_data_increment(user_id, book_id, params["overall_rating"])
+            recommendations.update_user_data_increment(user_id, book_id, params["overall_rating"])
 
-        response = "true"  # A response is needed to use this result, but does not impact the client at all.
+            response = "true"  # A response is needed to use this result, but does not impact the client at all.
 
-        status = "200 OK"
+            status = "200 OK"
 
-        response_headers = [
-            ("Content-Type", "text/plain"),
-            ("Content-Length", str(len(response)))
-        ]
+            response_headers = [
+                ("Content-Type", "text/plain"),
+                ("Content-Length", str(len(response)))
+            ]
+        except components.accounts.SessionExpiredError:
+            response = "false"
+
+            status = "403 fobidden"
+
+            response_headers = [
+                ("Content-Type", "text/plain")
+            ]
 
         return response, status, response_headers
 
@@ -622,22 +721,31 @@ class AuthorHandler(Handler):
         params = json.loads(json_response)
         session_id = params["session_id"]
         author_id = params["author_id"]
-        self._log.output_message("          Author ID: " + str(author_id))
-        self._log.output_message("          Session ID: " + session_id)
-        user_id = sessions.get_user_id(session_id)
-        self._log.output_message("          User ID: " + str(user_id))
+        try:
+            self._log.output_message("          Author ID: " + str(author_id))
+            self._log.output_message("          Session ID: " + session_id)
+            user_id = sessions.get_user_id(session_id)
+            self._log.output_message("          User ID: " + str(user_id))
 
-        authors.follow(user_id, author_id)
+            authors.follow(user_id, author_id)
 
-        response = str(authors.get_number_followers(author_id))  # Sends the new number of followers as the response.
-        # Cast the integer result to string so it can be sent as text.
+            response = str(authors.get_number_followers(author_id))  # Sends the new number of followers as the response.
+            # Cast the integer result to string so it can be sent as text.
 
-        status = "200 OK"
+            status = "200 OK"
 
-        response_headers = [
-            ("Content-Type", "text/plain"),
-            ("Content-Length", str(len(response)))
-        ]
+            response_headers = [
+                ("Content-Type", "text/plain"),
+                ("Content-Length", str(len(response)))
+            ]
+        except components.accounts.SessionExpiredError:
+            response = "false"
+
+            status = "403 fobidden"
+
+            response_headers = [
+                ("Content-Type", "text/plain")
+            ]
 
         return response, status, response_headers
 
@@ -646,22 +754,31 @@ class AuthorHandler(Handler):
         params = json.loads(json_response)
         session_id = params["session_id"]
         author_id = params["author_id"]
-        self._log.output_message("          Author ID: " + str(author_id))
-        self._log.output_message("          Session ID: " + session_id)
-        user_id = sessions.get_user_id(session_id)
-        self._log.output_message("          User ID: " + str(user_id))
+        try:
+            self._log.output_message("          Author ID: " + str(author_id))
+            self._log.output_message("          Session ID: " + session_id)
+            user_id = sessions.get_user_id(session_id)
+            self._log.output_message("          User ID: " + str(user_id))
 
-        authors.unfollow(user_id, author_id)
+            authors.unfollow(user_id, author_id)
 
-        response = str(authors.get_number_followers(author_id))  # Sends the new amount followers as the response.
-        # Cast the integer result to string, so it can be sent as text.
+            response = str(authors.get_number_followers(author_id))  # Sends the new amount followers as the response.
+            # Cast the integer result to string, so it can be sent as text.
 
-        status = "200 OK"
+            status = "200 OK"
 
-        response_headers = [
-            ("Content-Type", "text/plain"),
-            ("Content-Length", str(len(response)))
-        ]
+            response_headers = [
+                ("Content-Type", "text/plain"),
+                ("Content-Length", str(len(response)))
+            ]
+        except components.accounts.SessionExpiredError:
+            response = "false"
+
+            status = "403 fobidden"
+
+            response_headers = [
+                ("Content-Type", "text/plain")
+            ]
 
         return response, status, response_headers
 
@@ -705,52 +822,70 @@ class DiaryHandler(Handler):
 
     def get_entries(self):
         session_id = self.retrieve_get_parameters()["session_id"]  # Only has one parameter, so this is fine.
-        self._log.output_message("          Session ID: " + session_id)
-        user_id = sessions.get_user_id(session_id)
-        self._log.output_message("          User ID: " + str(user_id))
+        try:
+            self._log.output_message("          Session ID: " + session_id)
+            user_id = sessions.get_user_id(session_id)
+            self._log.output_message("          User ID: " + str(user_id))
 
-        result = dict()
-        result["entries"] = diaries.get_entries(user_id)
-        result["books"] = reading_lists.get_currently_reading(user_id)
+            result = dict()
+            result["entries"] = diaries.get_entries(user_id)
+            result["books"] = reading_lists.get_currently_reading(user_id)
 
-        response = json.dumps(result)
+            response = json.dumps(result)
 
-        status = "200 OK"
+            status = "200 OK"
 
-        self._log.output_message("          Response: " + response)
-        self._log.output_message("          Status: " + status)
+            self._log.output_message("          Response: " + response)
+            self._log.output_message("          Status: " + status)
 
-        response_headers = [
-            ("Content-Type", "application/json"),
-            ("Content-Length", str(len(response)))
-        ]
+            response_headers = [
+                ("Content-Type", "application/json"),
+                ("Content-Length", str(len(response)))
+            ]
+        except components.accounts.SessionExpiredError:
+            response = "false"
+
+            status = "403 fobidden"
+
+            response_headers = [
+                ("Content-Type", "text/plain")
+            ]
 
         return response, status, response_headers
 
     def delete_entry(self):
         json_response = self.retrieve_post_parameters()
         params = json.loads(json_response)
-        session_id = params["session_id"]
-        entry_id = params["entry_id"]
-        self._log.output_message("          Entry ID: " + str(entry_id))
-        self._log.output_message("          Session ID: " + session_id)
-        user_id = sessions.get_user_id(session_id)
-        self._log.output_message("          User ID: " + str(user_id))
+        try:
+            session_id = params["session_id"]
+            entry_id = params["entry_id"]
+            self._log.output_message("          Entry ID: " + str(entry_id))
+            self._log.output_message("          Session ID: " + session_id)
+            user_id = sessions.get_user_id(session_id)
+            self._log.output_message("          User ID: " + str(user_id))
 
-        diaries.delete_entry(user_id, entry_id)
+            diaries.delete_entry(user_id, entry_id)
 
-        response = "true"  # The client does not need the response. This is just for completeness, and a value is
-        # required for the return statement.
+            response = "true"  # The client does not need the response. This is just for completeness, and a value is
+            # required for the return statement.
 
-        status = "200 OK"
+            status = "200 OK"
 
-        self._log.output_message("          Response: " + response)
-        self._log.output_message("          Status: " + status)
+            self._log.output_message("          Response: " + response)
+            self._log.output_message("          Status: " + status)
 
-        response_headers = [
-            ("Content-Type", "text/plain"),
-            ("Content-Length", str(len(response)))
-        ]
+            response_headers = [
+                ("Content-Type", "text/plain"),
+                ("Content-Length", str(len(response)))
+            ]
+        except components.accounts.SessionExpiredError:
+            response = "false"
+
+            status = "403 fobidden"
+
+            response_headers = [
+                ("Content-Type", "text/plain")
+            ]
 
         return response, status, response_headers
 
@@ -759,48 +894,57 @@ class DiaryHandler(Handler):
         params = json.loads(json_response)
         session_id = params["session_id"]
         book_id = params["book_id"]
-        self._log.output_message("          Session ID: " + session_id)
-        user_id = sessions.get_user_id(session_id)
-        self._log.output_message("          User ID: " + str(user_id))
-        self._log.output_message("          Book ID: " + str(book_id))
+        try:
+            self._log.output_message("          Session ID: " + session_id)
+            user_id = sessions.get_user_id(session_id)
+            self._log.output_message("          User ID: " + str(user_id))
+            self._log.output_message("          Book ID: " + str(book_id))
 
-        diaries.add_entry(
-            user_id,
-            book_id,
-            params["overall_rating"],
-            params["character_rating"],
-            params["plot_rating"],
-            params["summary"],
-            params["thoughts"],
-            params["pages_read"]
-        )
+            diaries.add_entry(
+                user_id,
+                book_id,
+                params["overall_rating"],
+                params["character_rating"],
+                params["plot_rating"],
+                params["summary"],
+                params["thoughts"],
+                params["pages_read"]
+            )
 
-        if params["book_completed"]:
-            list_id = reading_lists.get_list_id("Have Read", user_id)
-            reading_lists.add_entry(user_id, list_id, book_id)
+            if params["book_completed"]:
+                list_id = reading_lists.get_list_id("Have Read", user_id)
+                reading_lists.add_entry(user_id, list_id, book_id)
 
-            if params["as_review"]:
-                books.leave_review(
-                    user_id,
-                    book_id,
-                    params["overall_rating"],
-                    params["plot_rating"],
-                    params["character_rating"],
-                    params["summary"],
-                    params["thoughts"]
-                )
+                if params["as_review"]:
+                    books.leave_review(
+                        user_id,
+                        book_id,
+                        params["overall_rating"],
+                        params["plot_rating"],
+                        params["character_rating"],
+                        params["summary"],
+                        params["thoughts"]
+                    )
 
-        response = "true" # The response does not matter - here for completeness only
+            response = "true" # The response does not matter - here for completeness only
 
-        status = "200 OK"
+            status = "200 OK"
 
-        self._log.output_message("          Response: " + response)
-        self._log.output_message("          Status: " + status)
+            self._log.output_message("          Response: " + response)
+            self._log.output_message("          Status: " + status)
 
-        response_headers = [
-            ("Content-Type", "text/plain"),
-            ("Content-Length", str(len(response)))
-        ]
+            response_headers = [
+                ("Content-Type", "text/plain"),
+                ("Content-Length", str(len(response)))
+            ]
+        except components.accounts.SessionExpiredError:
+            response = "false"
+
+            status = "403 fobidden"
+
+            response_headers = [
+                ("Content-Type", "text/plain")
+            ]
 
         return response, status, response_headers
 
@@ -866,30 +1010,39 @@ class RecommendationsHandler(Handler):
     def get_user_recommendations(self):
         session_id = self.retrieve_get_parameters()["session_id"]  # Only has one parameter, so this is fine.
         self._log.output_message("          Session ID: " + session_id)
-        user_id = sessions.get_user_id(session_id)
-        self._log.output_message("          User ID: " + str(user_id))
-
-        result = dict()
         try:
-            result["data"] = recommendations.get_user_recommendations(user_id)
-            result["new_user"] = False
-            result["list_id"] = reading_lists.get_list_id("Want to Read", user_id)  # This is not needed if it
-            # is a new user.
-        except components.recommendations.NoUserPreferencesError:
-            result["data"] = authors.get_author_id_list(names=True)
-            result["new_user"] = True
+            user_id = sessions.get_user_id(session_id)
+            self._log.output_message("          User ID: " + str(user_id))
 
-        response = json.dumps(result)
+            result = dict()
+            try:
+                result["data"] = recommendations.get_user_recommendations(user_id)
+                result["new_user"] = False
+                result["list_id"] = reading_lists.get_list_id("Want to Read", user_id)  # This is not needed if it
+                # is a new user.
+            except components.recommendations.NoUserPreferencesError:
+                result["data"] = authors.get_author_id_list(names=True)
+                result["new_user"] = True
 
-        status = "200 OK"
+            response = json.dumps(result)
 
-        self._log.output_message("          Response: " + response)
-        self._log.output_message("          Status: " + status)
+            status = "200 OK"
 
-        response_headers = [
-            ("Content-Type", "application/json"),
-            ("Content-Length", str(len(response)))
-        ]
+            self._log.output_message("          Response: " + response)
+            self._log.output_message("          Status: " + status)
+
+            response_headers = [
+                ("Content-Type", "application/json"),
+                ("Content-Length", str(len(response)))
+            ]
+        except components.accounts.SessionExpiredError:
+            response = "false"
+
+            status = "403 fobidden"
+
+            response_headers = [
+                ("Content-Type", "text/plain")
+            ]
 
         return response, status, response_headers
 
@@ -898,25 +1051,34 @@ class RecommendationsHandler(Handler):
         params = json.loads(json_response)
         session_id = params["session_id"]
         book_id = params["book_id"]
-        self._log.output_message("          Session ID: " + session_id)
-        user_id = sessions.get_user_id(session_id)
-        self._log.output_message("          User ID: " + str(user_id))
-        self._log.output_message("          Book ID: " + str(book_id))
+        try:
+            self._log.output_message("          Session ID: " + session_id)
+            user_id = sessions.get_user_id(session_id)
+            self._log.output_message("          User ID: " + str(user_id))
+            self._log.output_message("          Book ID: " + str(book_id))
 
-        recommendations.update_user_data_decrement(user_id, book_id, 1, delete_recommendation=True)
-        recommendations.remove_stored_recommendation(user_id, book_id)
+            recommendations.update_user_data_decrement(user_id, book_id, 1, delete_recommendation=True)
+            recommendations.remove_stored_recommendation(user_id, book_id)
 
-        response = "true" # The response does not matter - here for completeness only
+            response = "true" # The response does not matter - here for completeness only
 
-        status = "200 OK"
+            status = "200 OK"
 
-        self._log.output_message("          Response: " + response)
-        self._log.output_message("          Status: " + status)
+            self._log.output_message("          Response: " + response)
+            self._log.output_message("          Status: " + status)
 
-        response_headers = [
-            ("Content-Type", "text/plain"),
-            ("Content-Length", str(len(response)))
-        ]
+            response_headers = [
+                ("Content-Type", "text/plain"),
+                ("Content-Length", str(len(response)))
+            ]
+        except components.accounts.SessionExpiredError:
+            response = "false"
+
+            status = "403 fobidden"
+
+            response_headers = [
+                ("Content-Type", "text/plain")
+            ]
 
         return response, status, response_headers
 
@@ -924,54 +1086,72 @@ class RecommendationsHandler(Handler):
         json_response = self.retrieve_post_parameters()
         params = json.loads(json_response)
         session_id = params["session_id"]
-        book_id = params["book_id"]
-        self._log.output_message("          Session ID: " + session_id)
-        user_id = sessions.get_user_id(session_id)
-        self._log.output_message("          User ID: " + str(user_id))
-        self._log.output_message("          Book ID: " + str(book_id))
-        list_id = params["list_id"]
-        self._log.output_message("          List id: " + str(list_id))
+        try:
+            book_id = params["book_id"]
+            self._log.output_message("          Session ID: " + session_id)
+            user_id = sessions.get_user_id(session_id)
+            self._log.output_message("          User ID: " + str(user_id))
+            self._log.output_message("          Book ID: " + str(book_id))
+            list_id = params["list_id"]
+            self._log.output_message("          List id: " + str(list_id))
 
-        reading_lists.add_entry(user_id, list_id, book_id)
-        recommendations.remove_stored_recommendation(user_id, book_id)
+            reading_lists.add_entry(user_id, list_id, book_id)
+            recommendations.remove_stored_recommendation(user_id, book_id)
 
-        response = "true" # The response does not matter - here for completeness only
+            response = "true" # The response does not matter - here for completeness only
 
-        status = "200 OK"
+            status = "200 OK"
 
-        self._log.output_message("          Response: " + response)
-        self._log.output_message("          Status: " + status)
+            self._log.output_message("          Response: " + response)
+            self._log.output_message("          Status: " + status)
 
-        response_headers = [
-            ("Content-Type", "text/plain"),
-            ("Content-Length", str(len(response)))
-        ]
+            response_headers = [
+                ("Content-Type", "text/plain"),
+                ("Content-Length", str(len(response)))
+            ]
+        except components.accounts.SessionExpiredError:
+            response = "false"
+
+            status = "403 fobidden"
+
+            response_headers = [
+                ("Content-Type", "text/plain")
+            ]
 
         return response, status, response_headers
 
     def set_new_user_preferences(self):
         json_response = self.retrieve_post_parameters()
         params = json.loads(json_response)
-        session_id = params["session_id"]
-        author_ids = params["authors"]
-        self._log.output_message("          Session ID: " + session_id)
-        user_id = sessions.get_user_id(session_id)
-        self._log.output_message("          User ID: " + str(user_id))
-        recommendations.set_user_initial_preferences(user_id, [int(i) for i in author_ids])  # author_ids is returned as a list
-        # of strings.
-        recommendations.recommend_user_books(user_id)
+        try:
+            session_id = params["session_id"]
+            author_ids = params["authors"]
+            self._log.output_message("          Session ID: " + session_id)
+            user_id = sessions.get_user_id(session_id)
+            self._log.output_message("          User ID: " + str(user_id))
+            recommendations.set_user_initial_preferences(user_id, [int(i) for i in author_ids])  # author_ids is returned as a list
+            # of strings.
+            recommendations.recommend_user_books(user_id)
 
-        response = "true"  # The response does not matter - here for completeness only
+            response = "true"  # The response does not matter - here for completeness only
 
-        status = "200 OK"
+            status = "200 OK"
 
-        self._log.output_message("          Response: " + response)
-        self._log.output_message("          Status: " + status)
+            self._log.output_message("          Response: " + response)
+            self._log.output_message("          Status: " + status)
 
-        response_headers = [
-            ("Content-Type", "text/plain"),
-            ("Content-Length", str(len(response)))
-        ]
+            response_headers = [
+                ("Content-Type", "text/plain"),
+                ("Content-Length", str(len(response)))
+            ]
+        except components.accounts.SessionExpiredError:
+            response = "false"
+
+            status = "403 fobidden"
+
+            response_headers = [
+                ("Content-Type", "text/plain")
+            ]
 
         return response, status, response_headers
 
