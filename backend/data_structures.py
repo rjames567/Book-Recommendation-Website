@@ -42,7 +42,7 @@ class Queue:
     def push(self, item):
         if self._max_length is not None and self.size + 1 > self._max_length:
             # Checks if it is not None, and if so does not check second clause
-            raise QueueOverflowError()
+            raise QueueOverflowError
         self._items.append(item)  # Appends to end
 
     def pop(self):
@@ -69,6 +69,10 @@ class PriorityQueue(Queue):
             self._priority_func = priority_func
 
     def push(self, item, priority=None):
+        if self._max_length is not None and self.size + 1 > self._max_length:
+            # Checks if it is not None, and if so does not check second clause
+            raise QueueOverflowError
+
         if priority is None:
             priority = self._priority_func(item)
 
@@ -81,10 +85,14 @@ class PriorityQueue(Queue):
         self._items.insert(index, [item, priority])
 
     def pop(self):
+        if not self.size:
+            raise QueueUnderflowError
         return super().pop()[0]  # The result from the super would be a list, where the first item is the inserted value
         # and the second is the priority
     
     def peek(self):
+        if not self.size:
+            raise QueueUnderflowError
         return super().peek()[0]
 
 # ------------------------------------------------------------------------------
@@ -97,12 +105,12 @@ class Stack:
 
     def push(self, item):
         if self._max_length is not None and self.size + 1 > self._max_length:
-            raise StackOverflowError()
+            raise StackOverflowError
         self._items.append(item)
 
     def pop(self):
         if not self.size:
-            raise StackUnderflowError()
+            raise StackUnderflowError
         return self._items.pop(-1)
 
     def peek(self):
