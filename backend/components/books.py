@@ -282,19 +282,7 @@ class Books:
 
         stack = data_structures.Stack() # date added will be newest comes last - reverses the order
         for i in res:
-            body = i[5]
-            if body is not None:
-                body = "</p><p>".join(("<p>" + body + "</p>").split("\n"))
-            stack.push({
-                "id": i[0],
-                "overall_rating": i[1],
-                "plot_rating": i[2],
-                "character_rating": i[3],
-                "summary": i[4],
-                "rating_body": body,
-                "date_added": i[6].strftime("%d/%m/%Y"),
-                "username": i[7],
-            })
+            stack.push(i)
 
         output_dict["author_following"] = bool(len(self._connection.query("""
             SELECT author_id FROM author_followers
@@ -306,7 +294,23 @@ class Books:
         # (1 or 0), and bool converts this to the corresponding boolean value, which is whether the user is following the
         # author.
 
-        output_dict["reviews"] = [stack.pop() for i in range(stack.size)]  # Remove all items in stack and create array with them
+        output_dict["reviews"] = []  # Remove all items in stack and create array with them
+
+        for i in range(stack.size):
+            k = stack.pop()
+            body = k[5]
+            if body is not None:
+                body = "</p><p>".join(("<p>" + body + "</p>").split("\n"))
+            output_dict["reviews"].append({
+                "id": k[0],
+                "overall_rating": k[1],
+                "plot_rating": k[2],
+                "character_rating": k[3],
+                "summary": k[4],
+                "rating_body": body,
+                "date_added": k[6].strftime("%d/%m/%Y"),
+                "username": k[7],
+            })
 
         return output_dict
 
