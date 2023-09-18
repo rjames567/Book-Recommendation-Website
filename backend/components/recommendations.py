@@ -26,14 +26,19 @@ class NoUserPreferencesError(Exception):
 # Recommendations
 # -----------------------------------------------------------------------------
 class Recommendations:
-    def __init__(self, connection, genre_match_threshold, num_display_genres, authors):
+    def __init__(self,
+            connection,
+             genre_match_threshold,
+             num_display_genres,
+             authors
+         ):
         self._authors = authors
         self._connection = connection
         self._num_display_genres = num_display_genres
         self._genre_match_threshold = genre_match_threshold
-        self._available_genres = len(self._connection.query("""
-            SELECT genre_id FROM genres        
-        """))  # This is computed here as it is needed frequently.
+        self._available_genres = len(self._connection.query(
+            "SELECT genre_id FROM genres"
+        ))  # This is computed here as it is needed frequently.
         self._floating_error_threshold = 1E-15
         self._recommendation_number = 15  # Constant to specify number of
         # recommendations to generate each time
@@ -82,7 +87,12 @@ class Recommendations:
 
         return vector
 
-    def update_user_data_increment(self, user_id, book_id, rating, significant=False):
+    def update_user_data_increment(
+            self,
+            user_id,
+            book_id,
+            rating
+        ):
         user_vector = self.gen_user_vector(user_id)
 
         num_reviews = self._connection.query("""
@@ -117,7 +127,13 @@ class Recommendations:
         # 3 is neutral and has no effect
         # 1 has a more significant impact than 5
 
-    def update_user_data_decrement(self, user_id, book_id, rating, delete_recommendation=False):
+    def update_user_data_decrement(
+            self,
+            user_id,
+            book_id,
+            rating,
+            delete_recommendation=False
+        ):
         user_vector = self.gen_user_vector(user_id)
 
         num_reviews = self._connection.query("""
@@ -135,22 +151,25 @@ class Recommendations:
         
         if delete_recommendation:
             scale_factor = math.log(self.calc_scale_factor(rating + 3))
-            # Math/log is ln not log. Rating+3 undoes the subtraction in calc_scale_factor
-            # Increases the impact of the change, for when a user has deleted a recommendation.
+            # Math/log is ln not log. Rating+3 undoes the subtraction in
+            # calc_scale_factor Increases the impact of the change, for when a
+            # user has deleted a recommendation.
         else:
             scale_factor = self.calc_scale_factor(rating)
         user_vector -= book_vector * scale_factor
 
         user_vector /= num_reviews
 
-        res_vector = self.remove_rounding_errors(user_vector)  # This will prevent negative values
+        res_vector = self.remove_rounding_errors(user_vector)  # This will
+        # prevent negative values
 
         self.save_user_preference_vector(user_id, res_vector)
         return res_vector
 
     def remove_rounding_errors(self, vector):
-        # Storage space is limited so 0s are not stored, but due to float errors, these can become small <1E-19, so are
-        # removed to reduce storage needs
+        # Storage space is limited so 0s are not stored, but due to float
+        # errors, these can become small <1E-19, so are removed to reduce
+        # storage needs
         for count, val in enumerate(vector):
             if val < self._floating_error_threshold:
                 vector[count] = 0
@@ -165,24 +184,30 @@ class Recommendations:
         first = True
         for genre, match in enumerate(vector):
             if match == 0:
-                continue  # Prevents matches with strength 0 being inserted - skips to next iteration
+                continue  # Prevents matches with strength 0 being inserted,
+                # which skips to next iteration
             if not first:
                 values += ","
             else:
                 first = False
-            values += f"({user_id}, {genre + 1}, {match})"  # Genre id is incremented, as MySQL indexes from 1, python
-            # from 0
+            values += f"({user_id}, {genre + 1}, {match})"  # Genre id is
+            # incremented, as MySQL indexes from 1, python from 0
 
-        self._connection.query("INSERT INTO user_genres (user_id, genre_id, match_strength) VALUES " + values)
+        self._connection.query(
+            "INSERT INTO user_genres (user_id, genre_id, match_strength) VALUES "
+            + values
+        )
 
     def gen_all_user_data(self):
-        # This is for initial setup only. Updating user data when it is needed is faster.
-        users = self._connection.query("""
-            SELECT user_id FROM users
-        """)
+        # This is for initial setup only. Updating user data when it is needed
+        # is faster.
+        users = self._connection.query(
+            "SELECT user_id FROM users"
+        )
 
         for user in users:
-            user = user[0]  # The query gives an array of single element tuples – gets the integer value.
+            user = user[0]  # The query gives an array of single element tuples,
+            # gets the integer value.
             items = self._connection.query("""
                 SELECT (SELECT GROUP_CONCAT(book_genres.match_strength) as match_strengths
                         FROM book_genres

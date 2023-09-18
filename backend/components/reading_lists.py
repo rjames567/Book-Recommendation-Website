@@ -47,9 +47,12 @@ class ReadingLists:
                 authors.alias,
                 COUNT(books.book_id) as num
             FROM books
-            INNER JOIN authors ON books.author_id=authors.author_id
-            INNER JOIN reading_lists ON reading_lists.book_id=books.book_id
-            INNER JOIN reading_list_names ON reading_list_names.list_id=reading_lists.list_id
+            INNER JOIN authors
+                ON books.author_id=authors.author_id
+            INNER JOIN reading_lists
+                ON reading_lists.book_id=books.book_id
+            INNER JOIN reading_list_names
+                ON reading_list_names.list_id=reading_lists.list_id
             WHERE reading_list_names.list_name="Currently Reading"
             GROUP BY books.book_id
             ORDER BY num DESC;
@@ -104,9 +107,12 @@ class ReadingLists:
                 authors.surname,
                 authors.alias
             FROM reading_lists
-            INNER JOIN books ON reading_lists.book_id=books.book_id
-            INNER JOIN authors ON books.author_id=authors.author_id
-            INNER JOIN reading_list_names ON reading_list_names.list_id=reading_lists.list_id
+            INNER JOIN books
+                ON reading_lists.book_id=books.book_id
+            INNER JOIN authors
+                ON books.author_id=authors.author_id
+            INNER JOIN reading_list_names
+                ON reading_list_names.list_id=reading_lists.list_id
             WHERE reading_list_names.list_name="Currently Reading"
                 AND reading_list_names.user_id={};
         """.format(user_id))
@@ -126,9 +132,12 @@ class ReadingLists:
                 authors.surname,
                 authors.alias
             FROM reading_lists
-            INNER JOIN books ON reading_lists.book_id=books.book_id
-            INNER JOIN authors ON books.author_id=authors.author_id
-            INNER JOIN reading_list_names ON reading_list_names.list_id=reading_lists.list_id
+            INNER JOIN books
+                ON reading_lists.book_id=books.book_id
+            INNER JOIN authors
+                ON books.author_id=authors.author_id
+            INNER JOIN reading_list_names
+                ON reading_list_names.list_id=reading_lists.list_id
             WHERE reading_list_names.list_name="Want to Read"
                 AND reading_list_names.user_id={};
         """.format(user_id))
@@ -180,7 +189,7 @@ class ReadingLists:
                     inner join genres on genres.genre_id=book_genres.genre_id
                     WHERE book_genres.book_id=reading_lists.book_id
                     GROUP by books.title) AS genres,
-                (SELECT CAST(IFNULL(AVG(reviews.overall_rating), 0) as FLOAT)  # Prevent any null values - replace with 0s.
+                (SELECT CAST(IFNULL(AVG(reviews.overall_rating), 0) as FLOAT) 
                     FROM reviews
                     WHERE reviews.book_id=books.book_id) AS average_rating,
                 (SELECT COUNT(reviews.overall_rating)
@@ -197,10 +206,12 @@ class ReadingLists:
                     AND reading_lists.user_id={user_id}
                 ORDER BY reading_lists.date_added DESC, books.title ASC;
             """.format(
-            list_id=list_id,
-            user_id=user_id  # This is not strictly necessary, but helps protect against people being able to view other
-            # people's list contents by guessing the list id.
-        )
+                list_id=list_id,
+                user_id=user_id  # This is not strictly necessary, but helps
+                # protect against people being able to view other people's list
+                # contents by guessing the list id.# Prevent any null values -
+                # replace with 0s.
+            )
         )
 
         queue = data_structures.Queue()
@@ -265,7 +276,8 @@ class ReadingLists:
         ))
 
     def add_entry(self, user_id, list_id, book_id):
-        self._recommendations.remove_stored_recommendation(user_id, book_id)  # Delete recommendation when added to a list
+        self._recommendations.remove_stored_recommendation(user_id, book_id)
+        # Delete recommendation when added to a list
         self._connection.query("""
             DELETE FROM reading_lists
             WHERE user_id={user_id}
@@ -273,7 +285,8 @@ class ReadingLists:
                 AND list_id IN (SELECT list_id FROM reading_list_names
                     WHERE list_name IN ("Currently Reading", "Have Read", "Want to Read")
                     AND user_id={user_id})
-        """.format(book_id=book_id, user_id=user_id))  # Delete entry from other lists to prevent duplicates
+        """.format(book_id=book_id, user_id=user_id))
+        # Delete entry from other lists to prevent duplicates
         self._connection.query("""
             INSERT INTO reading_lists (user_id, book_id, list_id) VALUES 
             ({user_id}, {book_id}, {list_id});
@@ -284,20 +297,23 @@ class ReadingLists:
         ))
 
     def move_entry(self, user_id, start_list_id, end_list_id, book_id):
-        self.add_entry(user_id, end_list_id, book_id)  # This changes the date added, but this is not an issue as
+        self.add_entry(user_id, end_list_id, book_id)  # This changes the date
+        # added, but this is not an issue as
         self.remove_entry(user_id, start_list_id, book_id)
-        # as once moved, it would be a new addition to the list, so the date should change.
+        # as once moved, it would be a new addition to the list, so the date
+        # should change.
 
     def remove_list(self, user_id, list_id):
-        # Do not need to check whether the list is protected, the delete button is hidden by the JS. To delete it would
+        # Do not need to check whether the list is protected, the delete button
+        # is hidden by the JS. To delete it would
         # still require session id, so cannot be done accidentally.
         self._connection.query("""
             DELETE FROM reading_lists
             WHERE list_id={list_id}
                 AND user_id={user_id};
         """.format(list_id=list_id, user_id=user_id))
-        # Only the specific users list will be deleted, as it targets the single list
-        # Delete the entries
+        # Only the specific users list will be deleted, as it targets the single
+        # list
 
         self._connection.query("""
             DELETE FROM reading_list_names
@@ -317,7 +333,8 @@ class ReadingLists:
             SELECT books.book_id,
                 books.title
             FROM reading_lists
-            INNER JOIN reading_list_names ON reading_lists.list_id=reading_list_names.list_id
+            INNER JOIN reading_list_names
+                \ON reading_lists.list_id=reading_list_names.list_id
             INNER JOIN books ON books.book_id=reading_lists.book_id
             WHERE reading_lists.user_id={}
                 AND reading_list_names.list_name="Have Read"
@@ -334,7 +351,8 @@ class ReadingLists:
             SELECT books.book_id,
                 books.title
             FROM reading_lists
-            INNER JOIN reading_list_names ON reading_lists.list_id=reading_list_names.list_id
+            INNER JOIN reading_list_names
+                ON reading_lists.list_id=reading_list_names.list_id
             INNER JOIN books ON books.book_id=reading_lists.book_id
             WHERE reading_lists.user_id={}
                 AND reading_list_names.list_name!="Have Read"
