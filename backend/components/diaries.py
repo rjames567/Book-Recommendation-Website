@@ -2,11 +2,16 @@
 # Standard Python library imports
 # -----------------------------------------------------------------------------
 import re
+import sys
 
 # -----------------------------------------------------------------------------
 # Project imports
 # -----------------------------------------------------------------------------
 import components.authors
+
+sys.path.append("../backend")
+import data_structures
+
 
 # -----------------------------------------------------------------------------
 # Objects
@@ -73,11 +78,15 @@ class Diaries:
             INNER JOIN books ON books.book_id=diary_entries.book_id
             INNER JOIN authors ON books.author_id=authors.author_id
             WHERE diary_entries.user_id={}
-            ORDER BY diary_entries.date_added DESC;
-        """.format(user_id))  # Order by ensures that most recent is at the top.
+        """.format(user_id))
+
+        queue = data_structures.PriorityQueue(priority_func=lambda x: x[7])  # Order by date added
+        for i in res:
+            queue.push(i)
 
         output_dict = dict()
-        for i, k in enumerate(res):
+        for i in range(queue.size):
+            k = queue.pop()
             author = components.authors.names_to_display(k[12], k[13], k[14])
 
             thoughts = k[6]
