@@ -1,4 +1,7 @@
 def binary_search(arr, target, comparison_func=None):
+    if not len(arr):
+        return None
+
     if comparison_func is None:
         comparison_func = lambda x: x
     # geeksforgeeks.org/python-program-for-binary-search/
