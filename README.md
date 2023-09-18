@@ -71,6 +71,34 @@ Note that this will increase the maximum query size to 1GB for all database conn
 be reverted when the database is restarted. To do this enter the following command.
 > sudo systemctl restart mariadb
 
+### Configuration
+Change the configuration file to configure the project. An example configuration is shown below
+> mysql:\
+> &nbsp;&nbsp;&nbsp;&nbsp;username str: wsgi\
+> &nbsp;&nbsp;&nbsp;&nbsp;password str: 1qwerty7\
+> &nbsp;&nbsp;&nbsp;&nbsp;schema str: OpenBook\
+> &nbsp;&nbsp;&nbsp;&nbsp;host str: localhost\
+> \
+> passwords:\
+> &nbsp;&nbsp;&nbsp;&nbsp;salt bin-str: +%E!mKZ(5%Z}k#pi(cPW!US8TU-J87\
+> &nbsp;&nbsp;&nbsp;&nbsp;hashing_algorithm str: sha256\
+> &nbsp;&nbsp;&nbsp;&nbsp;number_hash_passes int: 100000\
+> \
+> books:\
+> &nbsp;&nbsp;&nbsp;&nbsp;genre_match_threshold float: 0.7\
+> \
+> home:\
+> &nbsp;&nbsp;&nbsp;&nbsp;number_home_summaries int: 8\
+> &nbsp;&nbsp;&nbsp;&nbsp;number_about_similarities int: 10\
+> &nbsp;&nbsp;&nbsp;&nbsp;number_display_genres int: 8\
+> \
+> search:\
+> &nbsp;&nbsp;&nbsp;&nbsp;number_results int: 50\
+> \
+> session_id_length int: 4\
+> debugging bool: false\
+
+
 ### Web server
 Make the directory readable
 > chmod a+r /path/to/project/
