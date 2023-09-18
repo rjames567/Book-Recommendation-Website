@@ -435,7 +435,8 @@ function assignReadingListNavigationHandlers () {
                 }
 
                 let books = result["books"];
-                for (let i = 0; i < books.length; i++) {
+                console.log(Object.keys(books).length);
+                for (let i = 0; i < Object.keys(books).length; i++) {
                     let averageRating = books[i]["average_rating"];
                     let template = $(".container .entries .book.template").clone().removeClass("template");
                     $(template).find(".title").html(books[i]["title"]);
