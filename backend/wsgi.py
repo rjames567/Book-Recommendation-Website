@@ -278,9 +278,10 @@ class MyBooksHandler(Handler):
                 ("Content-Length", str(len(response)))
             ]
         except components.accounts.SessionExpiredError:
+            self._log.output_message("          Session expired")
             response = "false"
 
-            status = "403 fobidden"
+            status = "403 forbidden"
 
             response_headers = [
                 ("Content-Type", "text/plain")
@@ -318,9 +319,10 @@ class MyBooksHandler(Handler):
                 ("Content-Length", str(len(response)))
             ]
         except components.accounts.SessionExpiredError:
+            self._log.output_message("          Session expired")
             response = "false"
 
-            status = "403 fobidden"
+            status = "403 forbidden"
 
             response_headers = [
                 ("Content-Type", "text/plain")
@@ -354,9 +356,10 @@ class MyBooksHandler(Handler):
             ]
 
         except components.accounts.SessionExpiredError:
+            self._log.output_message("          Session expired")
             response = "false"
 
-            status = "403 fobidden"
+            status = "403 forbidden"
 
             response_headers = [
                 ("Content-Type", "text/plain")
@@ -393,9 +396,10 @@ class MyBooksHandler(Handler):
                 ("Content-Length", str(len(response)))
             ]
         except components.accounts.SessionExpiredError:
+            self._log.output_message("          Session expired")
             response = "false"
 
-            status = "403 fobidden"
+            status = "403 forbidden"
 
             response_headers = [
                 ("Content-Type", "text/plain")
@@ -426,9 +430,10 @@ class MyBooksHandler(Handler):
                 ("Content-Length", str(len(response)))
             ]
         except components.accounts.SessionExpiredError:
+            self._log.output_message("          Session expired")
             response = "false"
 
-            status = "403 fobidden"
+            status = "403 forbidden"
 
             response_headers = [
                 ("Content-Type", "text/plain")
@@ -459,9 +464,10 @@ class MyBooksHandler(Handler):
                 ("Content-Length", str(len(response)))
             ]
         except components.accounts.SessionExpiredError:
+            self._log.output_message("          Session expired")
             response = "false"
 
-            status = "403 fobidden"
+            status = "403 forbidden"
 
             response_headers = [
                 ("Content-Type", "text/plain")
@@ -490,9 +496,10 @@ class MyBooksHandler(Handler):
                 ("Content-Length", str(len(response)))
             ]
         except components.accounts.SessionExpiredError:
+            self._log.output_message("          Session expired")
             response = "false"
 
-            status = "403 fobidden"
+            status = "403 forbidden"
 
             response_headers = [
                 ("Content-Type", "text/plain")
@@ -524,9 +531,10 @@ class MyBooksHandler(Handler):
                 ("Content-Length", str(len(response)))
             ]
         except components.accounts.SessionExpiredError:
+            self._log.output_message("          Session expired")
             response = "false"
 
-            status = "403 fobidden"
+            status = "403 forbidden"
 
             response_headers = [
                 ("Content-Type", "text/plain")
@@ -617,9 +625,10 @@ class BookHandler(Handler):
                 self._log.output_message("          Status: " + status)
                 return ErrorHandler("404 Not Found").error_response()  # Return the content for a 404 error
         except components.accounts.SessionExpiredError:
+            self._log.output_message("          Session expired")
             response = "false"
 
-            status = "403 fobidden"
+            status = "403 forbidden"
 
             response_headers = [
                 ("Content-Type", "text/plain")
@@ -648,9 +657,10 @@ class BookHandler(Handler):
                 ("Content-Length", str(len(response)))
             ]
         except components.accounts.SessionExpiredError:
+            self._log.output_message("          Session expired")
             response = "false"
 
-            status = "403 fobidden"
+            status = "403 forbidden"
 
             response_headers = [
                 ("Content-Type", "text/plain")
@@ -693,9 +703,10 @@ class BookHandler(Handler):
                 ("Content-Length", str(len(response)))
             ]
         except components.accounts.SessionExpiredError:
+            self._log.output_message("          Session expired")
             response = "false"
 
-            status = "403 fobidden"
+            status = "403 forbidden"
 
             response_headers = [
                 ("Content-Type", "text/plain")
@@ -739,9 +750,10 @@ class AuthorHandler(Handler):
                 ("Content-Length", str(len(response)))
             ]
         except components.accounts.SessionExpiredError:
+            self._log.output_message("          Session expired")
             response = "false"
 
-            status = "403 fobidden"
+            status = "403 forbidden"
 
             response_headers = [
                 ("Content-Type", "text/plain")
@@ -772,9 +784,10 @@ class AuthorHandler(Handler):
                 ("Content-Length", str(len(response)))
             ]
         except components.accounts.SessionExpiredError:
+            self._log.output_message("          Session expired")
             response = "false"
 
-            status = "403 fobidden"
+            status = "403 forbidden"
 
             response_headers = [
                 ("Content-Type", "text/plain")
@@ -843,9 +856,10 @@ class DiaryHandler(Handler):
                 ("Content-Length", str(len(response)))
             ]
         except components.accounts.SessionExpiredError:
+            self._log.output_message("          Session expired")
             response = "false"
 
-            status = "403 fobidden"
+            status = "403 forbidden"
 
             response_headers = [
                 ("Content-Type", "text/plain")
@@ -879,9 +893,10 @@ class DiaryHandler(Handler):
                 ("Content-Length", str(len(response)))
             ]
         except components.accounts.SessionExpiredError:
+            self._log.output_message("          Session expired")
             response = "false"
 
-            status = "403 fobidden"
+            status = "403 forbidden"
 
             response_headers = [
                 ("Content-Type", "text/plain")
@@ -938,9 +953,10 @@ class DiaryHandler(Handler):
                 ("Content-Length", str(len(response)))
             ]
         except components.accounts.SessionExpiredError:
+            self._log.output_message("          Session expired")
             response = "false"
 
-            status = "403 fobidden"
+            status = "403 forbidden"
 
             response_headers = [
                 ("Content-Type", "text/plain")
@@ -1036,9 +1052,10 @@ class RecommendationsHandler(Handler):
                 ("Content-Length", str(len(response)))
             ]
         except components.accounts.SessionExpiredError:
+            self._log.output_message("          Session expired")
             response = "false"
 
-            status = "403 fobidden"
+            status = "403 forbidden"
 
             response_headers = [
                 ("Content-Type", "text/plain")
@@ -1072,9 +1089,10 @@ class RecommendationsHandler(Handler):
                 ("Content-Length", str(len(response)))
             ]
         except components.accounts.SessionExpiredError:
+            self._log.output_message("          Session expired")
             response = "false"
 
-            status = "403 fobidden"
+            status = "403 forbidden"
 
             response_headers = [
                 ("Content-Type", "text/plain")
@@ -1110,9 +1128,10 @@ class RecommendationsHandler(Handler):
                 ("Content-Length", str(len(response)))
             ]
         except components.accounts.SessionExpiredError:
+            self._log.output_message("          Session expired")
             response = "false"
 
-            status = "403 fobidden"
+            status = "403 forbidden"
 
             response_headers = [
                 ("Content-Type", "text/plain")
@@ -1145,9 +1164,10 @@ class RecommendationsHandler(Handler):
                 ("Content-Length", str(len(response)))
             ]
         except components.accounts.SessionExpiredError:
+            self._log.output_message("          Session expired")
             response = "false"
 
-            status = "403 fobidden"
+            status = "403 forbidden"
 
             response_headers = [
                 ("Content-Type", "text/plain")
@@ -1193,6 +1213,7 @@ class SearchingHandler(Handler):
             user_id = sessions.get_user_id(session_id)
             self._log.output_message("          User ID: " + str(user_id))
         except components.accounts.SessionExpiredError:
+            self._log.output_message("          Session expired")
             user_id = None
             self._log.output_message("          User ID: #N/A")
         
