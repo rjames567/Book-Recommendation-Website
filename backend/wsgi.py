@@ -594,45 +594,37 @@ class BookHandler(Handler):
         get_params = self.retrieve_get_parameters()
         session_id = get_params["session_id"]
         book_id = get_params["book_id"]
+        self._log.output_message("          Book ID: " + book_id)
+        self._log.output_message("          Session ID: " + session_id)
+        
         try:
-            self._log.output_message("          Book ID: " + book_id)
-            self._log.output_message("          Session ID: " + session_id)
-            if session_id != "null":
-                user_id = sessions.get_user_id(session_id)
-            else:
-                user_id = None
-            self._log.output_message("          User ID: " + str(user_id))
-            try:
-                result = books.get_about_data(book_id, user_id)
-
-                result["similar_books"] = books.get_similar_items(int(book_id))
-                status = "200 OK"
-                self._log.output_message("          Success")
-
-                response = json.dumps(result)
-                # self._log.output_message("          Response: " + response)
-                self._log.output_message("          Status: " + status)
-
-                response_headers = [
-                    ("Content-Type", "application/json"),
-                    ("Content-Length", str(len(response)))
-                ]
-
-                return response, status, response_headers
-
-            except components.books.BookNotFoundError:
-                status = "404 Not Found"
-                self._log.output_message("          Status: " + status)
-                return ErrorHandler("404 Not Found").error_response()  # Return the content for a 404 error
+            user_id = sessions.get_user_id(session_id)
         except components.accounts.SessionExpiredError:
-            self._log.output_message("          Session expired")
-            response = "false"
+            user_id = None
+            self._log.output_message("          Session expired / No session")
+        self._log.output_message("          User ID: " + str(user_id))
+        try:
+            result = books.get_about_data(book_id, user_id)
 
-            status = "403 forbidden"
+            result["similar_books"] = books.get_similar_items(int(book_id))
+            status = "200 OK"
+            self._log.output_message("          Success")
+
+            response = json.dumps(result)
+            # self._log.output_message("          Response: " + response)
+            self._log.output_message("          Status: " + status)
 
             response_headers = [
-                ("Content-Type", "text/plain")
+                ("Content-Type", "application/json"),
+                ("Content-Length", str(len(response)))
             ]
+
+            return response, status, response_headers
+
+        except components.books.BookNotFoundError:
+            status = "404 Not Found"
+            self._log.output_message("          Status: " + status)
+            return ErrorHandler("404 Not Found").error_response()  # Return the content for a 404 error
 
     def delete_review(self):
         json_response = self.retrieve_post_parameters()
@@ -1303,5 +1295,3 @@ routes = {
 }
 
 app = Middleware(routes, log)
-
-# FIXME Fix errors with sessionIDs of null.
