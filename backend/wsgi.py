@@ -292,11 +292,9 @@ class MyBooksHandler(Handler):
 
         result = dict()
 
-        entries, result["button"], result["move_target_id"] = reading_lists.get_values(list_id, user_id)
+        result["books"], result["button"], result["move_target_id"] = reading_lists.get_values(list_id, user_id)
 
-        result["books"] = [entries.pop() for i in range(entries.size)]
-
-        if not entries.size:
+        if not len(result["books"]):
             result["meta"] = "You have no books in this list"
         else:
             result["meta"] = None
