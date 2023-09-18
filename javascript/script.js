@@ -370,8 +370,12 @@ function loadMyBooks () {
             assignReadingListNavigationHandlers();
             $(".navigation ul li").children().eq(1).trigger("click");
         },
-        error: function (result, jqXHR) {
-            console.log(result["success"] + "    " + result["message"]);
+        error: function (jqXHR) {
+            if (jqXHR.status == 403) {
+                sessionID = null;
+                changeAccountButtons();
+            }
+            console.log(jqXHR.status + " " + jqXHR.responseText);
         }
     });
     $(".container .entries .edit-lists button.create-list").off("click"); // Remove any preexisting handlers to prevent duplicate results
@@ -396,8 +400,12 @@ function loadMyBooks () {
                 $(".container .entries .edit-lists .add-container").addClass("hidden");
                 $(".container .entries .edit-lists button.create-list").show();
             },
-            error: function (result, jqXHR) {
-                console.log(result["success"] + "    " + result["message"]);
+            error: function (jqXHR) {
+                if (jqXHR.status == 403) {
+                    sessionID = null;
+                    changeAccountButtons();
+                }
+                console.log(jqXHR.status + " " + jqXHR.responseText);
             }
         });
     });
@@ -476,6 +484,10 @@ function assignReadingListNavigationHandlers () {
                 assignListDeleteHandlers(listName); // Slower, but avoids the difficulty and possible cost of finding the list Name again.
             },
             error: function (jqXHR) {
+                if (jqXHR.status == 403) {
+                    sessionID = null;
+                    changeAccountButtons();
+                }
                 console.log(jqXHR.status + " " + jqXHR.responseText);
             }
         });
@@ -494,6 +506,10 @@ function assignListDeleteHandlers (listName) {
             }),
             success: loadMyBooks, // Get the new list names, and move back to the first list and get content
             error: function (jqXHR) {
+                if (jqXHR.status == 403) {
+                    sessionID = null;
+                    changeAccountButtons();
+                }
                 console.log(jqXHR.status + " " + jqXHR.responseText);
             }
         });
@@ -516,6 +532,10 @@ function assignDeleteHandlers (listName) {
                 $(book).fadeOut(500); // Hide the entry from the list
             },
             error: function (jqXHR) {
+                if (jqXHR.status == 403) {
+                    sessionID = null;
+                    changeAccountButtons();
+                }
                 console.log(jqXHR.status + " " + jqXHR.responseText);
             }
         });
@@ -540,6 +560,10 @@ function assignMovementHandlers (listName, id) {
                 $(book).fadeOut(500); // Hide the entry from the list
             },
             error: function (jqXHR) {
+                if (jqXHR.status == 403) {
+                    sessionID = null;
+                    changeAccountButtons();
+                }
                 console.log(jqXHR.status + " " + jqXHR.responseText);
             }
         });
@@ -651,8 +675,12 @@ function switchBookPage (bookID) {
                         $(item).appendTo(".reading-list-selection ul");
                     }
                 },
-                error: function (result, jqXHR) {
-                    console.log(result["success"] + "    " + result["message"]);
+                error: function (jqXHR) {
+                    if (jqXHR.status == 403) {
+                        sessionID = null;
+                        changeAccountButtons();
+                    }
+                    console.log(jqXHR.status + " " + jqXHR.responseText);
                 },
                 complete: function () {
                     assignChangeReadingListHandler(bookID); // Needs to be here as this request is asynchronous
@@ -837,6 +865,10 @@ function switchBookPage (bookID) {
             assignBookNavigationHandlers();
         },
         error: function (jqXHR) {
+            if (jqXHR.status == 403) {
+                sessionID = null;
+                changeAccountButtons();
+            }
             $("main").html(jqXHR.responseText); // Fills in the main body with 404 error message
             // FIXME Fix not changing active link on AJAX fail
         },
@@ -860,6 +892,12 @@ function assignReviewDeleteButtonHandler () {
                 "session_id": sessionID,
                 "review_id": $(existingReview).data("id")
             }), // The user can only have one review of the book
+            error: function (jqXHR) {
+                if (jqXHR.status == 403) {
+                    sessionID = null;
+                    changeAccountButtons();
+                }
+            },
             complete: reloadCurrentPage // Avoids the stars not updating. // TODO Make this better and more efficient
         }); // The response does not matter
     });
@@ -886,6 +924,12 @@ function assignChangeReadingListHandler (bookID) {
             }),
             success: function () {
                 reloadCurrentPage();
+            },
+            error: function (jqXHR) {
+                if (jqXHR.status == 403) {
+                    sessionID = null;
+                    changeAccountButtons();
+                }
             },
             complete: function () {
                 hideReadingListPopup();
@@ -919,6 +963,12 @@ function assignAuthorFollowHandlers () {
                     $(".author-about .follow-author").addClass("hidden");
                     $(".author-about .unfollow-author").removeClass("hidden");
                     $(".author-about .num-followers").html(result); // Update number of followers
+                },
+                error: function (jqXHR) {
+                    if (jqXHR.status == 403) {
+                        sessionID = null;
+                        changeAccountButtons();
+                    }
                 }
             });
         } else {
@@ -937,6 +987,12 @@ function assignAuthorFollowHandlers () {
                 $(".author-about .follow-author").removeClass("hidden");
                 $(".author-about .unfollow-author").addClass("hidden");
                 $(".author-about .num-followers").html(result); // Update number of followers
+            },
+            error: function (jqXHR) {
+                if (jqXHR.status == 403) {
+                    sessionID = null;
+                    changeAccountButtons();
+                }
             }
         });
     });
@@ -994,7 +1050,12 @@ function assignReviewSubmissionHandlers (bookID) {
                         // TODO make this a more efficient and faster method
                     },
                     error: function () {
-                        reviewSubmissionAlert("Something went wrong.");
+                        if (jqXHR.status == 403) {
+                            sessionID = null;
+                            changeAccountButtons();
+                        } else {
+                            reviewSubmissionAlert("Something went wrong.");
+                        }
                         console.log(jqXHR.status + " " + jqXHR.responseText);
                     }
                 });
@@ -1174,8 +1235,12 @@ function loadDiary () {
             assignBookNavigationHandlers();
             assignAuthorNavigationHandlers();
         },
-        error: function (result, jqXHR) {
-            console.log(result["success"] + "    " + result["message"]);
+        error: function (jqXHR) {
+            if (jqXHR.status == 403) {
+                sessionID = null;
+                changeAccountButtons();
+            }
+            console.log(jqXHR.status + " " + jqXHR.responseText);
         }
     });
 }
@@ -1194,6 +1259,10 @@ function assignDeleteDiaryEntryButton () {
                 $(entry).fadeOut(500); // Hide the entry from the list
             },
             error: function (jqXHR) {
+                if (jqXHR.status == 403) {
+                    sessionID = null;
+                    changeAccountButtons();
+                }
                 console.log(jqXHR.status + " " + jqXHR.responseText);
             }
         });
@@ -1249,7 +1318,12 @@ function assignDiaryEntrySubmissionHandlers () {
                     // TODO make this a more efficient and faster method
                 },
                 error: function () {
-                    diaryEntrySubmissionAlert("Something went wrong.");
+                    if (jqXHR.status == 403) {
+                        sessionID = null;
+                        changeAccountButtons();
+                    } else {
+                        diaryEntrySubmissionAlert("Something went wrong.");
+                    }
                     console.log(jqXHR.status + " " + jqXHR.responseText);
                 }
             });
@@ -1356,6 +1430,10 @@ function loadHomePage () {
             assignBookNavigationHandlers();
         },
         error: function (jqXHR) {
+            if (jqXHR.status == 403) {
+                sessionID = null;
+                changeAccountButtons();
+            }
             console.log(jqXHR.status + " " + jqXHR.responseText);
         }
     });
@@ -1449,6 +1527,10 @@ function loadRecommendationsPage () {
             }
         },
         error: function (jqXHR) {
+            if (jqXHR.status == 403) {
+                sessionID = null;
+                changeAccountButtons();
+            }
             console.log(jqXHR.status + " " + jqXHR.responseText);
         }
     });
@@ -1484,6 +1566,10 @@ function assignPreferenceSubmissionHandlers () {
             }),
             success: function () {reloadCurrentPage()},
             error: function (jqXHR) {
+                if (jqXHR.status == 403) {
+                    sessionID = null;
+                    changeAccountButtons();
+                }
                 console.log(jqXHR.status + " " + jqXHR.responseText);
             },
             async: false  // Means that it waits for recommendations to be generated before reloading
@@ -1506,6 +1592,10 @@ function assignDeleteRecommendationHandlers () {
                 $(book).fadeOut(500); // Hide the entry from the list
             },
             error: function (jqXHR) {
+                if (jqXHR.status == 403) {
+                    sessionID = null;
+                    changeAccountButtons();
+                }
                 console.log(jqXHR.status + " " + jqXHR.responseText);
             }
         });
@@ -1528,6 +1618,10 @@ function assignMoveRecommendationHandlers () {
                 $(book).fadeOut(500); // Hide the entry from the list
             },
             error: function (jqXHR) {
+                if (jqXHR.status == 403) {
+                    sessionID = null;
+                    changeAccountButtons();
+                }
                 console.log(jqXHR.status + " " + jqXHR.responseText);
             }
         });
@@ -1638,6 +1732,12 @@ function loadBrowsePage () {
 
             changeNumVisibleSummaries(); // Needs to run once, as resize will not trigger by this point
             assignBookNavigationHandlers();
+        },
+        error: function (jqXHR) {
+            if (jqXHR.status == 403) {
+                sessionID = null;
+                changeAccountButtons();
+            }
         }
     })
 }
