@@ -3,6 +3,10 @@
 # ------------------------------------------------------------------------------
 import math
 
+# ------------------------------------------------------------------------------
+# Project imports
+# ------------------------------------------------------------------------------
+import searching_algorithms
 
 # ------------------------------------------------------------------------------
 # Custom exceptions
@@ -55,6 +59,33 @@ class Queue:
     def size(self):
         return len(self._items)
 
+
+class PriorityQueue(Queue):
+    def __init__(self, priority_func=None, max_length=None):
+        super().__init__(max_length=max_length)
+        if priority_func is None:
+            self._priority_func = lambda x: x
+        else:
+            self._priority_func = priority_func
+
+    def push(self, item, priority=None):
+        if priority is None:
+            priority = self._priority_func(item)
+
+        index = searching_algorithms.binary_search(self._items, priority, comparison_func=lambda x: x[1])  # This gets
+        # the first item in the array with the value, and it is in reverse order
+
+        if index is None:
+            index = 0
+
+        self._items.insert(index, [item, priority])
+
+    def pop(self):
+        return super().pop()[0]  # The result from the super would be a list, where the first item is the inserted value
+        # and the second is the priority
+    
+    def peek(self):
+        return super().peek()[0]
 
 # ------------------------------------------------------------------------------
 # Stack
