@@ -1542,46 +1542,50 @@ $("header nav.bottom .search form").on("submit", function (event) {
     let query = $(this).find("input[type='search']").val();
     switchPageContent(null, "search", async=false); // Cannot be async, as it could arrive after the next query
     changeActiveLink(null, "Browse"); // Change page to browse page
-    $.ajax({
-        type: "GET",
-        url: addGetParameter("/cgi-bin/search/search", "query", query),
-        success: function (result) {
-            let length = Object.keys(result).length;
-            if (length > 0) {
-                $(".search-container .alert").addClass("hidden");
-                for (let i = 0; i < length; i++) {
-                    let currentRes = result[i];
-                    let type = currentRes["type"];
-                    let template;
-                    if (type == "a") {
-                        template = $(".search-container .row.author-search.template").clone().removeClass("template");
-                        $(template).find("a.author").html(currentRes["name"]);
-                        $(template).find("a.author").data("id", currentRes["author_id"]);
-                    } else if (type == "b") {
-                        template = $(".search-container .row.book.template").clone().removeClass("template");
-                        $(template).data("id", currentRes["book_id"]);
-                        $(template).find("a.author-name").html(currentRes["author"]);
-                        $(template).find("a.book-button").html(currentRes["title"]);
-                        $(template).find(".cover img").attr("src", currentRes["cover"]);
-                    } else {
-                        template = $(".search-container .row.genre-search.template").clone().removeClass("template");
-                        $(template).find("a.genre-button").html(currentRes["name"]);
-                    }
-                    $(template).find("p.match-strength span").html(currentRes["certainty"]);
+    if (query != "") {
+        $.ajax({
+            type: "GET",
+            url: addGetParameter("/cgi-bin/search/search", "query", query),
+            success: function (result) {
+                let length = Object.keys(result).length;
+                if (length > 0) {
+                    $(".search-container .alert").addClass("hidden");
+                    for (let i = 0; i < length; i++) {
+                        let currentRes = result[i];
+                        let type = currentRes["type"];
+                        let template;
+                        if (type == "a") {
+                            template = $(".search-container .row.author-search.template").clone().removeClass("template");
+                            $(template).find("a.author").html(currentRes["name"]);
+                            $(template).find("a.author").data("id", currentRes["author_id"]);
+                        } else if (type == "b") {
+                            template = $(".search-container .row.book.template").clone().removeClass("template");
+                            $(template).data("id", currentRes["book_id"]);
+                            $(template).find("a.author-name").html(currentRes["author"]);
+                            $(template).find("a.book-button").html(currentRes["title"]);
+                            $(template).find(".cover img").attr("src", currentRes["cover"]);
+                        } else {
+                            template = $(".search-container .row.genre-search.template").clone().removeClass("template");
+                            $(template).find("a.genre-button").html(currentRes["name"]);
+                        }
+                        $(template).find("p.match-strength span").html(currentRes["certainty"]);
 
-                    $(template).appendTo(".search-container");
+                        $(template).appendTo(".search-container");
+                    }
+                    assignBookNavigationHandlers();
+                    assignAuthorNavigationHandlers();
+                    assignGenreNavigationHandlers();
+                } else {
+                    $(".search-container .alert").removeClass("hidden");
                 }
-                assignBookNavigationHandlers();
-                assignAuthorNavigationHandlers();
-                assignGenreNavigationHandlers();
-            } else {
-                $(".search-container .alert").removeClass("hidden");
+            },
+            error: function (jqXHR) {
+                console.log(jqXHR.status + " " + jqXHR.responseText);
             }
-        },
-        error: function (jqXHR) {
-            console.log(jqXHR.status + " " + jqXHR.responseText);
-        }
-    });
+        });
+    } else {
+        $(".search-container .alert").removeClass("hidden");
+    }
 })
 
 // -----------------------------------------------------------------------------
