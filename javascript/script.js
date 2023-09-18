@@ -374,6 +374,7 @@ function loadMyBooks () {
             if (jqXHR.status == 403) {
                 sessionID = null;
                 changeAccountButtons();
+                $.cookie.remove("sessionID");
             }
             console.log(jqXHR.status + " " + jqXHR.responseText);
         }
@@ -404,6 +405,7 @@ function loadMyBooks () {
                 if (jqXHR.status == 403) {
                     sessionID = null;
                     changeAccountButtons();
+                    $.cookie.remove("sessionID");
                 }
                 console.log(jqXHR.status + " " + jqXHR.responseText);
             }
@@ -487,6 +489,7 @@ function assignReadingListNavigationHandlers () {
                 if (jqXHR.status == 403) {
                     sessionID = null;
                     changeAccountButtons();
+                    $.cookie.remove("sessionID");
                 }
                 console.log(jqXHR.status + " " + jqXHR.responseText);
             }
@@ -509,6 +512,7 @@ function assignListDeleteHandlers (listName) {
                 if (jqXHR.status == 403) {
                     sessionID = null;
                     changeAccountButtons();
+                    $.cookie.remove("sessionID");
                 }
                 console.log(jqXHR.status + " " + jqXHR.responseText);
             }
@@ -535,6 +539,7 @@ function assignDeleteHandlers (listName) {
                 if (jqXHR.status == 403) {
                     sessionID = null;
                     changeAccountButtons();
+                    $.cookie.remove("sessionID");
                 }
                 console.log(jqXHR.status + " " + jqXHR.responseText);
             }
@@ -563,6 +568,7 @@ function assignMovementHandlers (listName, id) {
                 if (jqXHR.status == 403) {
                     sessionID = null;
                     changeAccountButtons();
+                    $.cookie.remove("sessionID");
                 }
                 console.log(jqXHR.status + " " + jqXHR.responseText);
             }
@@ -679,6 +685,7 @@ function switchBookPage (bookID) {
                     if (jqXHR.status == 403) {
                         sessionID = null;
                         changeAccountButtons();
+                        $.cookie.remove("sessionID");
                     }
                     console.log(jqXHR.status + " " + jqXHR.responseText);
                 },
@@ -868,6 +875,7 @@ function switchBookPage (bookID) {
             if (jqXHR.status == 403) {
                 sessionID = null;
                 changeAccountButtons();
+                $.cookie.remove("sessionID");
             }
             $("main").html(jqXHR.responseText); // Fills in the main body with 404 error message
             // FIXME Fix not changing active link on AJAX fail
@@ -896,6 +904,7 @@ function assignReviewDeleteButtonHandler () {
                 if (jqXHR.status == 403) {
                     sessionID = null;
                     changeAccountButtons();
+                    $.cookie.remove("sessionID");
                 }
             },
             complete: reloadCurrentPage // Avoids the stars not updating. // TODO Make this better and more efficient
@@ -929,6 +938,7 @@ function assignChangeReadingListHandler (bookID) {
                 if (jqXHR.status == 403) {
                     sessionID = null;
                     changeAccountButtons();
+                    $.cookie.remove("sessionID");
                 }
             },
             complete: function () {
@@ -968,6 +978,7 @@ function assignAuthorFollowHandlers () {
                     if (jqXHR.status == 403) {
                         sessionID = null;
                         changeAccountButtons();
+                        $.cookie.remove("sessionID");
                     }
                 }
             });
@@ -992,6 +1003,7 @@ function assignAuthorFollowHandlers () {
                 if (jqXHR.status == 403) {
                     sessionID = null;
                     changeAccountButtons();
+                    $.cookie.remove("sessionID");
                 }
             }
         });
@@ -1053,6 +1065,7 @@ function assignReviewSubmissionHandlers (bookID) {
                         if (jqXHR.status == 403) {
                             sessionID = null;
                             changeAccountButtons();
+                            $.cookie.remove("sessionID");
                         } else {
                             reviewSubmissionAlert("Something went wrong.");
                         }
@@ -1239,6 +1252,7 @@ function loadDiary () {
             if (jqXHR.status == 403) {
                 sessionID = null;
                 changeAccountButtons();
+                $.cookie.remove("sessionID");
             }
             console.log(jqXHR.status + " " + jqXHR.responseText);
         }
@@ -1262,6 +1276,7 @@ function assignDeleteDiaryEntryButton () {
                 if (jqXHR.status == 403) {
                     sessionID = null;
                     changeAccountButtons();
+                    $.cookie.remove("sessionID");
                 }
                 console.log(jqXHR.status + " " + jqXHR.responseText);
             }
@@ -1321,6 +1336,7 @@ function assignDiaryEntrySubmissionHandlers () {
                     if (jqXHR.status == 403) {
                         sessionID = null;
                         changeAccountButtons();
+                        $.cookie.remove("sessionID");
                     } else {
                         diaryEntrySubmissionAlert("Something went wrong.");
                     }
@@ -1433,6 +1449,7 @@ function loadHomePage () {
             if (jqXHR.status == 403) {
                 sessionID = null;
                 changeAccountButtons();
+                $.cookie.remove("sessionID");
             }
             console.log(jqXHR.status + " " + jqXHR.responseText);
         }
@@ -1530,6 +1547,7 @@ function loadRecommendationsPage () {
             if (jqXHR.status == 403) {
                 sessionID = null;
                 changeAccountButtons();
+                $.cookie.remove("sessionID");
             }
             console.log(jqXHR.status + " " + jqXHR.responseText);
         }
@@ -1569,6 +1587,7 @@ function assignPreferenceSubmissionHandlers () {
                 if (jqXHR.status == 403) {
                     sessionID = null;
                     changeAccountButtons();
+                    $.cookie.remove("sessionID");
                 }
                 console.log(jqXHR.status + " " + jqXHR.responseText);
             },
@@ -1595,6 +1614,7 @@ function assignDeleteRecommendationHandlers () {
                 if (jqXHR.status == 403) {
                     sessionID = null;
                     changeAccountButtons();
+                    $.cookie.remove("sessionID");
                 }
                 console.log(jqXHR.status + " " + jqXHR.responseText);
             }
@@ -1621,6 +1641,7 @@ function assignMoveRecommendationHandlers () {
                 if (jqXHR.status == 403) {
                     sessionID = null;
                     changeAccountButtons();
+                    $.cookie.remove("sessionID");
                 }
                 console.log(jqXHR.status + " " + jqXHR.responseText);
             }
@@ -1737,6 +1758,7 @@ function loadBrowsePage () {
             if (jqXHR.status == 403) {
                 sessionID = null;
                 changeAccountButtons();
+                $.cookie.remove("sessionID");
             }
         }
     })
