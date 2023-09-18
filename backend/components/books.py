@@ -280,12 +280,12 @@ class Books:
                    book_id=book_id))  # Inserting None will insert a string “None” so will not match any IDs.
         # Does not include the current user's review. If it is None it includes all users.
 
-        review_arr = []
+        stack = data_structures.Stack() # date added will be newest comes last - reverses the order
         for i in res:
             body = i[5]
             if body is not None:
                 body = "</p><p>".join(("<p>" + body + "</p>").split("\n"))
-            review_arr.append({
+            stack.push({
                 "id": i[0],
                 "overall_rating": i[1],
                 "plot_rating": i[2],
@@ -296,8 +296,6 @@ class Books:
                 "username": i[7],
             })
 
-        output_dict["reviews"] = review_arr
-
         output_dict["author_following"] = bool(len(self._connection.query("""
             SELECT author_id FROM author_followers
             WHERE author_id={author_id}
@@ -307,6 +305,8 @@ class Books:
         # author_following value should be false. If it is 1, they are, so it should be true. Len gets the number of results
         # (1 or 0), and bool converts this to the corresponding boolean value, which is whether the user is following the
         # author.
+
+        output_dict["reviews"] = [stack.pop() for i in range(stack.size)]  # Remove all items in stack and create array with them
 
         return output_dict
 
@@ -372,7 +372,7 @@ class Books:
         """)[:self._number_summaries_home]  # The number of summaries on the genre
         # page should be the same as the layout is the same
 
-        output_dict = dict()
+        output_dict = dict()  # priority queue
         for i, k in enumerate(res):
             output_dict[i] = {
                 "author": components.authors.names_to_display(k[3], k[4], k[5]),
