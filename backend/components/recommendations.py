@@ -114,7 +114,7 @@ class Recommendations:
         return ((1/100) * x**3) - ((1/40) * x ** 2) + ((1/3) * x)
     
         # Almost linear between 2 and 4.
-        # 3 is neurtral and has no effect
+        # 3 is neutral and has no effect
         # 1 has a more significant impact than 5
 
     def update_user_data_decrement(self, user_id, book_id, rating, delete_recommendation=False):
@@ -229,7 +229,8 @@ class Recommendations:
         reading_list_items = {i[0] for i in reading_list_items}
 
         user_preferences = self.gen_user_vector(user_id)
-        weightings = []
+        queue = data_structures.PriorityQueue(priority_func=lambda x: x["cos_sim"])  # Cannot use max length, as the
+        # recommendations are not ordered at this point
         for i in self._connection.query("SELECT book_id FROM books"):
             book = i[0]
             if (book not in existing_recommendations and  # Prevent duplicate recommendations, which is likely
@@ -239,14 +240,12 @@ class Recommendations:
                     cos_sim = user_preferences.cosine_sim(data)
                 else:
                     cos_sim = 0
-                weightings.append({
+                queue.push({
                         "id": book,
                         "cos_sim": cos_sim
                     })
 
-        new_recommendations = sorted(weightings, key=lambda x: x["cos_sim"], reverse=True)[:self._recommendation_number]
-        # Note that this could raise an error, but should not do so, as the amount available books should be greater
-        # than 3x the amount recommendations made, and they are removed every two days.
+        new_recommendations = [queue.pop() for i in range(self._recommendation_number)]
 
         values = ""
         for count, recommendation in enumerate(new_recommendations):
