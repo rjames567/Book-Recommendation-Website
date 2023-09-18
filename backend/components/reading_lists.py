@@ -203,27 +203,9 @@ class ReadingLists:
         )
         )
 
-        output_queue = data_structures.Queue()
+        queue = data_structures.Queue()
         for i in res:
-            author = components.authors.names_to_display(i[4], i[5], i[6])
-
-            synopsis = "</p><p>".join(("<p>" + i[3] + "</p>").split("\n"))
-            # Change new lines to new paragraphs
-
-            output_queue.push(
-                {
-                    "id": i[0],
-                    "cover": i[1],
-                    "title": i[2],
-                    "synopsis": synopsis,
-                    "author": author,
-                    "author_id": i[7],
-                    "date_added": i[8].strftime("%d-%m-%Y"),
-                    "genres": i[9].split(",")[:self._num_display_genres],
-                    "average_rating": i[10],
-                    "num_reviews": i[11]
-                }
-            )
+            queue.push(i)
 
         list_name = self._connection.query("""
             SELECT list_name FROM reading_list_names
@@ -248,7 +230,27 @@ class ReadingLists:
             button = None
             move_target = None
 
-        return output_queue, button, move_target
+        output_dict = dict()
+        for i in range(queue.size):
+            k = queue.pop()
+            author = components.authors.names_to_display(k[4], k[5], k[6])
+
+            synopsis = "</p><p>".join(("<p>" + k[3] + "</p>").split("\n"))
+            # Change new lines to new paragraphs
+            output_dict[i] = {
+                "id": k[0],
+                "cover": k[1],
+                "title": k[2],
+                "synopsis": synopsis,
+                "author": author,
+                "author_id": k[7],
+                "date_added": k[8].strftime("%d-%m-%Y"),
+                "genres": k[9].split(",")[:self._num_display_genres],
+                "average_rating": k[10],
+                "num_reviews": k[11]
+            }
+
+        return output_dict, button, move_target
 
     def remove_entry(self, user_id, list_id, book_id):
         self._connection.query("""
