@@ -978,7 +978,7 @@ class HomeHandler(Handler):
     def get_data(self):
         session_id = self.retrieve_get_parameters()["session_id"]  # Only has one parameter, so this is fine.
         result = dict()
-        if session_id != "null": # retrieve_get_parameters does not convert "null" to None.
+        try:
             self._log.output_message("          Session ID: " + session_id)
             user_id = sessions.get_user_id(session_id)
             self._log.output_message("          User ID: " + str(user_id))
@@ -986,8 +986,8 @@ class HomeHandler(Handler):
             result["recommended"] = recommendations.get_user_recommendation_summaries(user_id)[:number_summaries_home]
             result["currently_reading"] = reading_lists.get_currently_reading(user_id)[:number_summaries_home]
             result["want_read"] = reading_lists.get_want_read(user_id)[:number_summaries_home]
-        else:
-            self._log.output_message("          Session ID: None")
+        except components.accounts.SessionExpiredError:
+            self._log.output_message("          Session expired / No session")
             result["recommended"] = None
             result["currently_reading"] = None
             result["want_read"] = None
