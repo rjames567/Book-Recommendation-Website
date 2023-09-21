@@ -203,10 +203,6 @@ CREATE TABLE sessions (
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
-SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
-SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
- -- Restore original checks and constraint settings --
-
 -- -----------------------------------
 -- Information retrieval
 -- -----------------------------------
@@ -218,3 +214,7 @@ CREATE TABLE unique_words (
     idf_values FLOAT, -- it can be null as it values need to be inserted, before calculating these.
     PRIMARY KEY (word_id)
 );
+
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+ -- Restore original checks and constraint settings --
