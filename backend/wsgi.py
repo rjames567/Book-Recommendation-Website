@@ -266,6 +266,7 @@ class MyBooksHandler(Handler):
         self._log.output_message("          Session id: " + session_id)
         try:
             user_id = sessions.get_user_id(session_id)
+            sessions.update_time(session_id)
             self._log.output_message("          User id: " + str(user_id))
 
             names = reading_lists.get_names(user_id)
@@ -296,6 +297,7 @@ class MyBooksHandler(Handler):
         try:
             self._log.output_message("          Session id: " + session_id)
             user_id = sessions.get_user_id(session_id)
+            sessions.update_time(session_id)
             self._log.output_message("          User id: " + str(user_id))
 
             list_id = response_dict["list_id"]
@@ -340,6 +342,7 @@ class MyBooksHandler(Handler):
         try:
             self._log.output_message("          Session id: " + session_id)
             user_id = sessions.get_user_id(session_id)
+            sessions.update_time(session_id)
             self._log.output_message("          User id: " + str(user_id))
 
             self._log.output_message("          List ID: " + str(list_id))
@@ -377,6 +380,7 @@ class MyBooksHandler(Handler):
         try:
             self._log.output_message("          Session id: " + session_id)
             user_id = sessions.get_user_id(session_id)
+            sessions.update_time(session_id)
             self._log.output_message("          User id: " + str(user_id))
 
             self._log.output_message("          List ID: " + str(list_id))
@@ -416,6 +420,7 @@ class MyBooksHandler(Handler):
         try:
             self._log.output_message("          Session id: " + session_id)
             user_id = sessions.get_user_id(session_id)
+            sessions.update_time(session_id)
             self._log.output_message("          User id: " + str(user_id))
             self._log.output_message("          List ID: " + str(list_id))
 
@@ -450,6 +455,7 @@ class MyBooksHandler(Handler):
         try:
             self._log.output_message("          Session id: " + session_id)
             user_id = sessions.get_user_id(session_id)
+            sessions.update_time(session_id)
             self._log.output_message("          User id: " + str(user_id))
             self._log.output_message("          List name: " + list_name)
 
@@ -481,6 +487,7 @@ class MyBooksHandler(Handler):
         try:
             self._log.output_message("          Session id: " + session_id)
             user_id = sessions.get_user_id(session_id)
+            sessions.update_time(session_id)
             self._log.output_message("          User id: " + str(user_id))
             book_id = params["book_id"]
             self._log.output_message("          Book id: " + str(book_id))
@@ -514,6 +521,7 @@ class MyBooksHandler(Handler):
         try:
             self._log.output_message("          Session id: " + session_id)
             user_id = sessions.get_user_id(session_id)
+            sessions.update_time(session_id)
             self._log.output_message("          User id: " + str(user_id))
             book_id = params["book_id"]
             self._log.output_message("          Book id: " + str(book_id))
@@ -599,6 +607,7 @@ class BookHandler(Handler):
         
         try:
             user_id = sessions.get_user_id(session_id)
+            sessions.update_time(session_id)
         except components.accounts.SessionExpiredError:
             user_id = None
             self._log.output_message("          Session expired / No session")
@@ -635,6 +644,7 @@ class BookHandler(Handler):
         try:
             self._log.output_message("          Session ID: " + session_id)
             user_id = sessions.get_user_id(session_id)
+            sessions.update_time(session_id)
             self._log.output_message("          User ID: " + str(user_id))
 
             rating, book_id = books.delete_review(review_id, user_id)
@@ -667,6 +677,7 @@ class BookHandler(Handler):
             session_id = params["session_id"]
             self._log.output_message("          Session ID: " + session_id)
             user_id = sessions.get_user_id(session_id)
+            sessions.update_time(session_id)
             self._log.output_message("          User ID: " + str(user_id))
             book_id = params["book_id"]
             self._log.output_message("          Book ID: " + str(book_id))
@@ -728,6 +739,7 @@ class AuthorHandler(Handler):
             self._log.output_message("          Author ID: " + str(author_id))
             self._log.output_message("          Session ID: " + session_id)
             user_id = sessions.get_user_id(session_id)
+            sessions.update_time(session_id)
             self._log.output_message("          User ID: " + str(user_id))
 
             authors.follow(user_id, author_id)
@@ -762,6 +774,7 @@ class AuthorHandler(Handler):
             self._log.output_message("          Author ID: " + str(author_id))
             self._log.output_message("          Session ID: " + session_id)
             user_id = sessions.get_user_id(session_id)
+            sessions.update_time(session_id)
             self._log.output_message("          User ID: " + str(user_id))
 
             authors.unfollow(user_id, author_id)
@@ -830,6 +843,7 @@ class DiaryHandler(Handler):
         try:
             self._log.output_message("          Session ID: " + session_id)
             user_id = sessions.get_user_id(session_id)
+            sessions.update_time(session_id)
             self._log.output_message("          User ID: " + str(user_id))
 
             result = dict()
@@ -868,6 +882,7 @@ class DiaryHandler(Handler):
             self._log.output_message("          Entry ID: " + str(entry_id))
             self._log.output_message("          Session ID: " + session_id)
             user_id = sessions.get_user_id(session_id)
+            sessions.update_time(session_id)
             self._log.output_message("          User ID: " + str(user_id))
 
             diaries.delete_entry(user_id, entry_id)
@@ -904,6 +919,7 @@ class DiaryHandler(Handler):
         try:
             self._log.output_message("          Session ID: " + session_id)
             user_id = sessions.get_user_id(session_id)
+            sessions.update_time(session_id)
             self._log.output_message("          User ID: " + str(user_id))
             self._log.output_message("          Book ID: " + str(book_id))
 
@@ -973,6 +989,7 @@ class HomeHandler(Handler):
         try:
             self._log.output_message("          Session ID: " + session_id)
             user_id = sessions.get_user_id(session_id)
+            sessions.update_time(session_id)
             self._log.output_message("          User ID: " + str(user_id))
 
             result["recommended"] = recommendations.get_user_recommendation_summaries(user_id)[:number_summaries_home]
@@ -1020,6 +1037,7 @@ class RecommendationsHandler(Handler):
         self._log.output_message("          Session ID: " + session_id)
         try:
             user_id = sessions.get_user_id(session_id)
+            sessions.update_time(session_id)
             self._log.output_message("          User ID: " + str(user_id))
 
             result = dict()
@@ -1063,6 +1081,7 @@ class RecommendationsHandler(Handler):
         try:
             self._log.output_message("          Session ID: " + session_id)
             user_id = sessions.get_user_id(session_id)
+            sessions.update_time(session_id)
             self._log.output_message("          User ID: " + str(user_id))
             self._log.output_message("          Book ID: " + str(book_id))
 
@@ -1100,6 +1119,7 @@ class RecommendationsHandler(Handler):
             book_id = params["book_id"]
             self._log.output_message("          Session ID: " + session_id)
             user_id = sessions.get_user_id(session_id)
+            sessions.update_time(session_id)
             self._log.output_message("          User ID: " + str(user_id))
             self._log.output_message("          Book ID: " + str(book_id))
             list_id = params["list_id"]
@@ -1139,6 +1159,7 @@ class RecommendationsHandler(Handler):
             author_ids = params["authors"]
             self._log.output_message("          Session ID: " + session_id)
             user_id = sessions.get_user_id(session_id)
+            sessions.update_time(session_id)
             self._log.output_message("          User ID: " + str(user_id))
             recommendations.set_user_initial_preferences(user_id, [int(i) for i in author_ids])  # author_ids is returned as a list
             # of strings.
@@ -1203,6 +1224,7 @@ class SearchingHandler(Handler):
         self._log.output_message("          Session ID: " + session_id)
         try:
             user_id = sessions.get_user_id(session_id)
+            sessions.update_time(session_id)
             self._log.output_message("          User ID: " + str(user_id))
         except components.accounts.SessionExpiredError:
             self._log.output_message("          Session expired")
