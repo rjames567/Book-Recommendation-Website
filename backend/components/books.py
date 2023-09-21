@@ -121,8 +121,9 @@ class Books:
                 authors.alias
             FROM books
             INNER JOIN authors ON books.author_id=authors.author_id
-            ORDER BY books.date_added DESC;
-        """)[:self._number_summaries_home]  # Get the first n books
+            ORDER BY books.date_added DESC
+            LIMIT {};
+        """.format(self._number_summaries_home))  # Get the first n books
 
         output_dict = dict()
         for i, k in enumerate(res):
@@ -373,7 +374,8 @@ class Books:
             INNER JOIN reviews ON reviews.book_id=books.book_id
             GROUP BY books.book_id
             ORDER BY average_rating DESC;
-        """)[:self._number_summaries_home]  # The number of summaries on the genre
+            LIMIT {}
+        """.format(self._number_summaries_home))  # The number of summaries on the genre
         # page should be the same as the layout is the same
 
         output_dict = dict()  # priority queue

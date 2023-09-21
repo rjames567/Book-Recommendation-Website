@@ -55,8 +55,9 @@ class ReadingLists:
                 ON reading_list_names.list_id=reading_lists.list_id
             WHERE reading_list_names.list_name="Currently Reading"
             GROUP BY books.book_id
-            ORDER BY num DESC;
-        """)[:self._number_summaries_home]
+            ORDER BY num DESC
+            LIMIT {};
+        """.format(self._number_summaries_home))
 
         output_dict = dict()
         for i, k in enumerate(res):

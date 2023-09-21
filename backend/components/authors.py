@@ -153,10 +153,14 @@ class Authors:
             LEFT OUTER JOIN reviews ON reviews.book_id=books.book_id
             WHERE books.author_id IN (SELECT author_followers.author_id
                 FROM author_followers
-                WHERE author_followers.user_id={})
+                WHERE author_followers.user_id={user_id})
             GROUP BY books.book_id
-            ORDER BY average_rating DESC;        
-        """.format(user_id))[:self._number_summaries_home]
+            ORDER BY average_rating DESC
+            LIMIT {limit};
+        """.format(
+            user_id=user_id,
+            limit=self._number_summaries_home
+        ))
 
         if len(res) == 0:
             return None
