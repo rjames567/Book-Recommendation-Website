@@ -351,6 +351,18 @@ $("header a#sign-out-button").click(function () {
 });
 
 // -----------------------------------------------------------------------------
+// Session Expiry
+// -----------------------------------------------------------------------------
+function sessionExpired () {
+    sessionID = null;
+    if (checkSignInNecessary(currentPage)) {
+        showSignInPopup();
+    }
+    changeAccountButtons();
+    $.cookie.remove("sessionID");
+}
+
+// -----------------------------------------------------------------------------
 // Reading lists
 // -----------------------------------------------------------------------------
 function loadMyBooks () {
@@ -372,9 +384,7 @@ function loadMyBooks () {
         },
         error: function (jqXHR) {
             if (jqXHR.status == 403) {
-                sessionID = null;
-                changeAccountButtons();
-                $.cookie.remove("sessionID");
+                sessionExpired();
             }
             console.log(jqXHR.status + " " + jqXHR.responseText);
         }
@@ -403,9 +413,7 @@ function loadMyBooks () {
             },
             error: function (jqXHR) {
                 if (jqXHR.status == 403) {
-                    sessionID = null;
-                    changeAccountButtons();
-                    $.cookie.remove("sessionID");
+                    sessionExpired();
                 }
                 console.log(jqXHR.status + " " + jqXHR.responseText);
             }
@@ -487,9 +495,7 @@ function assignReadingListNavigationHandlers () {
             },
             error: function (jqXHR) {
                 if (jqXHR.status == 403) {
-                    sessionID = null;
-                    changeAccountButtons();
-                    $.cookie.remove("sessionID");
+                    sessionExpired();
                 }
                 console.log(jqXHR.status + " " + jqXHR.responseText);
             }
@@ -510,9 +516,7 @@ function assignListDeleteHandlers (listName) {
             success: loadMyBooks, // Get the new list names, and move back to the first list and get content
             error: function (jqXHR) {
                 if (jqXHR.status == 403) {
-                    sessionID = null;
-                    changeAccountButtons();
-                    $.cookie.remove("sessionID");
+                    sessionExpired();
                 }
                 console.log(jqXHR.status + " " + jqXHR.responseText);
             }
@@ -537,9 +541,7 @@ function assignDeleteHandlers (listName) {
             },
             error: function (jqXHR) {
                 if (jqXHR.status == 403) {
-                    sessionID = null;
-                    changeAccountButtons();
-                    $.cookie.remove("sessionID");
+                    sessionExpired();
                 }
                 console.log(jqXHR.status + " " + jqXHR.responseText);
             }
@@ -566,9 +568,7 @@ function assignMovementHandlers (listName, id) {
             },
             error: function (jqXHR) {
                 if (jqXHR.status == 403) {
-                    sessionID = null;
-                    changeAccountButtons();
-                    $.cookie.remove("sessionID");
+                    sessionExpired();
                 }
                 console.log(jqXHR.status + " " + jqXHR.responseText);
             }
@@ -683,9 +683,7 @@ function switchBookPage (bookID) {
                 },
                 error: function (jqXHR) {
                     if (jqXHR.status == 403) {
-                        sessionID = null;
-                        changeAccountButtons();
-                        $.cookie.remove("sessionID");
+                        sessionExpired();
                     }
                     console.log(jqXHR.status + " " + jqXHR.responseText);
                 },
@@ -873,9 +871,7 @@ function switchBookPage (bookID) {
         },
         error: function (jqXHR) {
             if (jqXHR.status == 403) {
-                sessionID = null;
-                changeAccountButtons();
-                $.cookie.remove("sessionID");
+                sessionExpired();
             }
             $("main").html(jqXHR.responseText); // Fills in the main body with 404 error message
             // FIXME Fix not changing active link on AJAX fail
@@ -902,9 +898,7 @@ function assignReviewDeleteButtonHandler () {
             }), // The user can only have one review of the book
             error: function (jqXHR) {
                 if (jqXHR.status == 403) {
-                    sessionID = null;
-                    changeAccountButtons();
-                    $.cookie.remove("sessionID");
+                    sessionExpired();
                 }
             },
             complete: reloadCurrentPage // Avoids the stars not updating. // TODO Make this better and more efficient
@@ -936,9 +930,7 @@ function assignChangeReadingListHandler (bookID) {
             },
             error: function (jqXHR) {
                 if (jqXHR.status == 403) {
-                    sessionID = null;
-                    changeAccountButtons();
-                    $.cookie.remove("sessionID");
+                    sessionExpired();
                 }
             },
             complete: function () {
@@ -976,9 +968,7 @@ function assignAuthorFollowHandlers () {
                 },
                 error: function (jqXHR) {
                     if (jqXHR.status == 403) {
-                        sessionID = null;
-                        changeAccountButtons();
-                        $.cookie.remove("sessionID");
+                        sessionExpired();
                     }
                 }
             });
@@ -1001,9 +991,7 @@ function assignAuthorFollowHandlers () {
             },
             error: function (jqXHR) {
                 if (jqXHR.status == 403) {
-                    sessionID = null;
-                    changeAccountButtons();
-                    $.cookie.remove("sessionID");
+                    sessionExpired();
                 }
             }
         });
@@ -1063,9 +1051,7 @@ function assignReviewSubmissionHandlers (bookID) {
                     },
                     error: function () {
                         if (jqXHR.status == 403) {
-                            sessionID = null;
-                            changeAccountButtons();
-                            $.cookie.remove("sessionID");
+                            sessionExpired();
                         } else {
                             reviewSubmissionAlert("Something went wrong.");
                         }
@@ -1250,9 +1236,7 @@ function loadDiary () {
         },
         error: function (jqXHR) {
             if (jqXHR.status == 403) {
-                sessionID = null;
-                changeAccountButtons();
-                $.cookie.remove("sessionID");
+                sessionExpired();
             }
             console.log(jqXHR.status + " " + jqXHR.responseText);
         }
@@ -1274,9 +1258,7 @@ function assignDeleteDiaryEntryButton () {
             },
             error: function (jqXHR) {
                 if (jqXHR.status == 403) {
-                    sessionID = null;
-                    changeAccountButtons();
-                    $.cookie.remove("sessionID");
+                    sessionExpired();
                 }
                 console.log(jqXHR.status + " " + jqXHR.responseText);
             }
@@ -1334,9 +1316,7 @@ function assignDiaryEntrySubmissionHandlers () {
                 },
                 error: function () {
                     if (jqXHR.status == 403) {
-                        sessionID = null;
-                        changeAccountButtons();
-                        $.cookie.remove("sessionID");
+                        sessionExpired();
                     } else {
                         diaryEntrySubmissionAlert("Something went wrong.");
                     }
@@ -1447,9 +1427,7 @@ function loadHomePage () {
         },
         error: function (jqXHR) {
             if (jqXHR.status == 403) {
-                sessionID = null;
-                changeAccountButtons();
-                $.cookie.remove("sessionID");
+                sessionExpired();
             }
             console.log(jqXHR.status + " " + jqXHR.responseText);
         }
@@ -1545,9 +1523,7 @@ function loadRecommendationsPage () {
         },
         error: function (jqXHR) {
             if (jqXHR.status == 403) {
-                sessionID = null;
-                changeAccountButtons();
-                $.cookie.remove("sessionID");
+                sessionExpired();
             }
             console.log(jqXHR.status + " " + jqXHR.responseText);
         }
@@ -1585,9 +1561,7 @@ function assignPreferenceSubmissionHandlers () {
             success: function () {reloadCurrentPage()},
             error: function (jqXHR) {
                 if (jqXHR.status == 403) {
-                    sessionID = null;
-                    changeAccountButtons();
-                    $.cookie.remove("sessionID");
+                    sessionExpired();
                 }
                 console.log(jqXHR.status + " " + jqXHR.responseText);
             },
@@ -1612,9 +1586,7 @@ function assignDeleteRecommendationHandlers () {
             },
             error: function (jqXHR) {
                 if (jqXHR.status == 403) {
-                    sessionID = null;
-                    changeAccountButtons();
-                    $.cookie.remove("sessionID");
+                    sessionExpired();
                 }
                 console.log(jqXHR.status + " " + jqXHR.responseText);
             }
@@ -1639,9 +1611,7 @@ function assignMoveRecommendationHandlers () {
             },
             error: function (jqXHR) {
                 if (jqXHR.status == 403) {
-                    sessionID = null;
-                    changeAccountButtons();
-                    $.cookie.remove("sessionID");
+                    sessionExpired();
                 }
                 console.log(jqXHR.status + " " + jqXHR.responseText);
             }
@@ -1756,9 +1726,7 @@ function loadBrowsePage () {
         },
         error: function (jqXHR) {
             if (jqXHR.status == 403) {
-                sessionID = null;
-                changeAccountButtons();
-                $.cookie.remove("sessionID");
+                sessionExpired();
             }
         }
     })
