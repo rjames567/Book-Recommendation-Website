@@ -335,7 +335,7 @@ class ReadingLists:
                 books.title
             FROM reading_lists
             INNER JOIN reading_list_names
-                \ON reading_lists.list_id=reading_list_names.list_id
+                ON reading_lists.list_id=reading_list_names.list_id
             INNER JOIN books ON books.book_id=reading_lists.book_id
             WHERE reading_lists.user_id={}
                 AND reading_list_names.list_name="Have Read"
