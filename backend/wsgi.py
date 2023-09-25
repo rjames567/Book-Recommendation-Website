@@ -583,7 +583,7 @@ class GenreHandler(Handler):
         except components.genres.GenreNotFoundError:
             status = "404 Not Found"
             self._log.output_message("          Status: " + status)
-            return ErrorHandler("404 Not Found").error_response()  # Return the content for a 404 error
+            return ErrorHandler("404 Not Found", self._log).error_response()  # Return the content for a 404 error
 
 
 # -----------------------------------------------------------------------------
@@ -633,7 +633,7 @@ class BookHandler(Handler):
         except components.books.BookNotFoundError:
             status = "404 Not Found"
             self._log.output_message("          Status: " + status)
-            return ErrorHandler("404 Not Found").error_response()  # Return the content for a 404 error
+            return ErrorHandler("404 Not Found", self._log).error_response()  # Return the content for a 404 error
 
     def delete_review(self):
         json_response = self.retrieve_post_parameters()
@@ -823,7 +823,7 @@ class AuthorHandler(Handler):
         except components.authors.AuthorNotFoundError:
             status = "404 Not Found"
             self._log.output_message("          Status: " + status)
-            return ErrorHandler("404 Not Found").error_response()  # Return the content for a 404 error
+            return ErrorHandler("404 Not Found", self._log).error_response()  # Return the content for a 404 error
 
 
 # -----------------------------------------------------------------------------
