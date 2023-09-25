@@ -97,7 +97,7 @@ information_retrieval = components.information_retrieval.DocumentCollection(
 # Note that this is not technically a middleware as it is not totally
 # transparent, but it performs the same role.
 class Middleware(object):
-    def __init__(self, routes, log=None):
+    def __init__(self, routes, log):
         self._routes = routes
         self._log = log
         self._log.output_message(f"Create Middleware object")
@@ -113,7 +113,7 @@ class Middleware(object):
 # Handler Base Class
 # -----------------------------------------------------------------------------
 class Handler(object):
-    def __init__(self, log=None):
+    def __init__(self, log):
         self._routes = {}  # There are no routes for the base class - included so the __call__ should still work
         self._log = log
         self._log.output_message("Created " + __class__.__name__ + " instance")  # Cannot use
@@ -152,8 +152,8 @@ class Handler(object):
 # Account Handler
 # -----------------------------------------------------------------------------
 class AccountHandler(Handler):
-    def __init__(self, log=None):
-        super().__init__(log=log)
+    def __init__(self, log):
+        super().__init__(log)
         self._routes = {
             "sign_in": self.sign_in,
             "sign_out": self.sign_out,
@@ -248,8 +248,8 @@ class AccountHandler(Handler):
 # My Books Handler
 # -----------------------------------------------------------------------------
 class MyBooksHandler(Handler):
-    def __init__(self, log=None):
-        super().__init__(log=log)
+    def __init__(self, log):
+        super().__init__(log)
         self._routes = {
             "get_lists": self.get_list_names,
             "get_list_entries": self.get_list_entries,
@@ -555,8 +555,8 @@ class MyBooksHandler(Handler):
 # Genres Handler
 # -----------------------------------------------------------------------------
 class GenreHandler(Handler):
-    def __init__(self, log=None):
-        super().__init__(log=log)
+    def __init__(self, log):
+        super().__init__(log)
         self._routes = {
             "about_data": self.get_genre_data
         }
@@ -590,7 +590,7 @@ class GenreHandler(Handler):
 # Book Handler
 # -----------------------------------------------------------------------------
 class BookHandler(Handler):
-    def __init__(self, log=None):
+    def __init__(self, log):
         super().__init__(log)
         self._routes = {
             "about_data": self.get_book_data,
@@ -722,7 +722,7 @@ class BookHandler(Handler):
 # Author Handler
 # -----------------------------------------------------------------------------
 class AuthorHandler(Handler):
-    def __init__(self, log=None):
+    def __init__(self, log):
         super().__init__(log)
         self._routes = {
             "follow_author": self.follow_author,
@@ -830,7 +830,7 @@ class AuthorHandler(Handler):
 # Author Handler
 # -----------------------------------------------------------------------------
 class DiaryHandler(Handler):
-    def __init__(self, log=None):
+    def __init__(self, log):
         super().__init__(log)
         self._routes = {
             "get_entries": self.get_entries,
@@ -977,7 +977,7 @@ class DiaryHandler(Handler):
 # Home Handler
 # -----------------------------------------------------------------------------
 class HomeHandler(Handler):
-    def __init__(self, log=None):
+    def __init__(self, log):
         super().__init__(log)
         self._routes = {
             "get_data": self.get_data
@@ -1023,7 +1023,7 @@ class HomeHandler(Handler):
 # Recommendations Handler
 # -----------------------------------------------------------------------------
 class RecommendationsHandler(Handler):
-    def __init__(self, log=None):
+    def __init__(self, log):
         super().__init__(log)
         self._routes = {
             "get_recommendations": self.get_user_recommendations,
@@ -1193,7 +1193,7 @@ class RecommendationsHandler(Handler):
 # Searching Handler
 # -----------------------------------------------------------------------------
 class SearchingHandler(Handler):
-    def __init__(self, log=None):
+    def __init__(self, log):
         super().__init__(log)
         self._routes = {
             "search": self.search_database,
@@ -1269,8 +1269,8 @@ class SearchingHandler(Handler):
 # Error Handler
 # -----------------------------------------------------------------------------
 class ErrorHandler(Handler):
-    def __init__(self, status, log=None):
-        super().__init__(log=log)
+    def __init__(self, status, log):
+        super().__init__(log)
         self._status = status
 
     def error_response(self):
