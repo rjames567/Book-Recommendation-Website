@@ -115,7 +115,7 @@ Open the crontab file by running the command:
 
 Modify the crontab file. Write the following commands to it. They run the scripts at 1:00 am, as it is
 likely to have a low number of clients, so the impact should be minimal. However, to change this, change the timing clause of the cronjob - https://crontab.guru/ can make this easier.
-> 0 1 * * * python3 /absolute/path/to/project/backend/recommendations.py
+> 0 1 * * * python3 /absolute/path/to/project/backend/maintenance.py
 
 ## Deleting project
 To clear the crontab, run the command
