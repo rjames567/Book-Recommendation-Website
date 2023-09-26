@@ -50,8 +50,6 @@ connection = mysql_handler.Connection(
 # -----------------------------------------------------------------------------
 # Class instantiation
 # -----------------------------------------------------------------------------
-diaries = components.diaries.Diaries(connection)
-genres = components.genres.Genres(connection)
 sessions = components.accounts.Sessions(connection, token_size)
 authors = components.authors.Authors(connection, genre_required_match, number_summaries_home)
 recommendations = components.recommendations.Recommendations(
@@ -67,14 +65,6 @@ reading_lists = components.reading_lists.ReadingLists(
     num_display_genres,
     recommendations
 )
-books = components.books.Books(
-    connection,
-    reading_lists,
-    genre_required_match,
-    number_similarities_about,
-    number_summaries_home,
-    num_display_genres
-)
 accounts = components.accounts.Accounts(
     connection,
     hashing_algorithm,
@@ -82,16 +72,19 @@ accounts = components.accounts.Accounts(
     number_hash_passes,
     reading_lists
 )
-information_retrieval = components.information_retrieval.DocumentCollection(
-    connection,
-    books,
-    authors,
-    genres,
-    num_search_results
-)
+
+# -----------------------------------------------------------------------------
+# Sessions
+# -----------------------------------------------------------------------------
+for i in sessions.get_session_id_list():
+    try:
+        sessions.get_user_id(i)
+    except components.accounts.SessionExpiredError:
+        pass
 
 # -----------------------------------------------------------------------------
 # Recommendations
 # -----------------------------------------------------------------------------
 for i in accounts.get_user_id_list():
-    recommendations.recommend_user_books(i)
+    recommendations.recommend_user_books(i)  # Takes on average 0.4102218615329156
+    # per user from 600 users
