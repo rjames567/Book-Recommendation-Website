@@ -291,3 +291,6 @@ class Sessions:
             WHERE client_id="{}";
             """.format(session_id)
         )
+    
+    def get_session_id_list(self):
+        return [i[0] for i in self._connection.query("SELECT client_id FROM sessions")]
