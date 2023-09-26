@@ -91,7 +91,7 @@ class Accounts:
         entered_password = self.hash_password(password)
         query_result = self._connection.query(
             """
-            SELECT password_hash FROM users
+            SELECT password_hash, user_id FROM users
             WHERE username="{}";
             """.format(username)
         )
@@ -99,7 +99,7 @@ class Accounts:
         if (len(query_result) == 0) or (query_result[0][0] != entered_password):
             raise InvalidUserCredentialsError(username)
         else:
-            return self.get_user_id(username)
+            return query_result[0][1]
 
     def create_user(self, first_name, surname, username, password):
         """
