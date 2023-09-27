@@ -145,12 +145,7 @@ class Accounts:
                 )
             )
 
-            user_id = self._connection.query(
-                """
-                SELECT user_id FROM users
-                WHERE username="{}"
-                """.format(username)
-            )[0][0]
+            user_id = self.get_user_id(username)
 
             self._reading_lists.create_list(user_id, "Want to Read")
             self._reading_lists.create_list(user_id, "Currently Reading")
