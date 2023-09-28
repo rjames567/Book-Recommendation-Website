@@ -248,7 +248,6 @@ class Recommendations:
         reading_list_items = self._connection.query("""
             SELECT reading_lists.book_id
             FROM reading_lists
-            INNER JOIN reading_list_names ON reading_lists.list_id=reading_list_names.list_id
             WHERE reading_lists.user_id={}
         """.format(user_id))
         reading_list_items = {i[0] for i in reading_list_items}
