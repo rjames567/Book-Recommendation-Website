@@ -249,23 +249,32 @@ class Matrix:
 
     def inverse(self):
         # https://github.com/ThomIves/MatrixInverse, MatrixInversion.py
-        if self.determinant():
-            self_copy = self.copy()
-            identity = Matrix(m=self._m, n=self._n, identity=True)
-            indices = list(range(self._n))
-            for fd in range(self._n):  # fd stands for focus diagonal
-                # in the source, this is range(1, self._n), which is wrong.
-                fd_scaler = 1.0 / self_copy[fd][fd]
-                for j in range(self._n):
-                    self_copy[fd][j] *= fd_scaler
-                    identity[fd][j] *= fd_scaler
+        self_copy = self.copy()
+        identity = Matrix(m=self._m, n=self._n, identity=True)
+        indices = list(range(self._n))
+        for fd in range(self._n):  # fd stands for focus diagonal
+            # in the source, this is range(1, self._n), which is wrong.
+            fd_scaler = 1.0 / self_copy[fd][fd]
+            for j in range(self._n):
+                self_copy[fd][j] *= fd_scaler
+                identity[fd][j] *= fd_scaler
 
-                for i in indices[:fd] + indices[fd + 1:]:  # skips the row with fd in it.
-                    cr_scaler = self_copy[i][fd]  # cr stands for current row
-                    for j in range(self._n):
-                        self_copy[i][j] = self_copy[i][j] - cr_scaler * self_copy[fd][j]
-                        identity[i][j] = identity[i][j] - cr_scaler * identity[fd][j]
-            return identity
+            for i in indices[:fd] + indices[fd + 1:]:  # skips the row with fd in it.
+                cr_scaler = self_copy[i][fd]  # cr stands for current row
+                for j in range(self._n):
+                    self_copy[i][j] = self_copy[i][j] - cr_scaler * self_copy[fd][j]
+                    identity[i][j] = identity[i][j] - cr_scaler * identity[fd][j]
+        return identity
+
+    def __pow__(self, power, modulo=None):
+        if power >= 1:
+            output = self.copy()
+            for i in range(1, power):
+                output *= output
+        elif power == -1:
+            output = self.inverse()
+
+        return output
 
     def __getitem__(self, index):
         return self._matrix[index]  # Returns a list, but doing [a][b] will work as
