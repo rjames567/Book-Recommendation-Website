@@ -203,6 +203,45 @@ class Matrix:
     def n(self):
         return self._n
 
+    def determinant(self):
+        # https://www.geeksforgeeks.org/determinant-of-a-matrix/
+        # Above 2x2, the determinant of a matrix is complicated, beyond A-level
+        # further maths, so use existing algorithm to do so
+        mat = self._matrix
+        temp = [0 for i in range(self._n)]
+        total = det = 1
+
+        for i in range(self._n):
+            index = i
+            while (index < self._n) and (mat[index][i] == 0):
+                index += 1
+
+            if (index == self._n):
+                continue
+
+            if (index != i):
+                for j in range(self._n):
+                    mat[index][j], mat[i][j] = mat[i][j], mat[index][j]
+
+                det *= -1 ** index - i
+
+            for j in range(self._n):
+                temp[j] = mat[i][j]
+
+            for j in range(i + 1, self._n):
+                num1 = temp[i]
+                num2 = mat[j][i]
+
+                for k in range(self._n):
+                    mat[j][k] = (num1 * mat[j][k]) - (num2 * temp[k])
+
+                total *= num1
+
+        for i in range(self._n):
+            det *= mat[i][i]
+
+        return int(det / total)
+
     def __getitem__(self, index):
         return self._matrix[index]  # Returns a list, but doing [a][b] will work as
         # [b] is performed in resulting arr
