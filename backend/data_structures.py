@@ -324,6 +324,9 @@ class Matrix:
         # equal. This is required to check this. Just checks the stored array
         # that is used to store the matrix data.
 
+    def __len__(self):
+        return self._m * self._n
+
 
 class IdentityMatrix(Matrix):
     def __init__(self, size):
