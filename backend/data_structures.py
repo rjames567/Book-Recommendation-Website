@@ -170,7 +170,10 @@ class Matrix:
         else:
             self._m = m  # Rows
             self._n = n  # Columns
-            self._matrix = [[default_value for i in range(self._n)] for k in range(self._m)]
+            if callable(default_value):
+                self._matrix = [[default_value() for i in range(self._n)] for k in range(self._m)]
+            else:
+                self._matrix = [[default_value for i in range(self._n)] for k in range(self._m)]
         self._is_matrix = True
 
     def print(self):
