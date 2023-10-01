@@ -207,7 +207,7 @@ class Matrix:
         # https://www.geeksforgeeks.org/determinant-of-a-matrix/
         # Above 2x2, the determinant of a matrix is complicated, beyond A-level
         # further maths, so use existing algorithm to do so
-        mat = self._matrix
+        mat = self.copy()
         temp = [0 for i in range(self._n)]
         total = det = 1
 
@@ -243,7 +243,29 @@ class Matrix:
         return int(det / total)
 
     def copy(self):
-        return Matrix(*self._matrix)
+        return Matrix(*[[i for i in k] for k in self._matrix])  # This does not
+        # work with self._matrix, as it modifies both the copy and the original.
+        # It does not work with .copy() either
+
+    def inverse(self):
+        # https://github.com/ThomIves/MatrixInverse, MatrixInversion.py
+        if self.determinant():
+            self_copy = self.copy()
+            identity = Matrix(m=self._m, n=self._n, identity=True)
+            indices = list(range(self._n))
+            for fd in range(self._n):  # fd stands for focus diagonal
+                # in the source, this is range(1, self._n), which is wrong.
+                fd_scaler = 1.0 / self_copy[fd][fd]
+                for j in range(self._n):
+                    self_copy[fd][j] *= fd_scaler
+                    identity[fd][j] *= fd_scaler
+
+                for i in indices[:fd] + indices[fd + 1:]:  # skips the row with fd in it.
+                    cr_scaler = self_copy[i][fd]  # cr stands for current row
+                    for j in range(self._n):
+                        self_copy[i][j] = self_copy[i][j] - cr_scaler * self_copy[fd][j]
+                        identity[i][j] = identity[i][j] - cr_scaler * identity[fd][j]
+            return identity
 
     def __getitem__(self, index):
         return self._matrix[index]  # Returns a list, but doing [a][b] will work as
