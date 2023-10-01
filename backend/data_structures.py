@@ -162,9 +162,7 @@ class BinaryTree:
 # Matrices
 # -----------------------------------------------------------------------------
 class Matrix:
-    def __init__(self, *kwargs, m=None, n=None, default_value=None, identity=False):
-        if identity:
-            default_value = 0
+    def __init__(self, *kwargs, m=None, n=None, default_value=None):
         if m is None:
             self._m = len(kwargs)
             self._n = len(kwargs[0])
@@ -173,9 +171,6 @@ class Matrix:
             self._m = m  # Rows
             self._n = n  # Columns
             self._matrix = [[default_value for i in range(self._n)] for k in range(self._m)]
-            if identity:
-                for i in range(self._m):
-                    self._matrix[i][i] = 1
         self._is_matrix = True
 
     def print(self):
@@ -250,7 +245,7 @@ class Matrix:
     def inverse(self):
         # https://github.com/ThomIves/MatrixInverse, MatrixInversion.py
         self_copy = self.copy()
-        identity = Matrix(m=self._m, n=self._n, identity=True)
+        identity = IdentityMatrix(size=self._m)
         indices = list(range(self._n))
         for fd in range(self._n):  # fd stands for focus diagonal
             # in the source, this is range(1, self._n), which is wrong.
@@ -328,6 +323,13 @@ class Matrix:
         # comparing two objects with the same contents are treated as not 
         # equal. This is required to check this. Just checks the stored array
         # that is used to store the matrix data.
+
+
+class IdentityMatrix(Matrix):
+    def __init__(self, size):
+        self._m = self._n = size
+        self._matrix = [[int(i == k) for i in range(self._n)] for k in range(self._m)]
+        self._is_matrix = True
 
 
 class Vector(Matrix):  # Vectors are a type of matrix
