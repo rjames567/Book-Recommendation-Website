@@ -275,8 +275,9 @@ class Matrix:
         return output
 
     def __getitem__(self, index):
-        return self._matrix[index]  # Returns a list, but doing [a][b] will work as
-        # [b] is performed in resulting arr
+        print(self._matrix[index])
+        return Matrix(self._matrix[index])  # Returns a list, but doing [a][b] will work as
+        # [b] is performed in resulting arr. Vector, so it can be multiplied.
 
     def __add__(self, op_matrix):
         res = Matrix(m=self._m, n=self._n)
@@ -329,7 +330,6 @@ class Matrix:
 
     def __len__(self):
         return self._m * self._n
-
 
 class IdentityMatrix(Matrix):
     def __init__(self, size):
