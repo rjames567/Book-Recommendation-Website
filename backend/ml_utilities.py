@@ -9,3 +9,9 @@ def jaccard_similarity(set_1, set_2):
     union = set_1.union(set_2)
     intersection = set_1.intersection(set_2)
     return len(intersection) / len(union)
+
+# -----------------------------------------------------------------------------
+# Error measures
+# -----------------------------------------------------------------------------
+def mean_squared_error(true, predicted):
+    return sum((i - k)**2 for i, k in zip(true, predicted)) / len(true)
