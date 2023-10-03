@@ -2,6 +2,7 @@
 # Standard Python library imports
 # ------------------------------------------------------------------------------
 import math
+import itertools
 
 # ------------------------------------------------------------------------------
 # Project imports
@@ -329,6 +330,12 @@ class Matrix:
 
     def __len__(self):
         return self._m * self._n
+    
+    def to_array(self):
+        return self._matrix
+    
+    def to_flat_array(self):
+        return list(itertools.chain(*self._matrix))
 
 
 class IdentityMatrix(Matrix):
