@@ -61,3 +61,40 @@ class Recommendations:
         true = true.mask(mask)
         pred = true.mask(mask)
         return ml_utilities.mean_squared_error(true, predicted)
+
+    @property
+    def book_factors(self):
+        if self._b_fact is None and not self._trained:
+            self._b_fact = data_structures.Matrix(
+                n=self._number_books,
+                m=self._number_factors,
+                default_value=random.random
+            )
+        elif (self._b_fact is None and self._trained):
+            res = self._connection.query("""
+                SELECT GROUP_CONCAT(genre_id) as genres,
+                    GROUP_CONCAT(match_strength) as strengths,
+                    book_id
+                FROM book_genres
+                GROUP BY book_id;
+            """)
+
+            mat = data_structures.Matrix(
+                n=self._number_books,
+                m=self._number_factors,
+                default_value=random.random
+            )
+
+            for genres, strengths, book in res:
+                ids = genres.split()
+                strengths = strengths.split()
+                for genre_id, strength in zip(ids, strengths):
+                    mat[genre_id][book] = strength
+
+            return mat  # Does not update the stored value of the book factor
+            # matrix. This is because it cannot guarantee whether the contents
+            # stored in the database has changed, because of being run in
+            # multiple locations. This therefore means that it must assume that
+            # it has changed.
+        return self._b_fact  # If it is being trained, it should update the
+        # actual matrix, and return it.
