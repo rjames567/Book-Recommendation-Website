@@ -44,3 +44,10 @@ class Recommendations:
         self._num_converge_iters = num_converge_iters
         self._hyperparam = hyperparam
         self._trained = trained
+
+    def wals_step(self, ratings, fixed):
+        I = data_structures.IdentityMatrix(self._number_factors)
+        A = (fixed.transpose() * fixed) + I * self._hyperparam
+        B = ratings * fixed
+        A_inv = A.inverse()
+        return (B * A_inv)
