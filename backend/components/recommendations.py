@@ -51,3 +51,6 @@ class Recommendations:
         B = ratings * fixed
         A_inv = A.inverse()
         return (B * A_inv)
+
+    def predict(self):
+        return self.user_factors * self.book_factors
