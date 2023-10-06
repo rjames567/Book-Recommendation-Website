@@ -181,3 +181,18 @@ class Recommendations:
             # it has changed.
         return self._u_fact  # If it is being trained, it should update the
         # actual matrix, and return it.
+
+    @user_factors.setter
+    def user_factors(self, matrix):
+        self._u_fact = matrix
+        if not self._training:
+            self._connection.query("DELETE FROM test")
+            query = "INSERT INTO test (user_id, genre_id, match_strength) VALUES"
+            for genre_id, vals in enumerate(self._u_fact):
+                for user_id, strength in enumerate(vals):
+                    query += f" ({self._user_id_lookup[user_id]}, {genre_id + 1}, {strength}),"
+            query = query[:-1]  # Remove trailing comma
+            self._connection.query(query)
+            self._u_fact = None  # This is done to free up memory as the matrix
+            # will take up a large amount of memory (for the training data of
+            # 500 users, 768 genres, this would take up ~2.93MiB for raw data).
