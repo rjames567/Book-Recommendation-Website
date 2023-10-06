@@ -39,12 +39,16 @@ class Recommendations:
         self._number_books = len(
             self._connection.query("SELECT book_id FROM books")
         )
+        self._number_users = len(
+            self._connection.query("SELECT user_id FROM users")
+        )
         self._training = False
         self._u_fact = self._b_fact = None
         self._num_converge_iters = num_converge_iters
         self._hyperparam = hyperparam
         self._trained = trained
         self._book_id_lookup = dict()
+        self._user_id_lookup = dict()
 
     def wals_step(self, ratings, fixed):
         I = data_structures.IdentityMatrix(self._number_factors)
@@ -87,8 +91,8 @@ class Recommendations:
                     GROUP_CONCAT(match_strength) as strengths,
                     book_id
                 FROM book_genres
+                GROUP BY book_id
                 ORDER BY book_id ASC
-                GROUP BY book_id;
             """)
 
             mat = data_structures.Matrix(
@@ -127,3 +131,53 @@ class Recommendations:
             self._b_fact = None  # This is done to free up memory as the matrix
             # will take up a large amount of memory (for the training data of
             # 250 books, 768 genres, this would take up ~1.46MiB for raw data).
+
+    @property
+    def user_factors(self):
+        if self._u_fact is None and not self._trained:
+            self._u_fact = data_structures.Matrix(
+                n=self._number_users,
+                m=self._number_factors,
+                default_value=random.random
+            )
+            res = self._connection.query("""
+                SELECT user_id FROM users
+                ORDER BY user_id ASC
+            """)
+
+            for user_id, i in enumerate(res):
+                self._user_id_lookup[user_id] = i[0]  # Have to create a lookup
+                # table as it cannot be guaranteed that the book IDs are
+                # sequential, with not gaps.
+
+        elif (self._u_fact is None and self._trained):
+            res = self._connection.query("""
+                SELECT GROUP_CONCAT(genre_id) as genres,
+                    GROUP_CONCAT(match_strength) as strengths,
+                    user_id
+                FROM user_genres
+                GROUP BY user_id
+                ORDER BY user_id ASC
+            """)
+
+            mat = data_structures.Matrix(
+                n=self._number_books,
+                m=self._number_factors,
+                default_value=random.random
+            )
+
+            for user_id, tup in res:
+                genres, strengths, user_true = tup
+                ids = genres.split()
+                strengths = strengths.split()
+                for genre_id, strength in zip(ids, strengths):
+                    self._user_id_lookup[user_id] = user_true
+                    mat[genre_id][user_id] = strength
+
+            return mat  # Does not update the stored value of the book factor
+            # matrix. This is because it cannot guarantee whether the contents
+            # stored in the database has changed, because of being run in
+            # multiple locations. This therefore means that it must assume that
+            # it has changed.
+        return self._u_fact  # If it is being trained, it should update the
+        # actual matrix, and return it.
