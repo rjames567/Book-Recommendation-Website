@@ -247,24 +247,23 @@ class Matrix:
         # It does not work with .copy() either
 
     def inverse(self):
-        if self.determinant():
-            # https://github.com/ThomIves/MatrixInverse, MatrixInversion.py
-            self_copy = self.copy()
-            identity = IdentityMatrix(size=self._m)
-            indices = list(range(self._n))
-            for fd in range(self._n):  # fd stands for focus diagonal
-                # in the source, this is range(1, self._n), which is wrong.
-                fd_scaler = 1.0 / self_copy[fd][fd]
-                for j in range(self._n):
-                    self_copy[fd][j] *= fd_scaler
-                    identity[fd][j] *= fd_scaler
+        # https://github.com/ThomIves/MatrixInverse, MatrixInversion.py
+        self_copy = self.copy()
+        identity = IdentityMatrix(size=self._m)
+        indices = list(range(self._n))
+        for fd in range(self._n):  # fd stands for focus diagonal
+            # in the source, this is range(1, self._n), which is wrong.
+            fd_scaler = 1.0 / self_copy[fd][fd]
+            for j in range(self._n):
+                self_copy[fd][j] *= fd_scaler
+                identity[fd][j] *= fd_scaler
 
-                for i in indices[:fd] + indices[fd + 1:]:  # skips the row with fd in it.
-                    cr_scaler = self_copy[i][fd]  # cr stands for current row
-                    for j in range(self._n):
-                        self_copy[i][j] = self_copy[i][j] - cr_scaler * self_copy[fd][j]
-                        identity[i][j] = identity[i][j] - cr_scaler * identity[fd][j]
-            return identity
+            for i in indices[:fd] + indices[fd + 1:]:  # skips the row with fd in it.
+                cr_scaler = self_copy[i][fd]  # cr stands for current row
+                for j in range(self._n):
+                    self_copy[i][j] = self_copy[i][j] - cr_scaler * self_copy[fd][j]
+                    identity[i][j] = identity[i][j] - cr_scaler * identity[fd][j]
+        return identity
 
     def __pow__(self, power, modulo=None):
         if power >= 1:
@@ -303,7 +302,7 @@ class Matrix:
 
     # https://en.wikipedia.org/wiki/Matrix_multiplication_algorithm
     def __mul__(self, op_value):
-        if type(op_value) == Matrix:
+        if isinstance(op_value, Matrix):  # Type does not match for any child classes.
             res = Matrix(m=self._m, n=op_value.n, default_value=0)
             for m in range(res.m):
                 for n in range(res.n):
@@ -417,3 +416,12 @@ class Vector(Matrix):  # Vectors are a type of matrix
         for count, v1, v2 in zip(list(range(self._m)), self._matrix, op_vector):
             res[count] = v1[0] + v2  # v1 is a list with one element in it.
         return res
+
+
+# M = Matrix(
+#     [1,2,3],
+#     [4,5,6],
+#     [7,8,100]
+# )
+#
+# M.inverse().print()
