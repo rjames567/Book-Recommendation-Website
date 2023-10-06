@@ -26,3 +26,21 @@ class NoUserPreferencesError(Exception):
 # -----------------------------------------------------------------------------
 # Recommendations
 # -----------------------------------------------------------------------------
+class Recommendations:
+    def __init__(self, connection, genre_match_threshold, num_display_genres, authors, num_converge_iters, hyperparam,
+                 trained=True):
+        self._authors = authors
+        self._connection = connection
+        self._num_display_genres = num_display_genres
+        self._genre_match_threshold = genre_match_threshold
+        self._number_factors = len(
+            self._connection.query("SELECT genre_id FROM genres")
+        )
+        self._number_books = len(
+            self._connection.query("SELECT book_id FROM books")
+        )
+        self._training = False
+        self._u_fact = self._b_fact = None
+        self._num_converge_iters = num_converge_iters
+        self._hyperparam = hyperparam
+        self._trained = trained
