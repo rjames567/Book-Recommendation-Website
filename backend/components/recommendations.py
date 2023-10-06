@@ -54,3 +54,10 @@ class Recommendations:
 
     def predict(self):
         return self.user_factors * self.book_factors
+
+    @staticmethod
+    def mean_squared_error(true, predicted):
+        mask = true.get_zero_indexes()
+        true = true.mask(mask)
+        pred = true.mask(mask)
+        return ml_utilities.mean_squared_error(true, predicted)
