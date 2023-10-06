@@ -355,11 +355,7 @@ class Matrix:
     def mask(self, arr):
         copy = self._matrix
         arr.sort(reverse=True)
-        print(arr)
-        print(copy)
         for i, k in arr:
-            print(i,k)
-            print(copy[i])
             copy[i].pop(k)
         return list(itertools.chain(*copy))
 
