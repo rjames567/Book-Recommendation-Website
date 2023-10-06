@@ -97,8 +97,7 @@ class Recommendations:
 
             mat = data_structures.Matrix(
                 n=self._number_books,
-                m=self._number_factors,
-                default_value=random.random
+                m=self._number_factors
             )
 
             for book_id, tup in res:
@@ -162,8 +161,7 @@ class Recommendations:
 
             mat = data_structures.Matrix(
                 n=self._number_books,
-                m=self._number_factors,
-                default_value=random.random
+                m=self._number_factors
             )
 
             for user_id, tup in res:
