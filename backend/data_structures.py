@@ -343,17 +343,16 @@ class Matrix:
         # of 0s, and iterating that many times and removing them. for a 100×200 matrix, this method takes ~0.09 sec 
         # for 10, and the one described takes ~4.6sec.
 
-    def get_nonzero_indexes(self):
+    def get_zero_indexes(self):
         indexes = []
         for row, val in enumerate(self._matrix):
             for col, i in enumerate(val):
-                if not(i):
+                if i == 0:
                     indexes.append((row, col))
-
         return indexes
 
     def mask(self, arr):
-        copy = self._matrix
+        copy = self.copy()
         arr.sort(reverse=True)
         for i, k in arr:
             copy[i].pop(k)
