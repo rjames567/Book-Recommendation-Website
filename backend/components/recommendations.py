@@ -44,6 +44,7 @@ class Recommendations:
         self._num_converge_iters = num_converge_iters
         self._hyperparam = hyperparam
         self._trained = trained
+        self._book_id_lookup = dict()
 
     def wals_step(self, ratings, fixed):
         I = data_structures.IdentityMatrix(self._number_factors)
@@ -70,12 +71,23 @@ class Recommendations:
                 m=self._number_factors,
                 default_value=random.random
             )
+            res = self._connection.query("""
+                SELECT book_id FROM books
+                ORDER BY book_id ASC
+            """)
+
+            for book_id, i in enumerate(res):
+                self._book_id_lookup[book_id] = i[0]  # Have to create a lookup
+                # table as it cannot be guaranteed that the book IDs are
+                # sequential, with not gaps.
+
         elif (self._b_fact is None and self._trained):
             res = self._connection.query("""
                 SELECT GROUP_CONCAT(genre_id) as genres,
                     GROUP_CONCAT(match_strength) as strengths,
                     book_id
                 FROM book_genres
+                ORDER BY book_id ASC
                 GROUP BY book_id;
             """)
 
@@ -85,11 +97,13 @@ class Recommendations:
                 default_value=random.random
             )
 
-            for genres, strengths, book in res:
+            for book_id, tup in res:
+                genres, strengths, book_true = tup
                 ids = genres.split()
                 strengths = strengths.split()
                 for genre_id, strength in zip(ids, strengths):
-                    mat[genre_id][book] = strength
+                    self._book_id_lookup[book_id] = book_true
+                    mat[genre_id][book_id] = strength
 
             return mat  # Does not update the stored value of the book factor
             # matrix. This is because it cannot guarantee whether the contents
@@ -98,3 +112,18 @@ class Recommendations:
             # it has changed.
         return self._b_fact  # If it is being trained, it should update the
         # actual matrix, and return it.
+
+    @book_factors.setter
+    def book_factors(self, matrix):
+        self._b_fact = matrix
+        if not self._training:
+            self._connection.query("DELETE FROM book_genres")
+            query = "INSERT INTO book_genres (book_id, genre_id, match_strength) VALUES"
+            for genre_id, vals in enumerate(self._b_fact):
+                for book_id, strength in enumerate(vals):
+                    query += f" ({self._book_id_lookup[book_id]}, {genre_id + 1}, {strength}),"
+            query = query[:-1]  # Remove trailing comma
+            self._connection.query(query)
+            self._b_fact = None  # This is done to free up memory as the matrix
+            # will take up a large amount of memory (for the training data of
+            # 250 books, 768 genres, this would take up ~1.46MiB for raw data).
