@@ -57,8 +57,61 @@ class Recommendations:
         A_inv = A.inverse()
         return (B * A_inv)
 
+    def fit(self, train, test):
+        self._training = True
+        self._trained = False
+
+        self._number_factors = train.n
+        self._number_users = train.m
+
+        self.test_mse_record = []
+        self.train_mse_record = []
+
+        for i in range(self._num_converge_iters):
+            self.user_factors = self.wals_step(train, self.book_factors)
+            self.book_factors = self.wals_step(train.transpose(), self.user_factors)
+
+            predictions = self.predict()
+
+            test_mse = self.mean_squared_error(test, predictions)
+            train_mse = self.mean_squared_error(train, predictions)
+            self.test_mse_record(test_mse)
+            self.train_mse_record(train_mse)
+
+        self._save_user_factors()
+        self._save_book_factors()
+
+        self._training = False
+        self._trained = True
+
     def predict(self):
         return self.user_factors * self.book_factors
+
+    def _save_user_factors(self):
+        self._connection.query("DELETE FROM user_genres")
+        query = "INSERT INTO user_genres (user_id, genre_id, match_strength) VALUES"
+        for genre_id, vals in enumerate(self._u_fact):
+            for user_id, strength in enumerate(vals):
+                query += f" ({self._user_id_lookup[user_id]}, {genre_id + 1}, {strength}),"
+        query = query[:-1]  # Remove trailing comma
+        self._connection.query(query)
+        self._u_fact = None  # This is done to free up memory as the matrix
+
+        # will take up a large amount of memory (for the training data of
+        # 500 users, 768 genres, this would take up ~2.93MiB for raw data).
+
+    def _save_book_factors(self):
+        self._connection.query("DELETE FROM book_genres")
+        query = "INSERT INTO book_genres (book_id, genre_id, match_strength) VALUES"
+        for genre_id, vals in enumerate(self._b_fact):
+            for book_id, strength in enumerate(vals):
+                query += f" ({self._book_id_lookup[book_id]}, {genre_id + 1}, {strength}),"
+        query = query[:-1]  # Remove trailing comma
+        self._connection.query(query)
+        self._b_fact = None  # This is done to free up memory as the matrix
+
+        # will take up a large amount of memory (for the training data of
+        # 250 books, 768 genres, this would take up ~1.46MiB for raw data).
 
     @staticmethod
     def mean_squared_error(true, predicted):
@@ -120,16 +173,7 @@ class Recommendations:
     def book_factors(self, matrix):
         self._b_fact = matrix
         if not self._training:
-            self._connection.query("DELETE FROM book_genres")
-            query = "INSERT INTO book_genres (book_id, genre_id, match_strength) VALUES"
-            for genre_id, vals in enumerate(self._b_fact):
-                for book_id, strength in enumerate(vals):
-                    query += f" ({self._book_id_lookup[book_id]}, {genre_id + 1}, {strength}),"
-            query = query[:-1]  # Remove trailing comma
-            self._connection.query(query)
-            self._b_fact = None  # This is done to free up memory as the matrix
-            # will take up a large amount of memory (for the training data of
-            # 250 books, 768 genres, this would take up ~1.46MiB for raw data).
+            self._save_book_factors()
 
     @property
     def user_factors(self):
@@ -184,13 +228,5 @@ class Recommendations:
     def user_factors(self, matrix):
         self._u_fact = matrix
         if not self._training:
-            self._connection.query("DELETE FROM user_genres")
-            query = "INSERT INTO user_genres (user_id, genre_id, match_strength) VALUES"
-            for genre_id, vals in enumerate(self._u_fact):
-                for user_id, strength in enumerate(vals):
-                    query += f" ({self._user_id_lookup[user_id]}, {genre_id + 1}, {strength}),"
-            query = query[:-1]  # Remove trailing comma
-            self._connection.query(query)
-            self._u_fact = None  # This is done to free up memory as the matrix
-            # will take up a large amount of memory (for the training data of
-            # 500 users, 768 genres, this would take up ~2.93MiB for raw data).
+            self._save_user_factors()
+
