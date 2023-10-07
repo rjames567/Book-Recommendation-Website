@@ -184,8 +184,8 @@ class Recommendations:
     def user_factors(self, matrix):
         self._u_fact = matrix
         if not self._training:
-            self._connection.query("DELETE FROM test")
-            query = "INSERT INTO test (user_id, genre_id, match_strength) VALUES"
+            self._connection.query("DELETE FROM user_genres")
+            query = "INSERT INTO user_genres (user_id, genre_id, match_strength) VALUES"
             for genre_id, vals in enumerate(self._u_fact):
                 for user_id, strength in enumerate(vals):
                     query += f" ({self._user_id_lookup[user_id]}, {genre_id + 1}, {strength}),"
