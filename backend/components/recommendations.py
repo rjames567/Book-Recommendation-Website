@@ -7,7 +7,7 @@ import random
 # -----------------------------------------------------------------------------
 # Project imports
 # -----------------------------------------------------------------------------
-import components.authors
+# import components.authors
 
 import sys
 sys.path.append("../backend")
@@ -49,6 +49,7 @@ class Recommendations:
         self._trained = trained
         self._book_id_lookup = dict()
         self._user_id_lookup = dict()
+        self._recommendation_number = 15
 
     def wals_step(self, ratings, fixed):
         I = data_structures.IdentityMatrix(self._number_factors)
@@ -86,6 +87,55 @@ class Recommendations:
 
     def predict(self):
         return self.user_factors * self.book_factors
+
+    def add_user(self, user_id, author_ids):
+        vals = [f"({user_id}, {author_id})" for author_id in author_ids]
+        self._connection.query(
+            "INSERT INTO initial_preferences VALUES {}".format(
+                ",".join(vals)
+            )
+        )
+
+        res = self._connection.query("""
+                SELECT AVG(book_genres.match_strength),
+                    book_genres.genre_id
+                FROM book_genres
+                INNER JOIN books
+                    ON book_genres.book_id=books.book_id
+                INNER JOIN authors
+                    ON books.author_id=authors.author_id
+                WHERE authors.author_id IN ({})
+                GROUP BY book_genres.genre_id;
+            """.format(
+                ",".join(str(i) for i in author_ids)
+            )
+        )
+
+        target_vec = data_structures.Vector(
+            dimensions=self._number_factors,
+            default_value=0
+        )
+
+        for avg, genre_id in res:
+            target_vec[genre_id] = avg
+
+        rec = target_vec.transpose() * self.book_factors
+
+        for i in rec[0]:
+            print(i)
+
+        output = []
+        for count, val in enumerate(rec[0]):
+            output.append({
+                "id": self._book_id_lookup[count],
+                "strength": val
+            })
+
+        output.sort(key=lambda x: x["strength"], reverse=True)
+
+        output = output[:self._recommendation_number]
+
+
 
     def _save_user_factors(self):
         self._connection.query("DELETE FROM user_genres")
@@ -150,16 +200,21 @@ class Recommendations:
 
             mat = data_structures.Matrix(
                 n=self._number_books,
-                m=self._number_factors
+                m=self._number_factors,
+                default_value=0
             )
 
-            for book_id, tup in res:
+            for book_id, tup in enumerate(res):
                 genres, strengths, book_true = tup
-                ids = genres.split()
-                strengths = strengths.split()
+                ids = genres.split(",")
+                strengths = strengths.split(",")
                 for genre_id, strength in zip(ids, strengths):
-                    self._book_id_lookup[book_id] = book_true
-                    mat[genre_id][book_id] = strength
+                    mat[int(genre_id) - 1][book_id - 1] = float(strength)
+
+            for book_id, i in enumerate(res):
+                self._book_id_lookup[book_id] = i[2]  # Have to create a lookup
+                # table as it cannot be guaranteed that the book IDs are
+                # sequential, with not gaps.
 
             return mat  # Does not update the stored value of the book factor
             # matrix. This is because it cannot guarantee whether the contents
@@ -210,11 +265,10 @@ class Recommendations:
 
             for user_id, tup in res:
                 genres, strengths, user_true = tup
-                ids = genres.split()
-                strengths = strengths.split()
+                ids = genres.split(",")
+                strengths = strengths.split(",")
                 for genre_id, strength in zip(ids, strengths):
-                    self._user_id_lookup[user_id] = user_true
-                    mat[genre_id][user_id] = strength
+                    mat[int(genre_id) - 1][user_id - 1] = float(strength)
 
             return mat  # Does not update the stored value of the book factor
             # matrix. This is because it cannot guarantee whether the contents
@@ -230,3 +284,45 @@ class Recommendations:
         if not self._training:
             self._save_user_factors()
 
+# -----------------------------------------------------------------------------
+# Project imports
+# -----------------------------------------------------------------------------
+import components.authors
+
+import configuration
+import mysql_handler
+
+# -----------------------------------------------------------------------------
+# Project constants
+# -----------------------------------------------------------------------------
+config = configuration.Configuration("./project_config.conf")
+debugging = config.get("debugging")  # Toggle whether logs are shown
+number_hash_passes = config.get("passwords number_hash_passes")
+hashing_salt = config.get("passwords salt")  # Stored in the config as binary
+hashing_algorithm = config.get("passwords hashing_algorithm")
+token_size = config.get("session_id_length")
+genre_required_match = config.get("books genre_match_threshold")
+number_summaries_home = config.get("home number_home_summaries")
+number_similarities_about = config.get("home number_about_similarities")
+num_display_genres = config.get("home number_display_genres")
+num_search_results = config.get("search number_results")
+
+# -----------------------------------------------------------------------------
+# Database connection
+# -----------------------------------------------------------------------------
+connection = mysql_handler.Connection(
+    user=config.get("mysql username"),
+    password=config.get("mysql password"),
+    schema=config.get("mysql schema"),
+    host=config.get("mysql host")
+)
+
+
+# -----------------------------------------------------------------------------
+# Class instantiation
+# -----------------------------------------------------------------------------
+authors = components.Authors(connection, genre_required_match, number_summaries_home)
+
+rec = Recommendations(connection, genre_required_match, num_display_genres, authors, 1000, 0.1)
+
+rec.add_user(1, [1,2,3,4,5,18,90,43])
