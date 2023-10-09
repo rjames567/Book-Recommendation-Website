@@ -7,7 +7,7 @@ import random
 # -----------------------------------------------------------------------------
 # Project imports
 # -----------------------------------------------------------------------------
-import components.authors
+# import components.authors
 
 import sys
 sys.path.append("../backend")
@@ -47,9 +47,9 @@ class Recommendations:
         self._num_converge_iters = num_converge_iters
         self._hyperparam = hyperparam
         self._trained = trained
-        self._book_id_lookup = dict()
         self._user_id_lookup = dict()
         self._recommendation_number = 15
+        self._b_id_look = None
 
     def wals_step(self, ratings, fixed):
         I = data_structures.IdentityMatrix(self._number_factors)
@@ -161,12 +161,47 @@ class Recommendations:
         # will take up a large amount of memory (for the training data of
         # 250 books, 768 genres, this would take up ~1.46MiB for raw data).
 
+    def gen_review_matrix(self):
+        res = self._connection.query("""
+            SELECT user_id,
+                book_id,
+                (overall_rating + IFNULL(character_rating, overall_rating) + IFNULL(plot_rating, overall_rating)) / 3
+            FROM reviews
+            GROUP BY review_id;
+        """)
+
+        mat = data_structures.Matrix(
+            m=self._number_users,
+            n=self._number_books,
+            default_value=0
+        )
+
+        for user_id, book_id, average in res:
+            used_book_id = list(self._book_id_lookup.values()).index(book_id)  # This finds the key for the value stored in the lookup table.
+            # geeksforgeeks.org/python-get-key-from-value-in-dictionary
+            mat[user_id - 1][used_book_id] = average
+
+        return mat
+
     @staticmethod
     def mean_squared_error(true, predicted):
         mask = true.get_zero_indexes()
         true = true.mask(mask)
         pred = true.mask(mask)
         return ml_utilities.mean_squared_error(true, predicted)
+
+    @property
+    def _book_id_lookup(self):
+        if self._b_id_look is None:
+            self._b_id_look = dict()
+            res = self._connection.query("""
+                SELECT book_id
+                FROM books
+            """)
+
+            for book_id, i in enumerate(res):
+                self._b_id_look[book_id] = i[0]
+        return self._b_id_look
 
     @property
     def book_factors(self):
@@ -281,3 +316,47 @@ class Recommendations:
         self._u_fact = matrix
         if not self._training:
             self._save_user_factors()
+
+
+
+# -----------------------------------------------------------------------------
+# Project imports
+# -----------------------------------------------------------------------------
+import components.authors
+
+import configuration
+import mysql_handler
+
+# -----------------------------------------------------------------------------
+# Project constants
+# -----------------------------------------------------------------------------
+config = configuration.Configuration("./project_config.conf")
+debugging = config.get("debugging")  # Toggle whether logs are shown
+number_hash_passes = config.get("passwords number_hash_passes")
+hashing_salt = config.get("passwords salt")  # Stored in the config as binary
+hashing_algorithm = config.get("passwords hashing_algorithm")
+token_size = config.get("session_id_length")
+genre_required_match = config.get("books genre_match_threshold")
+number_summaries_home = config.get("home number_home_summaries")
+number_similarities_about = config.get("home number_about_similarities")
+num_display_genres = config.get("home number_display_genres")
+num_search_results = config.get("search number_results")
+
+# -----------------------------------------------------------------------------
+# Database connection
+# -----------------------------------------------------------------------------
+connection = mysql_handler.Connection(
+    user=config.get("mysql username"),
+    password=config.get("mysql password"),
+    schema=config.get("mysql schema"),
+    host=config.get("mysql host")
+)
+
+# -----------------------------------------------------------------------------
+# Class instantiation
+# -----------------------------------------------------------------------------
+authors = components.Authors(connection, genre_required_match, number_summaries_home)
+
+rec = Recommendations(connection, genre_required_match, num_display_genres, authors, 1000, 0.1)
+
+rec.gen_review_matrix()
