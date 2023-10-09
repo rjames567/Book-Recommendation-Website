@@ -74,6 +74,7 @@ CREATE TABLE book_genres (
 -- -----------------------------------
 DROP TABLE IF EXISTS user_genres;
 DROP TABLE IF EXISTS recommendations;
+DROP TABLE IF EXISTS initial_preferences;
 
 CREATE TABLE user_genres (
     link_id INT NOT NULL AUTO_INCREMENT,
@@ -94,6 +95,15 @@ CREATE TABLE recommendations (
     PRIMARY KEY (recommendation_id),
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (book_id) REFERENCES books(book_id)
+);
+
+CREATE TABLE initial_preferences (
+    preference_id INT NOT NULL AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    author_id INT NOT NULL,
+    PRIMARY KEY (preference_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (author_id) REFERENCES authors(author_id)
 );
 
 -- -----------------------------------
