@@ -7,7 +7,7 @@ import random
 # -----------------------------------------------------------------------------
 # Project imports
 # -----------------------------------------------------------------------------
-# import components.authors
+import components.authors
 
 import sys
 sys.path.append("../backend")
@@ -133,9 +133,7 @@ class Recommendations:
 
         output.sort(key=lambda x: x["strength"], reverse=True)
 
-        output = output[:self._recommendation_number]
-
-
+        return output[:self._recommendation_number]
 
     def _save_user_factors(self):
         self._connection.query("DELETE FROM user_genres")
@@ -283,46 +281,3 @@ class Recommendations:
         self._u_fact = matrix
         if not self._training:
             self._save_user_factors()
-
-# -----------------------------------------------------------------------------
-# Project imports
-# -----------------------------------------------------------------------------
-import components.authors
-
-import configuration
-import mysql_handler
-
-# -----------------------------------------------------------------------------
-# Project constants
-# -----------------------------------------------------------------------------
-config = configuration.Configuration("./project_config.conf")
-debugging = config.get("debugging")  # Toggle whether logs are shown
-number_hash_passes = config.get("passwords number_hash_passes")
-hashing_salt = config.get("passwords salt")  # Stored in the config as binary
-hashing_algorithm = config.get("passwords hashing_algorithm")
-token_size = config.get("session_id_length")
-genre_required_match = config.get("books genre_match_threshold")
-number_summaries_home = config.get("home number_home_summaries")
-number_similarities_about = config.get("home number_about_similarities")
-num_display_genres = config.get("home number_display_genres")
-num_search_results = config.get("search number_results")
-
-# -----------------------------------------------------------------------------
-# Database connection
-# -----------------------------------------------------------------------------
-connection = mysql_handler.Connection(
-    user=config.get("mysql username"),
-    password=config.get("mysql password"),
-    schema=config.get("mysql schema"),
-    host=config.get("mysql host")
-)
-
-
-# -----------------------------------------------------------------------------
-# Class instantiation
-# -----------------------------------------------------------------------------
-authors = components.Authors(connection, genre_required_match, number_summaries_home)
-
-rec = Recommendations(connection, genre_required_match, num_display_genres, authors, 1000, 0.1)
-
-rec.add_user(1, [1,2,3,4,5,18,90,43])
