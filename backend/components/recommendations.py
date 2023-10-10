@@ -91,7 +91,7 @@ class Recommendations:
     def add_user(self, user_id, author_ids):
         vals = [f"({user_id}, {author_id})" for author_id in author_ids]
         self._connection.query(
-            "INSERT INTO initial_preferences VALUES {}".format(
+            "INSERT INTO initial_preferences (user_id, author_id) VALUES {}".format(
                 ",".join(vals)
             )
         )
@@ -162,13 +162,21 @@ class Recommendations:
         # 250 books, 768 genres, this would take up ~1.46MiB for raw data).
 
     def gen_review_matrix(self):
-        res = self._connection.query("""
-            SELECT user_id,
-                book_id,
-                (overall_rating + IFNULL(character_rating, overall_rating) + IFNULL(plot_rating, overall_rating)) / 3
-            FROM reviews
-            GROUP BY review_id;
-        """)
+        # books = self._connection.query("""
+        #     SELECT initial_preferences.user_id,
+        #        GROUP_CONCAT(book_genres.match_strength),
+        #        GROUP_CONCAT(book_genres.genre_id)
+        #     FROM initial_preferences
+        #     INNER JOIN books
+        #         ON books.author_id=initial_preferences.author_id
+        #     INNER JOIN book_genres
+        #         ON book_genres.book_id=books.book_id
+        #     GROUP BY books.book_id;
+        # """.format())
+        #
+        # user_vecs = dict()
+        # for user_id, strengths, ids in books:
+        #     user_vecs[user_id] = data_structures.Vector(dimensions=)
 
         mat = data_structures.Matrix(
             m=self._number_users,
@@ -176,12 +184,99 @@ class Recommendations:
             default_value=0
         )
 
-        for user_id, book_id, average in res:
-            used_book_id = list(self._book_id_lookup.values()).index(book_id)  # This finds the key for the value stored in the lookup table.
-            # geeksforgeeks.org/python-get-key-from-value-in-dictionary
-            mat[user_id - 1][used_book_id] = average
+        user_ids = [i[0] for i in self._connection.query("SELECT user_id FROM users")]
+        for user in user_ids:
+            reviews = self._connection.query("""
+                SELECT book_id,
+                    (overall_rating + IFNULL(character_rating, overall_rating) + IFNULL(plot_rating, overall_rating)) / 3
+                FROM reviews
+                WHERE user_id={}
+                GROUP BY review_id;
+            """.format(user))
 
-        return mat
+            if self._trained:
+                books = self._connection.query("""
+                    SELECT initial_preferences.user_id,
+                        GROUP_CONCAT(book_genres.match_strength),
+                        GROUP_CONCAT(book_genres.genre_id)
+                    FROM initial_preferences
+                    INNER JOIN books
+                        ON books.author_id=initial_preferences.author_id
+                    INNER JOIN book_genres
+                        ON book_genres.book_id=books.book_id
+                    WHERE user_id={}
+                    GROUP BY books.book_id
+                    ORDER BY book_genres.genre_id ASC
+                """.format(user))
+            else:
+                books = self._connection.query("""
+                    SELECT book_id from initial_preferences
+                    WHERE user_id={}
+                """.format(user))
+            for book_id, average in reviews:
+                used_book_id = list(self._book_id_lookup.values()).index(book_id)  # This finds the key for the value stored in the lookup table.
+                # geeksforgeeks.org/python-get-key-from-value-in-dictionary
+                mat[user - 1][used_book_id] = average  # The user_ids won't work if a user is deleted, however this is not supported, so is not an issue.
+
+            if len(reviews) <= 10:  # Until the user has left 10 reviews, still use their initial preferences.
+                if self._trained:
+                    avg_vec = data_structures.Vector(dimensions=self._number_factors)
+                    for strength, genre_id in books:
+                        avg_vec[genre_id - 1] = strength  # Need to reduce id as SQL indexes from 1 not 0.
+                    expected = avg_vec * self.book_factors
+                    output = []
+                    for count, match in enumerate(expected[0]):
+                        output.append({
+                            "id": count,
+                            "cosim": match
+                        })
+                    output.sort(lambda x: x["cosim"])
+                    for i in output:
+                        mat[user - 1][i["id"]] = math.tanh(i["cosim"]/self._number_factors)  # tanh limits results between 0 and 1, and with many genres is almost linear.
+                else:
+                    pass
+            elif len(books):
+                self._connection.query("""
+                    DELETE FROM initial_preferences
+                    WHERE user_id={}
+                """.format(user))  # Delete user preferences once many reviews have been achived.
+        # res = self._connection.query("""
+        #     SELECT user_id,
+        #         book_id,
+        #         (overall_rating + IFNULL(character_rating, overall_rating) + IFNULL(plot_rating, overall_rating)) / 3
+        #     FROM reviews
+        #     GROUP BY review_id;
+        # """)
+        #
+        # mat = data_structures.Matrix(
+        #     m=self._number_users,
+        #     n=self._number_books,
+        #     default_value=0
+        # )
+        #
+        # for user_id, book_id, average in res:
+        #     used_book_id = list(self._book_id_lookup.values()).index(book_id)  # This finds the key for the value stored in the lookup table.
+        #     # geeksforgeeks.org/python-get-key-from-value-in-dictionary
+        #     mat[user_id - 1][used_book_id] = average
+        #
+        #     books = self._connection.query("""
+        #         SELECT initial_preferences.user_id,
+        #            GROUP_CONCAT(book_genres.match_strength),
+        #            GROUP_CONCAT(book_genres.genre_id)
+        #         FROM initial_preferences
+        #         INNER JOIN books
+        #             ON books.author_id=initial_preferences.author_id
+        #         INNER JOIN book_genres
+        #             ON book_genres.book_id=books.book_id
+        #         GROUP BY books.book_id;
+        #     """.format())
+        #
+        #     avg_genre = data_structures.Vector(dimensions=self._number_factors)
+        #
+        #     for user_id, strengths, genres in books:
+        #         avg_genre[genres][strengths] =
+        #
+        # return mat
 
     @staticmethod
     def mean_squared_error(true, predicted):
@@ -359,4 +454,4 @@ authors = components.Authors(connection, genre_required_match, number_summaries_
 
 rec = Recommendations(connection, genre_required_match, num_display_genres, authors, 1000, 0.1)
 
-rec.gen_review_matrix()
+rec.add_user(1, [1,2,3,4,5,6,90])
