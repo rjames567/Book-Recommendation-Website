@@ -162,22 +162,6 @@ class Recommendations:
         # 250 books, 768 genres, this would take up ~1.46MiB for raw data).
 
     def gen_review_matrix(self):
-        # books = self._connection.query("""
-        #     SELECT initial_preferences.user_id,
-        #        GROUP_CONCAT(book_genres.match_strength),
-        #        GROUP_CONCAT(book_genres.genre_id)
-        #     FROM initial_preferences
-        #     INNER JOIN books
-        #         ON books.author_id=initial_preferences.author_id
-        #     INNER JOIN book_genres
-        #         ON book_genres.book_id=books.book_id
-        #     GROUP BY books.book_id;
-        # """.format())
-        #
-        # user_vecs = dict()
-        # for user_id, strengths, ids in books:
-        #     user_vecs[user_id] = data_structures.Vector(dimensions=)
-
         mat = data_structures.Matrix(
             m=self._number_users,
             n=self._number_books,
@@ -243,7 +227,22 @@ class Recommendations:
                     DELETE FROM initial_preferences
                     WHERE user_id={}
                 """.format(user))
-            return mat
+
+            following = self._connection.query("""
+                SELECT author_followers.author_id,
+                    GROUP_CONCAT(books.book_id)
+                FROM author_followers
+                INNER JOIN books
+                    ON books.author_id=author_followers.author_id
+                WHERE user_id={}
+                GROUP BY author_followers.author_id;
+            """.format(user))
+
+            for i in following:
+                used_book_id = list(self._book_id_lookup.values()).index(i[0])
+                mat[user - 1][used_book_id] * 1.5
+            
+        return mat
 
     @staticmethod
     def mean_squared_error(true, predicted):
