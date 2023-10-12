@@ -9,8 +9,11 @@ import random
 # -----------------------------------------------------------------------------
 # import components.authors
 
+import os
 import sys
-sys.path.append("../backend")
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 import data_structures
 import ml_utilities
@@ -50,6 +53,7 @@ class Recommendations:
         self._user_id_lookup = dict()
         self._recommendation_number = 15
         self._b_id_look = None
+        self._following_percentage_increase = 0.5
 
     def wals_step(self, ratings, fixed):
         I = data_structures.IdentityMatrix(self._number_factors)
@@ -120,9 +124,6 @@ class Recommendations:
             target_vec[genre_id] = avg
 
         rec = target_vec.transpose() * self.book_factors
-
-        for i in rec[0]:
-            print(i)
 
         output = []
         for count, val in enumerate(rec[0]):
@@ -200,23 +201,27 @@ class Recommendations:
             for book_id, average in reviews:
                 used_book_id = list(self._book_id_lookup.values()).index(book_id)  # This finds the key for the value stored in the lookup table.
                 # geeksforgeeks.org/python-get-key-from-value-in-dictionary
-                mat[user - 1][used_book_id] = average  # The user_ids won't work if a user is deleted, however this is not supported, so is not an issue.
-
+                mat[user - 1][used_book_id] = float(average)  # The user_ids won't work if a user is deleted, however this is not supported, so is not an issue.
             if len(reviews) <= 10:  # Until the user has left 10 reviews, still use their initial preferences.
                 if self._trained:
-                    avg_vec = data_structures.Vector(dimensions=self._number_factors)
+                    avg_vec = data_structures.Vector(
+                        dimensions=self._number_factors,
+                        default_value=0
+                    )
+
                     for strength, genre_id in books:
                         avg_vec[genre_id - 1] = strength  # Need to reduce id as SQL indexes from 1 not 0.
-                    expected = avg_vec * self.book_factors
+                    
+                    expected = avg_vec.transpose() * self.book_factors
                     output = []
                     for count, match in enumerate(expected[0]):
                         output.append({
                             "id": count,
                             "cosim": match
                         })
-                    output.sort(lambda x: x["cosim"])
+                    output.sort(key=lambda x: x["cosim"])
                     for i in output:
-                        mat[user - 1][i["id"]] = math.tanh(i["cosim"]/self._number_factors)  # tanh limits results between 0 and 1, and with many genres is almost linear.
+                        mat[user - 1][i["id"]] = math.tanh(i["cosim"]/self._number_factors)  # tanh limits results between 0 and 1, and with many genres is almost linear. Will always range from 0 to ~ 0.762
                 else:
                     for i in books:
                         used_book_id = list(self._book_id_lookup.values()).index(i[0])
@@ -229,8 +234,7 @@ class Recommendations:
                 """.format(user))
 
             following = self._connection.query("""
-                SELECT author_followers.author_id,
-                    GROUP_CONCAT(books.book_id)
+                SELECT GROUP_CONCAT(books.book_id)
                 FROM author_followers
                 INNER JOIN books
                     ON books.author_id=author_followers.author_id
@@ -239,9 +243,9 @@ class Recommendations:
             """.format(user))
 
             for i in following:
-                used_book_id = list(self._book_id_lookup.values()).index(i[0])
-                mat[user - 1][used_book_id] * 1.5
-            
+                for k in i[0].split(","):
+                    used_book_id = list(self._book_id_lookup.values()).index(int(k))
+                    mat[user - 1][used_book_id] *= (1 + self._following_percentage_increase)
         return mat
 
     @staticmethod
@@ -380,17 +384,17 @@ class Recommendations:
 
 
 
-# -----------------------------------------------------------------------------
-# Project imports
-# -----------------------------------------------------------------------------
-import components.authors
+# # -----------------------------------------------------------------------------
+# # Project imports
+# # -----------------------------------------------------------------------------
+# import components.authors
 
 import configuration
 import mysql_handler
 
-# -----------------------------------------------------------------------------
-# Project constants
-# -----------------------------------------------------------------------------
+# # -----------------------------------------------------------------------------
+# # Project constants
+# # -----------------------------------------------------------------------------
 config = configuration.Configuration("./project_config.conf")
 debugging = config.get("debugging")  # Toggle whether logs are shown
 number_hash_passes = config.get("passwords number_hash_passes")
@@ -413,11 +417,10 @@ connection = mysql_handler.Connection(
     host=config.get("mysql host")
 )
 
-# -----------------------------------------------------------------------------
-# Class instantiation
-# -----------------------------------------------------------------------------
-authors = components.Authors(connection, genre_required_match, number_summaries_home)
-
-rec = Recommendations(connection, genre_required_match, num_display_genres, authors, 1000, 0.1)
-
-rec.add_user(1, [1,2,3,4,5,6,90])
+# # -----------------------------------------------------------------------------
+# # Class instantiation
+# # -----------------------------------------------------------------------------
+# authors = components.Authors(connection, genre_required_match, number_summaries_home)
+print("RUNNING")
+rec = Recommendations(connection, genre_required_match, num_display_genres, None, 1000, 0.1)
+rec.gen_review_matrix()
