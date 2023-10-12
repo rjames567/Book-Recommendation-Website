@@ -251,6 +251,12 @@ class Recommendations:
                         mat[user - 1][used_book_id] = self._default_value
                     else:
                         mat[user - 1][used_book_id] *= (1 + self._following_percentage_increase)
+
+        indexes = [count for count, i in enumerate(mat) if sum(i) == 0]
+        indexes.sort(reverse=True)
+        for i in indexes:
+            mat.remove_row(i)  # Remove rows that are only zero. This is so that any users who have not specified their recommendations yet do not affect the book matrix
+
         return mat
 
     @staticmethod
