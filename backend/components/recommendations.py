@@ -205,30 +205,33 @@ class Recommendations:
                 # geeksforgeeks.org/python-get-key-from-value-in-dictionary
                 mat[user - 1][used_book_id] = float(average)  # The user_ids won't work if a user is deleted, however this is not supported, so is not an issue.
             if len(reviews) <= 10:  # Until the user has left 10 reviews, still use their initial preferences.
-                if self._trained:
-                    avg_vec = data_structures.Vector(
-                        dimensions=self._number_factors,
-                        default_value=0
-                    )
+                if len(books) > 0:
+                    if self._trained:
+                        avg_vec = data_structures.Vector(
+                            dimensions=self._number_factors,
+                            default_value=0
+                        )
 
-                    for strength, genre_id in books:
-                        avg_vec[genre_id - 1] = strength  # Need to reduce id as SQL indexes from 1 not 0.
-                    
-                    expected = avg_vec.transpose() * self.book_factors
-                    output = []
-                    for count, match in enumerate(expected[0]):
-                        output.append({
-                            "id": count,
-                            "cosim": match
-                        })
-                    output.sort(key=lambda x: x["cosim"])
-                    for i in output:
-                        mat[user - 1][i["id"]] = math.tanh(i["cosim"]/self._number_factors)  # tanh limits results between 0 and 1, and with many genres is almost linear. Will always range from 0 to ~ 0.762
+                        for strength, genre_id in books:
+                            avg_vec[genre_id - 1] = strength  # Need to reduce id as SQL indexes from 1 not 0.
+
+                        expected = avg_vec.transpose() * self.book_factors
+                        output = []
+                        for count, match in enumerate(expected[0]):
+                            output.append({
+                                "id": count,
+                                "cosim": match
+                            })
+                        output.sort(key=lambda x: x["cosim"])
+                        for i in output:
+                            mat[user - 1][i["id"]] = math.tanh(i["cosim"]/self._number_factors)  # tanh limits results between 0 and 1, and with many genres is almost linear. Will always range from 0 to ~ 0.762
+                    else:
+                        for i in books:
+                            used_book_id = list(self._book_id_lookup.values()).index(i[0])
+                            mat[user - 1][used_book_id] = self._default_value  # This is a non-zero value so recommendation is made. This is not affected by the average preference expressed
+                            # by all the user's selected authors.
                 else:
-                    for i in books:
-                        used_book_id = list(self._book_id_lookup.values()).index(i[0])
-                        mat[user - 1][used_book_id] = self._default_value  # This is a non-zero value so recommendation is made. This is not affected by the average preference expressed
-                        # by all the user's selected authors.
+                    continue  # skip immediately to the next user if they have not started their recommendations, to prevent incorrect alterations to the book matrix.
             elif len(books):
                 self._connection.query("""
                     DELETE FROM initial_preferences
