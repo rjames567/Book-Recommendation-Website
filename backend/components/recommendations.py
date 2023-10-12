@@ -54,6 +54,7 @@ class Recommendations:
         self._recommendation_number = 15
         self._b_id_look = None
         self._following_percentage_increase = 0.5
+        self._default_value = 0.5  # If a user has not got any explicit data, multiplying will not work, so
 
     def wals_step(self, ratings, fixed):
         I = data_structures.IdentityMatrix(self._number_factors)
@@ -198,6 +199,7 @@ class Recommendations:
                     SELECT book_id from initial_preferences
                     WHERE user_id={}
                 """.format(user))
+
             for book_id, average in reviews:
                 used_book_id = list(self._book_id_lookup.values()).index(book_id)  # This finds the key for the value stored in the lookup table.
                 # geeksforgeeks.org/python-get-key-from-value-in-dictionary
@@ -225,7 +227,7 @@ class Recommendations:
                 else:
                     for i in books:
                         used_book_id = list(self._book_id_lookup.values()).index(i[0])
-                        mat[user - 1][used_book_id] = 0.5  # This is a non-zero value so recommendation is made. This is not affected by the average preference expressed 
+                        mat[user - 1][used_book_id] = self._default_value  # This is a non-zero value so recommendation is made. This is not affected by the average preference expressed
                         # by all the user's selected authors.
             elif len(books):
                 self._connection.query("""
@@ -245,7 +247,10 @@ class Recommendations:
             for i in following:
                 for k in i[0].split(","):
                     used_book_id = list(self._book_id_lookup.values()).index(int(k))
-                    mat[user - 1][used_book_id] *= (1 + self._following_percentage_increase)
+                    if mat[user - 1][used_book_id] == 0:
+                        mat[user - 1][used_book_id] = self._default_value
+                    else:
+                        mat[user - 1][used_book_id] *= (1 + self._following_percentage_increase)
         return mat
 
     @staticmethod
