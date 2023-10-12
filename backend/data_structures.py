@@ -265,6 +265,10 @@ class Matrix:
                     identity[i][j] = identity[i][j] - cr_scaler * identity[fd][j]
         return identity
 
+    def remove_row(self, index):
+        self._matrix.pop(index)
+        self._m -= 1
+
     def __pow__(self, power, modulo=None):
         if power >= 1:
             output = self.copy()
@@ -416,12 +420,3 @@ class Vector(Matrix):  # Vectors are a type of matrix
         for count, v1, v2 in zip(list(range(self._m)), self._matrix, op_vector):
             res[count] = v1[0] + v2  # v1 is a list with one element in it.
         return res
-
-
-# M = Matrix(
-#     [1,2,3],
-#     [4,5,6],
-#     [7,8,100]
-# )
-#
-# M.inverse().print()
