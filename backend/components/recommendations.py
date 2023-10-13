@@ -238,6 +238,22 @@ class Recommendations:
                     WHERE user_id={}
                 """.format(user))
 
+            lists = self._connection.query("""
+                SELECT reading_lists.book_id
+                FROM reading_lists
+                INNER JOIN reading_list_names
+                    ON reading_lists.list_id=reading_list_names.list_id
+                WHERE reading_lists.user_id={}
+                GROUP BY reading_lists.book_id;
+            """.format(user))
+
+            for i in lists:
+                used_book_id = list(self._book_id_lookup.values()).index(int(i[0]))
+                if mat[user - 1][used_book_id] == 0:
+                    mat[user - 1][used_book_id] = self._default_value
+                else:
+                    mat[user - 1][used_book_id] *= (1 + self._following_percentage_increase)
+
             following = self._connection.query("""
                 SELECT GROUP_CONCAT(books.book_id)
                 FROM author_followers
