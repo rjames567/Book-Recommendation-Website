@@ -54,7 +54,7 @@ class Recommendations:
         self._recommendation_number = 15
         self._b_id_look = None
         self._following_percentage_increase = 0.5
-        self._default_value = 0.5  # If a user has not got any explicit data, multiplying will not work, so
+        self._default_value = 0.2  # If a user has not got any explicit data, multiplying will not work, so
 
     def wals_step(self, ratings, fixed):
         I = data_structures.IdentityMatrix(self._number_factors)
