@@ -272,11 +272,23 @@ class Recommendations:
                         mat[user - 1][used_book_id] *= (1 + self._following_percentage_increase)
 
         indexes = [count for count, i in enumerate(mat) if sum(i) == 0]
-        indexes.sort(reverse=True)
+        indexes.sort(reverse=True)  # Needs to be done from last to first, as if it were done the other way, the indexes would change and could raise errors or delete incorrect rows.
         for i in indexes:
             mat.remove_row(i)  # Remove rows that are only zero. This is so that any users who have not specified their recommendations yet do not affect the book matrix
 
         return mat
+
+    def _gen_test_train_data(self):
+        ratings = self.gen_review_matrix()
+        copy = ratings
+        while ratings == copy:
+            copy = ratings.copy()
+            num_items = len(copy)
+
+            for i in range(random.randint(num_items//8, num_items//4)):
+                copy[random.randint(0, copy.m - 1)][random.randint(0, copy.n - 1)] = random.random()
+
+        return ratings, copy
 
     @staticmethod
     def mean_squared_error(true, predicted):
@@ -453,4 +465,3 @@ connection = mysql_handler.Connection(
 # authors = components.Authors(connection, genre_required_match, number_summaries_home)
 print("RUNNING")
 rec = Recommendations(connection, genre_required_match, num_display_genres, None, 1000, 0.1)
-rec.gen_review_matrix()
