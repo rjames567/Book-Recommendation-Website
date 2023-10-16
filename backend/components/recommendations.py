@@ -39,20 +39,22 @@ class Recommendations:
         self._number_factors = len(
             self._connection.query("SELECT genre_id FROM genres")
         )
-        self._number_books = len(
-            self._connection.query("SELECT book_id FROM books")
-        )
-        self._number_users = len(
-            self._connection.query("SELECT user_id FROM users")
-        )
+        self._user_id_lookup = dict()
+        res = self._connection.query("SELECT book_id FROM books")
+        self._number_books = len(res)
+        self._b_id_look = dict()
+        for count, i in enumerate(res):
+            self._book_id_lookup[count] = i[0]
+        res = self._connection.query("SELECT user_id FROM users")
+        for count, i in enumerate(res):
+            self._user_id_lookup[count] = i[0]
+        self._number_users = len(res)
         self._training = False
         self._u_fact = self._b_fact = None
         self._num_converge_iters = num_converge_iters
         self._hyperparam = hyperparam
         self._trained = trained
-        self._user_id_lookup = dict()
         self._recommendation_number = 15
-        self._b_id_look = None
         self._following_percentage_increase = 0.5
         self._default_value = 0.2  # If a user has not got any explicit data, multiplying will not work, so
 
@@ -63,7 +65,8 @@ class Recommendations:
         A_inv = A.inverse()
         return (B * A_inv)
 
-    def fit(self, train, test):
+    def fit(self):
+        train, test = self._gen_test_train_data()
         self._training = True
         self._trained = False
 
@@ -74,6 +77,7 @@ class Recommendations:
         self.train_mse_record = []
 
         for i in range(self._num_converge_iters):
+            print(f"Iteration: {i} of {self._num_converge_iters}")
             self.user_factors = self.wals_step(train, self.book_factors)
             self.book_factors = self.wals_step(train.transpose(), self.user_factors)
 
@@ -81,8 +85,8 @@ class Recommendations:
 
             test_mse = self.mean_squared_error(test, predictions)
             train_mse = self.mean_squared_error(train, predictions)
-            self.test_mse_record(test_mse)
-            self.train_mse_record(train_mse)
+            self.test_mse_record.append(test_mse)
+            self.train_mse_record.append(train_mse)
 
         self._save_user_factors()
         self._save_book_factors()
@@ -293,9 +297,9 @@ class Recommendations:
     @staticmethod
     def mean_squared_error(true, predicted):
         mask = true.get_zero_indexes()
+        pred = predicted.mask(mask)
         true = true.mask(mask)
-        pred = true.mask(mask)
-        return ml_utilities.mean_squared_error(true, predicted)
+        return ml_utilities.mean_squared_error(true, pred)
 
     @property
     def _book_id_lookup(self):
@@ -373,6 +377,7 @@ class Recommendations:
     @property
     def user_factors(self):
         if self._u_fact is None and not self._trained:
+            print(1)
             self._u_fact = data_structures.Matrix(
                 n=self._number_users,
                 m=self._number_factors,
@@ -384,7 +389,7 @@ class Recommendations:
             """)
 
             for user_id, i in enumerate(res):
-                self._user_id_lookup[user_id] = i[0]  # Have to create a lookup
+                self._user_id_lookups[user_id] = i[0]  # Have to create a lookup
                 # table as it cannot be guaranteed that the book IDs are
                 # sequential, with not gaps.
 
@@ -403,10 +408,11 @@ class Recommendations:
                 m=self._number_factors
             )
 
-            for user_id, tup in res:
+            for user_id, tup in enumerate(res):
                 genres, strengths, user_true = tup
                 ids = genres.split(",")
                 strengths = strengths.split(",")
+                self._user_id_lookup[user_id] = user_true
                 for genre_id, strength in zip(ids, strengths):
                     mat[int(genre_id) - 1][user_id - 1] = float(strength)
 
@@ -464,4 +470,6 @@ connection = mysql_handler.Connection(
 # # -----------------------------------------------------------------------------
 # authors = components.Authors(connection, genre_required_match, number_summaries_home)
 print("RUNNING")
-rec = Recommendations(connection, genre_required_match, num_display_genres, None, 1000, 0.1)
+rec = Recommendations(connection, genre_required_match, num_display_genres, None, 1, 0.1)
+
+rec.fit()
