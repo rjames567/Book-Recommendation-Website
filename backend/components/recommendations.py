@@ -106,10 +106,11 @@ class Recommendations:
             WHERE date_added<=DATE_SUB(NOW(), INTERVAL 2 DAY)
         """)
 
-        for user in recommendation_mat:
+        for count, vals in enumerate(recommendation_mat):
+            user = count + 1
             books = []
 
-            avoid = set(self.get_bad_recommendations(user))
+            avoid = set(self.get_bad_recommendations(user+1))
 
             res = self._connection.query("""
                 SELECT book_id
@@ -133,10 +134,10 @@ class Recommendations:
             for i in existing_recommendations:
                 avoid.add(i[0])
 
-            for count, book in enumerate(user):
-                if count not in avoid:
+            for i, book in enumerate(vals):
+                if i not in avoid:
                     books.append({
-                        "book_id": self._book_id_lookup[count],
+                        "book_id": self._book_id_lookup[i],
                         "dot_prod": book
                     })
 
@@ -179,7 +180,7 @@ class Recommendations:
         output = []
         for count, val in enumerate(rec[0]):
             output.append({
-                "id": self._book_id_lookup[count],
+                "book_id": self._book_id_lookup[count],
                 "strength": val
             })
 
@@ -193,7 +194,7 @@ class Recommendations:
 
     def _save_recommendations(self, vals, user_id):
         # vals should be a list containing dictionaries with the true id and the dot product for the entry
-        vals = ",".join(f"({user_id}, {i['id']}, 0)")
+        vals = ",".join(f"({user_id}, {i['book_id']}, 0)" for i in vals)
         self._connection.query("INSERT INTO recommendations (user_id, book_id, certainty) VALUES " + vals)
 
 
@@ -489,7 +490,6 @@ class Recommendations:
     @property
     def user_factors(self):
         if self._u_fact is None and not self._trained:
-            print(1)
             self._u_fact = data_structures.Matrix(
                 n=self._number_users,
                 m=self._number_factors,
@@ -517,7 +517,8 @@ class Recommendations:
 
             mat = data_structures.Matrix(
                 n=self._number_books,
-                m=self._number_factors
+                m=self._number_factors,
+                default_value=0
             )
 
             for user_id, tup in enumerate(res):
@@ -584,4 +585,6 @@ connection = mysql_handler.Connection(
 print("RUNNING")
 rec = Recommendations(connection, genre_required_match, num_display_genres, None, 1, 0.1)
 
-rec.fit()
+# rec.fit()
+
+rec.gen_recommendations()
