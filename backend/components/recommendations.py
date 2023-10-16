@@ -1,6 +1,7 @@
 # -----------------------------------------------------------------------------
 # Standard Python library imports
 # -----------------------------------------------------------------------------
+import datetime
 import math
 import random
 
@@ -294,6 +295,25 @@ class Recommendations:
                         mat[user - 1][used_book_id] = self._default_value
                     else:
                         mat[user - 1][used_book_id] *= (1 + self._following_percentage_increase)
+
+            bad_recommendations = self._connection.query("""
+                SELECT recommendation_id,
+                    book_id,
+                    date_added
+                FROM bad_recommendations
+            """)
+
+            vals = []
+            for rec_id, book, date in bad_recommendations:
+                used_book_id = list(self._book_id_lookup.values()).index(book)
+                if date + datetime.timedelta(weeks=10) > datetime.datetime.now():
+                    # 10 week expiry, so it can start recommending books if the user has
+                    mat[user - 1][used_book_id] = 1
+                else:
+                    vals.append(rec_id)
+
+            self._connection.query("DELETE FROM bad_recommendations WHERE recommendation_id IN ({})".format(",".join(str(i) for i in vals)))
+            # Delete expired recommendations.
 
         indexes = [count for count, i in enumerate(mat) if sum(i) == 0]
         indexes.sort(reverse=True)  # Needs to be done from last to first, as if it were done the other way, the indexes would change and could raise errors or delete incorrect rows.
