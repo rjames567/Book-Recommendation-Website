@@ -75,6 +75,7 @@ CREATE TABLE book_genres (
 DROP TABLE IF EXISTS user_genres;
 DROP TABLE IF EXISTS recommendations;
 DROP TABLE IF EXISTS initial_preferences;
+DROP TABLE IF EXISTS bad_recommendations;
 
 CREATE TABLE user_genres (
     link_id INT NOT NULL AUTO_INCREMENT,
@@ -104,6 +105,16 @@ CREATE TABLE initial_preferences (
     PRIMARY KEY (preference_id),
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (author_id) REFERENCES authors(author_id)
+);
+
+CREATE TABLE bad_recommendations (
+    recommendation_id INT NOT NULL auto_increment,
+    user_id INT NOT NULL,
+    book_id INT NOT NULL,
+    date_added DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (recommendation_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (book_id) REFERENCES books(book_id)
 );
 
 -- -----------------------------------
