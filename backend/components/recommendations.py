@@ -176,6 +176,17 @@ class Recommendations:
         # will take up a large amount of memory (for the training data of
         # 250 books, 768 genres, this would take up ~1.46MiB for raw data).
 
+    def remove_stored_recommendation(self, user_id, book_id):
+        self._connection.query("""
+            DELETE FROM recommendations
+            WHERE user_id={user_id}
+                AND book_id={book_id};
+        """.format(user_id=user_id, book_id=book_id))
+
+        self._connection.query("""
+            INSERT INTO bad_recommendations (user_id, book_id) VALUES ({user_id}, {book_id})
+        """.format(user_id=user_id, book_id=book_id))
+
     def gen_review_matrix(self):
         mat = data_structures.Matrix(
             m=self._number_users,
