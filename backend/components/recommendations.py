@@ -99,50 +99,59 @@ class Recommendations:
         return self.user_factors * self.book_factors
 
     def gen_recommendations(self):
-        recommendation_mat = self.user_factors * self.book_factors
+        if self._trained:
+            recommendation_mat = self.user_factors * self.book_factors
 
-        self._connection.query("""
-            DELETE FROM recommendations
-            WHERE date_added<=DATE_SUB(NOW(), INTERVAL 2 DAY)
-        """)
+            self._connection.query("""
+                DELETE FROM recommendations
+                WHERE date_added<=DATE_SUB(NOW(), INTERVAL 2 DAY)
+            """)
 
-        for count, vals in enumerate(recommendation_mat):
-            user = count + 1
-            books = []
+            for count, vals in enumerate(recommendation_mat):
+                user = count + 1
+                user_genres = self._connection.query("""
+                    SELECT genre_id
+                    FROM user_genres
+                    WHERE user_id={}
+                """.format(user))
+                if len(user_genres) == 0:
+                    continue  # skip to the next user if they have not had any preferences set yet
+                else:
+                    books = []
 
-            avoid = set(self.get_bad_recommendations(user+1))
+                    avoid = set(self.get_bad_recommendations(user+1))
 
-            res = self._connection.query("""
-                SELECT book_id
-                FROM reading_lists
-                INNER JOIN reading_list_names
-                    ON reading_lists.list_id=reading_list_names.list_id
-                WHERE reading_lists.user_id={}
-                    AND reading_list_names.list_name IN (
-                        "Currently Reading",
-                        "Have Read",
-                        "Want To Read"
-                    )
-            """.format(user))
+                    res = self._connection.query("""
+                        SELECT book_id
+                        FROM reading_lists
+                        INNER JOIN reading_list_names
+                            ON reading_lists.list_id=reading_list_names.list_id
+                        WHERE reading_lists.user_id={}
+                            AND reading_list_names.list_name IN (
+                                "Currently Reading",
+                                "Have Read",
+                                "Want To Read"
+                            )
+                    """.format(user))
 
-            for i in res:
-                avoid.add(i[0])
+                    for i in res:
+                        avoid.add(i[0])
 
-            existing_recommendations = self._connection.query(
-                "SELECT book_id FROM recommendations WHERE user_id={}".format(user))
+                    existing_recommendations = self._connection.query(
+                        "SELECT book_id FROM recommendations WHERE user_id={}".format(user))
 
-            for i in existing_recommendations:
-                avoid.add(i[0])
+                    for i in existing_recommendations:
+                        avoid.add(i[0])
 
-            for i, book in enumerate(vals):
-                if i not in avoid:
-                    books.append({
-                        "book_id": self._book_id_lookup[i],
-                        "dot_prod": book
-                    })
+                    for i, book in enumerate(vals):
+                        if i not in avoid:
+                            books.append({
+                                "book_id": self._book_id_lookup[i],
+                                "dot_prod": book
+                            })
 
-            books.sort(key=lambda x: x["dot_prod"], reverse=True)
-            self._save_recommendations(books[:self._recommendation_number], user)
+                    books.sort(key=lambda x: x["dot_prod"], reverse=True)
+                    self._save_recommendations(books[:self._recommendation_number], user)
 
     def add_user(self, user_id, author_ids):
         vals = [f"({user_id}, {author_id})" for author_id in author_ids]
