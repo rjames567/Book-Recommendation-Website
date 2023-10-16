@@ -295,6 +295,14 @@ class Recommendations:
         return ratings, copy
 
     @staticmethod
+    def remove_rounding_errors(matrix, threshold):
+        for row, row_val in enumerate(matrix):
+            for col, val in enumerate(row_val):
+                if val <= threshold:
+                    matrix[row][col] = 0
+        return matrix
+
+    @staticmethod
     def mean_squared_error(true, predicted):
         mask = true.get_zero_indexes()
         pred = predicted.mask(mask)
