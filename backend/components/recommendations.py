@@ -149,7 +149,8 @@ class Recommendations:
 
         for genre_id, vals in enumerate(self._u_fact):
             for user_id, strength in enumerate(vals):
-                query += f" ({self._user_id_lookup[user_id]}, {genre_id + 1}, {strength}),"
+                if strength:  # Only allow non-zero values to be written to save space.
+                    query += f" ({self._user_id_lookup[user_id]}, {genre_id + 1}, {strength}),"
         query = query[:-1]  # Remove trailing comma
         self._connection.query(query)
         self._u_fact = None  # This is done to free up memory as the matrix
@@ -166,7 +167,8 @@ class Recommendations:
 
         for genre_id, vals in enumerate(self._b_fact):
             for book_id, strength in enumerate(vals):
-                query += f" ({self._book_id_lookup[book_id]}, {genre_id + 1}, {strength}),"
+                if strength:
+                    query += f" ({self._book_id_lookup[book_id]}, {genre_id + 1}, {strength}),"
         query = query[:-1]  # Remove trailing comma
         self._connection.query(query)
         self._b_fact = None  # This is done to free up memory as the matrix
