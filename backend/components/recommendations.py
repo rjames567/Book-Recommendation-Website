@@ -144,6 +144,9 @@ class Recommendations:
     def _save_user_factors(self):
         self._connection.query("DELETE FROM user_genres")
         query = "INSERT INTO user_genres (user_id, genre_id, match_strength) VALUES"
+
+        self._u_fact = self.remove_floating_point_errors(self._u_fact, 1E-15)
+
         for genre_id, vals in enumerate(self._u_fact):
             for user_id, strength in enumerate(vals):
                 query += f" ({self._user_id_lookup[user_id]}, {genre_id + 1}, {strength}),"
@@ -157,6 +160,10 @@ class Recommendations:
     def _save_book_factors(self):
         self._connection.query("DELETE FROM book_genres")
         query = "INSERT INTO book_genres (book_id, genre_id, match_strength) VALUES"
+
+        self._b_fact = self.remove_floating_point_errors(self._b_fact, 1E-15)
+        # Reduce the size of the stored data by removing very small, non-zero values
+
         for genre_id, vals in enumerate(self._b_fact):
             for book_id, strength in enumerate(vals):
                 query += f" ({self._book_id_lookup[book_id]}, {genre_id + 1}, {strength}),"
@@ -295,7 +302,7 @@ class Recommendations:
         return ratings, copy
 
     @staticmethod
-    def remove_rounding_errors(matrix, threshold):
+    def remove_floating_point_errors(matrix, threshold):
         for row, row_val in enumerate(matrix):
             for col, val in enumerate(row_val):
                 if val <= threshold:
