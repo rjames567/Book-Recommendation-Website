@@ -100,6 +100,12 @@ class Recommendations:
 
     def gen_recommendations(self):
         recommendation_mat = self.user_factors * self.book_factors
+
+        self._connection.query("""
+            DELETE FROM recommendations
+            WHERE date_added<=DATE_SUB(NOW(), INTERVAL 2 DAY)
+        """)
+
         for user in recommendation_mat:
             books = []
 
@@ -119,6 +125,12 @@ class Recommendations:
             """.format(user))
 
             for i in res:
+                avoid.add(i[0])
+
+            existing_recommendations = self._connection.query(
+                "SELECT book_id FROM recommendations WHERE user_id={}".format(user))
+
+            for i in existing_recommendations:
                 avoid.add(i[0])
 
             for count, book in enumerate(user):
