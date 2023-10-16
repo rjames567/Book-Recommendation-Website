@@ -98,6 +98,39 @@ class Recommendations:
     def predict(self):
         return self.user_factors * self.book_factors
 
+    def gen_recommendations(self):
+        recommendation_mat = self.user_factors * self.book_factors
+        for user in recommendation_mat:
+            books = []
+
+            avoid = set(self.get_bad_recommendations(user))
+
+            res = self._connection.query("""
+                SELECT book_id
+                FROM reading_lists
+                INNER JOIN reading_list_names
+                    ON reading_lists.list_id=reading_list_names.list_id
+                WHERE reading_lists.user_id={}
+                    AND reading_list_names.list_name IN (
+                        "Currently Reading",
+                        "Have Read",
+                        "Want To Read"
+                    )
+            """.format(user))
+
+            for i in res:
+                avoid.add(i[0])
+
+            for count, book in enumerate(user):
+                if count not in avoid:
+                    books.append({
+                        "book_id": self._book_id_lookup[count],
+                        "dot_prod": book
+                    })
+
+            books.sort(key=lambda x: x["dot_prod"], reverse=True)
+            self._save_recommendations(books[:self._recommendation_number], user)
+
     def add_user(self, user_id, author_ids):
         vals = [f"({user_id}, {author_id})" for author_id in author_ids]
         self._connection.query(
@@ -140,7 +173,17 @@ class Recommendations:
 
         output.sort(key=lambda x: x["strength"], reverse=True)
 
-        return output[:self._recommendation_number]
+        output = output[:self._recommendation_number]
+
+        self._save_recommendations(output, user_id)
+
+        return output
+
+    def _save_recommendations(self, vals, user_id):
+        # vals should be a list containing dictionaries with the true id and the dot product for the entry
+        vals = ",".join(f"({user_id}, {i['id']}, 0)")
+        self._connection.query("INSERT INTO recommendations (user_id, book_id, certainty) VALUES " + vals)
+
 
     def _save_user_factors(self):
         self._connection.query("DELETE FROM user_genres")
@@ -296,24 +339,9 @@ class Recommendations:
                     else:
                         mat[user - 1][used_book_id] *= (1 + self._following_percentage_increase)
 
-            bad_recommendations = self._connection.query("""
-                SELECT recommendation_id,
-                    book_id,
-                    date_added
-                FROM bad_recommendations
-            """)
-
-            vals = []
-            for rec_id, book, date in bad_recommendations:
+            for book in self.get_bad_recommendations(user):
                 used_book_id = list(self._book_id_lookup.values()).index(book)
-                if date + datetime.timedelta(weeks=10) > datetime.datetime.now():
-                    # 10 week expiry, so it can start recommending books if the user has
-                    mat[user - 1][used_book_id] = 1
-                else:
-                    vals.append(rec_id)
-
-            self._connection.query("DELETE FROM bad_recommendations WHERE recommendation_id IN ({})".format(",".join(str(i) for i in vals)))
-            # Delete expired recommendations.
+                mat[user - 1][used_book_id] = 1
 
         indexes = [count for count, i in enumerate(mat) if sum(i) == 0]
         indexes.sort(reverse=True)  # Needs to be done from last to first, as if it were done the other way, the indexes would change and could raise errors or delete incorrect rows.
@@ -333,6 +361,30 @@ class Recommendations:
                 copy[random.randint(0, copy.m - 1)][random.randint(0, copy.n - 1)] = random.random()
 
         return ratings, copy
+
+    def get_bad_recommendations(self, user_id):
+        bad_recommendations = self._connection.query("""
+            SELECT recommendation_id,
+                book_id,
+                date_added
+            FROM bad_recommendations
+            WHERE user_id={}
+        """.format(user_id))
+
+        return_vals = []
+        remove = []
+        for rec_id, book, date in bad_recommendations:
+            if date + datetime.timedelta(weeks=10) > datetime.datetime.now():
+                # 10 week expiry, so it can start recommending books if the user has
+                return_vals.append(book)
+            else:
+                remove.append(rec_id)
+
+        self._connection.query(
+            "DELETE FROM bad_recommendations WHERE recommendation_id IN ({})".format(",".join(str(i) for i in remove)))
+        # Delete expired recommendations.
+
+        return return_vals
 
     @staticmethod
     def remove_floating_point_errors(matrix, threshold):
