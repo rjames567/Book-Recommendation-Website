@@ -182,10 +182,18 @@ class Recommendations:
                 if book_id not in avoid_recs:
                     user_books.append({
                         "id": book_id,
-                        "certainty": rating
+                        "dot_product": rating
                     })
 
-            user_books.sort(key=lambda x: x["certainty"], reverse=True)
+            user_books.sort(key=lambda x: x["dot_product"], reverse=True)
+            user_books = user_books[:self._number_recommendations]
+
+            for count, i in enumerate(user_books):  # Done after as this is faily expensive, to avoid unecessary calculations
+                user_books[count]["certainty"] = self.calculate_certainty(
+                    i["id"],
+                    user_id,
+                    i["dot_product"]
+                )
 
             query += ",".join(
                 f"({user_id}, {i['id']}, {i['certainty']})" for i in user_books[:self._number_recommendations]) + ","
@@ -197,7 +205,6 @@ class Recommendations:
         self._connection.query(query[:-1])
 
         # TODO books in reading lists
-        # TODO convert dot products into percentage matches using cosine similarity
 
     def delete_recommendation(self, user_id, book_id):
         # This includes marking a recommendation as bad - it is implicitly the same thing
@@ -326,9 +333,7 @@ class Recommendations:
         abs_book_vec = math.sqrt(sum(i ** 2 for i in book_vec))
         abs_user_vec = math.sqrt(sum(i ** 2 for i in user_vec))
 
-        similarity = dot_product / (abs_book_vec * abs_user_vec)  # gives a value between 0 and 1
-
-        return similarity * 100  # convert value into a percentage
+        return dot_product / (abs_book_vec * abs_user_vec)  # gives a value between 0 and 1
 
     @staticmethod
     def mean_squared_error(true, pred):
