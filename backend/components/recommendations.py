@@ -182,7 +182,10 @@ class Recommendations:
             query += ",".join(
                 f"({user_id}, {i['id']}, {i['certainty']})" for i in user_books[:self._number_recommendations]) + ","
 
-        self._connection.query("DELETE FROM test_recommendations")  # TODO add expiry for deletion
+        self._connection.query("""
+            DELETE FROM test_recommendations
+            WHERE date_added<=DATE_SUB(NOW(), INTERVAL 2 DAY)
+        """)
         self._connection.query(query[:-1])
 
         # TODO bad recommendations
