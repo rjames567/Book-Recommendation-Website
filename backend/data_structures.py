@@ -90,7 +90,7 @@ class PriorityQueue(Queue):
             raise QueueUnderflowError
         return super().pop()[0]  # The result from the super would be a list, where the first item is the inserted value
         # and the second is the priority
-    
+
     def peek(self):
         if not self.size:
             raise QueueUnderflowError
@@ -320,31 +320,31 @@ class Matrix:
         return res
 
     def __truediv__(self, value):
-        return self.__mul__(1/value)  # Equivilent to dividing bur will only
+        return self.__mul__(1 / value)  # Equivilent to dividing bur will only
         # work with scalars.
 
     def __iter__(self):
         return iter(self._matrix)
-    
+
     def __eq__(self, matrix):
-        return self._matrix == matrix._matrix  # Needs to be rewritten as 
-        # comparing two objects with the same contents are treated as not 
+        return self._matrix == matrix._matrix  # Needs to be rewritten as
+        # comparing two objects with the same contents are treated as not
         # equal. This is required to check this. Just checks the stored array
         # that is used to store the matrix data.
 
     def __len__(self):
         return self._m * self._n
-    
+
     def to_array(self):
         return self._matrix
-    
+
     def to_flat_array(self):
         return list(itertools.chain(*self._matrix))
-    
+
     def get_nonzero(self):
         arr = self.to_flat_array().sort()
         return arr[arr.index(1):]  # This approach is significantly faster and more scalable than finding the number
-        # of 0s, and iterating that many times and removing them. for a 100×200 matrix, this method takes ~0.09 sec 
+        # of 0s, and iterating that many times and removing them. for a 100×200 matrix, this method takes ~0.09 sec
         # for 10, and the one described takes ~4.6sec.
 
     def get_zero_indexes(self):
@@ -376,11 +376,11 @@ class Vector(Matrix):  # Vectors are a type of matrix
             kwargs = [[i] for i in kwargs]  # Convert kwargs to 2D array
 
         super().__init__(*kwargs,
-            m=dimensions,
-            n=1,
-            default_value=default_value
-        ) # This handles processing and value checking
-                
+                         m=dimensions,
+                         n=1,
+                         default_value=default_value
+                         )  # This handles processing and value checking
+
         self._is_matrix = False
 
     def dot_product(self, op_vector):
@@ -393,14 +393,14 @@ class Vector(Matrix):  # Vectors are a type of matrix
         # converts to an angle between the vectors
 
     def __abs__(self):
-        return math.sqrt(sum(i[0]**2 for i in self._matrix))
+        return math.sqrt(sum(i[0] ** 2 for i in self._matrix))
 
     def __getitem__(self, index):
         return self._matrix[index][0]
-    
+
     def __setitem__(self, index, value):
         self._matrix[index][0] = value
-    
+
     def __iter__(self):
         return iter(i[0] for i in self._matrix)
 
