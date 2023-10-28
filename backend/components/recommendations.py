@@ -33,7 +33,7 @@ class NoUserPreferencesError(Exception):
 # Recommendations
 # -----------------------------------------------------------------------------
 class Recommendations:
-    def __init__(self, connection, num_converge_iters, hyperparam, debug=False):
+    def __init__(self, connection, num_converge_iters, hyperparam, number_display_genres, debug=False):
         self._connection = connection
         self._num_converge_iters = num_converge_iters
         self._hyperparam = hyperparam
@@ -42,7 +42,7 @@ class Recommendations:
         self._num_users = len(self._connection.query("SELECT user_id FROM test_users"))
         self._num_books = len(self._connection.query("SELECT book_id FROM test_books"))
         self._number_recommendations = 10
-        self._num_display_genres = 5  # TODO make this configurable
+        self._num_display_genres = number_display_genres
 
         self.gen_lookup_tables()
 
@@ -439,6 +439,6 @@ connection = mysql_handler.Connection(
 
 if __name__ == "__main__":
     connection.query("DELETE FROM test_recommendations")
-    rec = Recommendations(connection, 100, 0.1)
+    rec = Recommendations(connection, 100, 0.1, 5)
     rec.fit()
     rec.gen_recommendations()
