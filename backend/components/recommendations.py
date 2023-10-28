@@ -167,7 +167,7 @@ class Recommendations:
                         FROM recommendations
                         WHERE user_id={}
                             AND date_added<=DATE_SUB(NOW(), INTERVAL 2 DAY)
-                    """).format(user_id)
+                    """.format(user_id))
             }  # sets are faster for "is val in list" operations
             for book, rating in enumerate(books):
                 book_id = self.book_lookup_table[book]
@@ -191,6 +191,24 @@ class Recommendations:
         # TODO bad recommendations
         # TODO books in reading lists
         # TODO convert dot products into percentage matches using cosine similarity
+
+    def delete_recommendation(self, user_id, book_id):
+        # This includes marking a recommendation as bad - it is implicitly the same thing
+        self._connection.query("""
+            DELETE FROM test_recommendations
+            WHERE user_id={user_id}
+                AND book_id={book_id}
+        """.format(
+            user_id=user_id,
+            book_id=book_id
+        ))
+
+        self._connection.query(
+            "INSERT INTO test_bad_recommendations (user_id, book_id) VALUES ({user_id}, {book_id})".format(
+                user_id=user_id,
+                book_id=book_id
+            )
+        )
 
     @staticmethod
     def mean_squared_error(true, pred):
