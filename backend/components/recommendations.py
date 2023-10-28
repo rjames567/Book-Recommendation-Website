@@ -326,14 +326,70 @@ class Recommendations:
 
     def calculate_certainty(self, book_id, user_id, dot_product):
         book_id = list(self.book_lookup_table.values()).index(book_id)
-        book_vec = [round(i, 2) for i in self.book_factors[book_id]]
+        book_vec = [i for i in self.book_factors[book_id]]
         user_id = list(self.user_lookup_table.values()).index(user_id)
-        user_vec = [round(i, 2) for i in self.user_factors[user_id]]
+        user_vec = [i for i in self.user_factors[user_id]]
 
         abs_book_vec = math.sqrt(sum(i ** 2 for i in book_vec))
         abs_user_vec = math.sqrt(sum(i ** 2 for i in user_vec))
 
-        return dot_product / (abs_book_vec * abs_user_vec)  # gives a value between 0 and 1
+        similarity = dot_product / (abs_book_vec * abs_user_vec)
+        if similarity > 1:  # Slim chance it ends up larger than 100%, so limits it artificially.
+            similarity = 1
+        return similarity
+
+    def add_user(self, user_id, author_ids):
+        vals = [f"({user_id}, {author_id})" for author_id in author_ids]
+        self._connection.query(
+            "INSERT INTO initial_preferences (user_id, author_id) VALUES {}".format(
+                ",".join(vals)
+            )
+        )
+
+        res = self._connection.query("""
+                SELECT AVG(test_book_genres.match_strength),
+                    test_book_genres.genre_id
+                FROM test_book_genres
+                INNER JOIN test_books
+                    ON test_book_genres.book_id=test_books.book_id
+                INNER JOIN authors
+                    ON test_books.author_id=authors.author_id
+                WHERE authors.author_id IN ({})
+                GROUP BY test_book_genres.genre_id;
+            """.format(
+                ",".join(str(i) for i in author_ids)
+            )
+        )
+
+        target_vec = np.zeros(self._num_factors)
+
+        for avg, genre_id in res:
+            genre = list(self.genre_lookup_table.values()).index(genre_id)
+            target_vec[genre] = avg
+
+        rec = target_vec * self.book_factors
+
+        output = []
+        for count, val in enumerate(rec[0]):
+            output.append({
+                "book_id": self.book_lookup_table[count],
+                "strength": val
+            })
+
+        output.sort(key=lambda x: x["strength"], reverse=True)
+
+        output = output[:self._number_recommendations]
+
+        for count, i in enumerate(output):
+            output[count]["certainty"] = self.calculate_certainty(
+                i["book_id"],
+                user_id,
+                i["strength"]
+            )
+
+        self._connection.query("INSERT INTO test_recommendations (user_id, book_id, certainty) VALUES {}".format(",".join(f"({user_id}, {i['book_id']}, {i['certainty']})" for i in output)))
+
+        return output
 
     @staticmethod
     def mean_squared_error(true, pred):
@@ -386,6 +442,3 @@ if __name__ == "__main__":
     rec = Recommendations(connection, 100, 0.1)
     rec.fit()
     rec.gen_recommendations()
-
-# TODO add method to add a new user
-# TODO add method to set initial user preferences
