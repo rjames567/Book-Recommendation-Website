@@ -167,7 +167,7 @@ class Recommendations:
                         FROM recommendations
                         WHERE user_id={}
                             AND date_added<=DATE_SUB(NOW(), INTERVAL 2 DAY)
-                    """)
+                    """).format(user_id)
             }  # sets are faster for "is val in list" operations
             for book, rating in enumerate(books):
                 book_id = self.book_lookup_table[book]
