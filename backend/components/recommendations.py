@@ -12,6 +12,7 @@ import sklearn.metrics
 # -----------------------------------------------------------------------------
 import os
 import sys
+import authors
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -171,8 +172,8 @@ class Recommendations:
                     """.format(user_id))
             }  # sets are faster for "is val in list" operations
 
-            for i in self.get_bad_recommendations():
-                avoid_recs.add(i[0])
+            for i in self.get_bad_recommendations(user_id):
+                avoid_recs.add(i)
 
             for book, rating in enumerate(books):
                 book_id = self.book_lookup_table[book]
@@ -214,7 +215,7 @@ class Recommendations:
             )
         )
 
-    def get_bad_recommendations(self):
+    def get_bad_recommendations(self, user_id):
         bad_recommendations = self._connection.query("""
             SELECT recommendation_id,
                 book_id,
