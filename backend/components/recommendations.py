@@ -41,6 +41,7 @@ class Recommendations:
         self._num_users = len(self._connection.query("SELECT user_id FROM test_users"))
         self._num_books = len(self._connection.query("SELECT book_id FROM test_books"))
         self._number_recommendations = 10
+        self._num_display_genres = 5  # TODO make this configurable
 
         self.gen_lookup_tables()
 
@@ -240,6 +241,60 @@ class Recommendations:
 
         return return_vals
 
+    def get_user_recommendations(self, user_id):
+        items = self._connection.query("""
+            SELECT test_recommendations.book_id,
+                ROUND(test_recommendations.certainty * 100, 1) as certainty,
+                test_recommendations.date_added,
+                test_books.cover_image,
+                test_books.synopsis,
+                test_books.title,
+                authors.first_name,
+                authors.surname,
+                authors.alias,
+                authors.author_id,
+                (SELECT GROUP_CONCAT(test_genres.name) FROM test_book_genres
+                    INNER JOIN test_genres ON test_book_genres.genre_id=test_genres.genre_id
+                    WHERE test_book_genres.book_id=test_recommendations.book_id
+                    GROUP BY test_books.book_id) AS genres,
+                (SELECT ROUND(CAST(IFNULL(AVG(reviews.overall_rating), 0) as FLOAT), 2)
+                    FROM reviews
+                    WHERE reviews.book_id=test_books.book_id) AS average_rating,
+                (SELECT COUNT(reviews.overall_rating)
+                    FROM reviews
+                    WHERE reviews.book_id=test_books.book_id) AS num_ratings
+            FROM test_recommendations
+            INNER JOIN test_books ON test_recommendations.book_id=test_books.book_id
+            INNER JOIN authors ON test_books.author_id=authors.author_id
+            WHERE test_recommendations.user_id={}
+            ORDER BY test_recommendations.certainty DESC;
+        """.format(
+            user_id))  # ORDER BY does not use calculated certainty for higher accuracy, and avoiding collisions
+        # IFNULL prevents any null values - replace with 0s.
+
+        if len(items) == 0:
+            raise NoUserPreferencesError(user_id)
+
+        output_dict = dict()
+        for i, k in enumerate(items):
+            author = authors.names_to_display(k[6], k[7], k[8])
+
+            output_dict[i] = {
+                "book_id": k[0],
+                "certainty": k[1],
+                "date_added": k[2].strftime("%d/%m/%Y"),
+                "cover_image": k[3],
+                "synopsis": "</p><p>".join(("<p>" + k[4] + "</p>").split("\n")),
+                "title": k[5],
+                "author_name": author,
+                "author_id": k[9],
+                "genres": k[10].split(",")[:self._num_display_genres],
+                "average_rating": round(k[11], 2),
+                "number_ratings": k[12]
+            }
+
+        return output_dict
+
     @staticmethod
     def mean_squared_error(true, pred):
         mask = np.nonzero(true)
@@ -287,11 +342,12 @@ connection = mysql_handler.Connection(
 )
 
 if __name__ == "__main__":
+    connection.query("DELETE FROM test_recommendations")
     rec = Recommendations(connection, 100, 0.1)
     rec.fit()
     rec.gen_recommendations()
+    print(rec.get_user_recommendations(1))
 
-# TODO add method to get specific user's recommendations
 # TODO add method to add a new user
 # TODO add method to get users recommendations
 # TODO add method to set initial user preferences
