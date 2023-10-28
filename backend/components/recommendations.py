@@ -169,6 +169,15 @@ class Recommendations:
                             AND date_added<=DATE_SUB(NOW(), INTERVAL 2 DAY)
                     """.format(user_id))
             }  # sets are faster for "is val in list" operations
+
+            res = self._connection.query("""
+                SELECT book_id
+                FROM test_bad_recommendations
+                WHERE user_id={}
+            """.format(user_id))
+            for i in res:
+                avoid_recs.add(i[0])
+
             for book, rating in enumerate(books):
                 book_id = self.book_lookup_table[book]
                 if book_id not in avoid_recs:
@@ -188,7 +197,6 @@ class Recommendations:
         """)
         self._connection.query(query[:-1])
 
-        # TODO bad recommendations
         # TODO books in reading lists
         # TODO convert dot products into percentage matches using cosine similarity
 
@@ -261,10 +269,8 @@ if __name__ == "__main__":
     rec.fit()
     rec.gen_recommendations()
 
-# TODO add method to mark a recommendation as bad
-# TODO add method to delete a recommendation from database
 # TODO add method to get specific user's recommendations
 # TODO add method to add a new user
-# TODO add method to get users
+# TODO add method to get users recommendations
 # TODO add method to set initial user preferences
 # TODO create method to get recommendation summaries for specific user
