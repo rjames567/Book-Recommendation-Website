@@ -295,6 +295,27 @@ class Recommendations:
 
         return output_dict
 
+    def get_user_recommendation_summaries(self, user_id):
+        res = self._connection.query("""
+            SELECT test_books.book_id,
+                test_books.title,
+                test_books.cover_image,
+                authors.first_name,
+                authors.surname,
+                authors.alias
+            FROM test_recommendations
+            INNER JOIN test_books ON test_recommendations.book_id=test_books.book_id
+            INNER JOIN authors ON test_books.author_id=authors.author_id
+            WHERE test_recommendations.user_id={}
+            ORDER BY test_recommendations.certainty DESC;
+        """.format(user_id))
+        return [{
+                "author": authors.names_to_display(i[3], i[4], i[5]),
+                "title": i[1],
+                "book_id": i[0],
+                "cover": i[2],
+            } for i in res]
+
     @staticmethod
     def mean_squared_error(true, pred):
         mask = np.nonzero(true)
@@ -346,9 +367,6 @@ if __name__ == "__main__":
     rec = Recommendations(connection, 100, 0.1)
     rec.fit()
     rec.gen_recommendations()
-    print(rec.get_user_recommendations(1))
 
 # TODO add method to add a new user
-# TODO add method to get users recommendations
 # TODO add method to set initial user preferences
-# TODO create method to get recommendation summaries for specific user
