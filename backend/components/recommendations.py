@@ -1,6 +1,7 @@
 # -----------------------------------------------------------------------------
 # Standard Python library imports
 # -----------------------------------------------------------------------------
+import math
 import random
 import datetime
 import numpy as np
@@ -315,6 +316,19 @@ class Recommendations:
                 "book_id": i[0],
                 "cover": i[2],
             } for i in res]
+
+    def calculate_certainty(self, book_id, user_id, dot_product):
+        book_id = list(self.book_lookup_table.values()).index(book_id)
+        book_vec = [round(i, 2) for i in self.book_factors[book_id]]
+        user_id = list(self.user_lookup_table.values()).index(user_id)
+        user_vec = [round(i, 2) for i in self.user_factors[user_id]]
+
+        abs_book_vec = math.sqrt(sum(i ** 2 for i in book_vec))
+        abs_user_vec = math.sqrt(sum(i ** 2 for i in user_vec))
+
+        similarity = dot_product / (abs_book_vec * abs_user_vec)  # gives a value between 0 and 1
+
+        return similarity * 100  # convert value into a percentage
 
     @staticmethod
     def mean_squared_error(true, pred):
