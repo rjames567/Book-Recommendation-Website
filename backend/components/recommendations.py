@@ -2,6 +2,7 @@
 # Standard Python library imports
 # -----------------------------------------------------------------------------
 import random
+import datetime
 import numpy as np
 import matplotlib.pyplot as plt
 import sklearn.metrics
@@ -164,18 +165,13 @@ class Recommendations:
             avoid_recs = {
                 i[0] for i in self._connection.query("""
                         SELECT book_id
-                        FROM recommendations
+                        FROM test_recommendations
                         WHERE user_id={}
                             AND date_added<=DATE_SUB(NOW(), INTERVAL 2 DAY)
                     """.format(user_id))
             }  # sets are faster for "is val in list" operations
 
-            res = self._connection.query("""
-                SELECT book_id
-                FROM test_bad_recommendations
-                WHERE user_id={}
-            """.format(user_id))
-            for i in res:
+            for i in self.get_bad_recommendations():
                 avoid_recs.add(i[0])
 
             for book, rating in enumerate(books):
@@ -217,6 +213,31 @@ class Recommendations:
                 book_id=book_id
             )
         )
+
+    def get_bad_recommendations(self):
+        bad_recommendations = self._connection.query("""
+            SELECT recommendation_id,
+                book_id,
+                date_added
+            FROM test_bad_recommendations
+            WHERE user_id={}
+        """.format(user_id))
+
+        return_vals = []
+        remove = []
+        for rec_id, book, date in bad_recommendations:
+            if date + datetime.timedelta(weeks=10) > datetime.datetime.now():
+                # 10 week expiry, so it can start recommending books if the user's preferences have changed. 10 weeks is
+                # a long enough time for it to be plausible to be a good recommendation
+                return_vals.append(book)
+            else:
+                remove.append(rec_id)
+
+        self._connection.query(
+            "DELETE FROM test_bad_recommendations WHERE recommendation_id IN ({})".format(",".join(str(i) for i in remove)))
+        # Delete expired recommendations.
+
+        return return_vals
 
     @staticmethod
     def mean_squared_error(true, pred):
