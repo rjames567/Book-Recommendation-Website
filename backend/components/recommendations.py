@@ -122,7 +122,6 @@ class Recommendations:
         mat = np.zeros((self._num_users, self._num_books))
         for user in self.user_lookup_table:
             user_id = self.user_lookup_table[user]
-            print(f"user_id: {user_id}")
             reviews = self._connection.query("""
                 SELECT book_id,
                     (overall_rating + IFNULL(character_rating, overall_rating) + IFNULL(plot_rating, overall_rating)) / 3
@@ -135,23 +134,7 @@ class Recommendations:
                 used_book_id = list(self.book_lookup_table.values()).index(book_id)  # This finds the key for the value stored in the lookup table.
                 # geeksforgeeks.org/python-get-key-from-value-in-dictionary
                 mat[user][used_book_id] = float(rating)
-            #
-            # if existing_factors:
-            #     books = self._connection.query("""
-            #         SELECT books.book_id,
-            #             GROUP_CONCAT(book_genres.match_strength),
-            #             GROUP_CONCAT(book_genres.genre_id)
-            #         FROM initial_preferences
-            #         INNER JOIN books
-            #             ON books.author_id=initial_preferences.author_id
-            #         INNER JOIN book_genres
-            #             ON book_genres.book_id=books.book_id
-            #         WHERE initial_preferences.user_id={}
-            #         GROUP BY books.book_id
-            #     """.format(user_id))
-            #
-            #     books = [(j[0], float(i), int(k)) for j in books for i, k in zip(j[1].split(","), j[2].split(","))]
-            # else:
+
             books = self._connection.query("""
                 SELECT books.book_id
                 FROM initial_preferences
@@ -161,8 +144,6 @@ class Recommendations:
                 GROUP BY books.book_id
             """.format(user_id))  # Get a user's existing preferences
 
-            print(f"Number reviews: {len(reviews)}")
-            print(f"Number books: {len(books)}")
             if len(reviews) <= self._min_required_reviews:
                 if len(books):
                     for i in books:
@@ -177,7 +158,6 @@ class Recommendations:
                     DELETE FROM initial_preferences
                     WHERE user_id={}
                 """.format(user_id))
-            print("\n")
         return mat
 
         # TODO include presence of books in reading lists
