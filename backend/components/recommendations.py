@@ -74,8 +74,10 @@ class Recommendations:
 
         else:
             for i in range(self._num_converge_iters):
+                print(f"Iteration {i + 1} of {self._num_converge_iters} Start")   # This is here for development. TODO remove this
                 self.user_factors = self.wals_step(train, self.book_factors)
                 self.item_factors = self.wals_step(train.T, self.user_factors)
+                print(f"Iteration {i + 1} of {self._num_converge_iters} End")
 
             self.save_book_genres()  # Not included in the debug option, as it increases time cost,
             # and would likely be rerun a lot to find optimum parameters, so is unnecessary.
@@ -94,20 +96,25 @@ class Recommendations:
     def predict(self):
         return self.user_factors.dot(self.item_factors.T)
 
-    def gen_recommendation_matrix(self, percentage_books_rated_user=30):
+    def gen_review_matrix(self):
         # x = np.array([[0.0 for i in range(num_books)] for k in range(num_users)])
-        reviews = np.zeros((self._num_users, self._num_books))
+        mat = np.zeros((self._num_users, self._num_books))
+        for user in self.user_lookup_table:
+            user_id = self.user_lookup_table[user]
+            reviews = self._connection.query("""
+                SELECT book_id,
+                    (overall_rating + IFNULL(character_rating, overall_rating) + IFNULL(plot_rating, overall_rating)) / 3
+                FROM reviews
+                WHERE user_id={}
+                GROUP BY review_id;
+            """.format(user_id))
 
-        for i in range(self._num_users):
-            indexes = list(range(self._num_books))
-            for k in range(int(self._num_books * (percentage_books_rated_user / 100))):
-                option = random.choice(indexes)
-                indexes.remove(option)
-                reviews[i][option] = random.random()
+            for book_id, rating in reviews:
+                used_book_id = list(self.book_lookup_table.values()).index(book_id)  # This finds the key for the value stored in the lookup table.
+                # geeksforgeeks.org/python-get-key-from-value-in-dictionary
+                mat[user][used_book_id] = float(rating)
+        return mat
 
-        return reviews
-
-        # TODO Use real recommendation data
         # TODO include users initial preferences
         # TODO include presence of books in reading lists
         # TODO include users following authors
@@ -115,7 +122,7 @@ class Recommendations:
 
     def create_train_test(self, ratings=None):
         if ratings is None:
-            self.ratings = self.gen_recommendation_matrix()
+            self.ratings = self.gen_review_matrix()
         else:
             self.ratings = ratings
 
@@ -440,7 +447,8 @@ connection = mysql_handler.Connection(
 )
 
 if __name__ == "__main__":
-    connection.query("DELETE FROM test_recommendations")
+    connection.query("DELETE FROM recommendations")
     rec = Recommendations(connection, 100, 0.1, 5)
-    rec.fit()
-    rec.gen_recommendations()
+    # rec.fit()
+    # rec.gen_recommendations()
+    print(rec.gen_review_matrix().tolist())
