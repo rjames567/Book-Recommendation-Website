@@ -41,7 +41,8 @@ class Recommendations:
         self.debug = debug
         self._num_users = len(self._connection.query("SELECT user_id FROM users"))
         self._num_books = len(self._connection.query("SELECT book_id FROM books"))
-        self._number_recommendations = 10
+        self._number_recommendations = 10  # TODO make this configurable
+        self._min_required_reviews = 10  # TODO make this configurable
         self._num_display_genres = number_display_genres
         self.test_mse_record = []
         self.train_mse_record = []
@@ -63,7 +64,7 @@ class Recommendations:
             for i in range(self._num_converge_iters):
                 print(f"Iteration {i + 1} of {self._num_converge_iters}")
                 self.user_factors = self.wals_step(train, self.book_factors)
-                self.item_factors = self.wals_step(train.T, self.user_factors)
+                self.book_factors = self.wals_step(train.T, self.user_factors)
 
                 predict = self.predict()
 
@@ -76,7 +77,7 @@ class Recommendations:
             for i in range(self._num_converge_iters):
                 print(f"Iteration {i + 1} of {self._num_converge_iters} Start")   # This is here for development. TODO remove this
                 self.user_factors = self.wals_step(train, self.book_factors)
-                self.item_factors = self.wals_step(train.T, self.user_factors)
+                self.book_factors = self.wals_step(train.T, self.user_factors)
                 print(f"Iteration {i + 1} of {self._num_converge_iters} End")
 
             self.save_book_genres()  # Not included in the debug option, as it increases time cost,
@@ -94,13 +95,34 @@ class Recommendations:
         self._connection.query(query[:-1])
 
     def predict(self):
-        return self.user_factors.dot(self.item_factors.T)
+        return self.user_factors.dot(self.book_factors.T)
 
     def gen_review_matrix(self):
         # x = np.array([[0.0 for i in range(num_books)] for k in range(num_users)])
+        self._list_users_no_preferences = set()
+        existing_factors = bool(len(self._connection.query("SELECT book_id FROM book_genres")))  # Check if the script has run before, so approximations of old values can be used.
+        if existing_factors:  # If the existing genres are there, they should be accurate enough to be used. Therefore they need to be loaded into memory to be used.
+            self.book_factors = np.zeros((self._num_books, self._num_factors))
+            res = self._connection.query("""
+                SELECT book_id,
+                    GROUP_CONCAT(genre_id),
+                    GROUP_CONCAT(match_strength)
+                FROM book_genres
+                GROUP BY book_id
+            """)
+
+            res = [(j[0], int(i), float(k)) for j in res for i, k in zip(j[1].split(","), j[2].split(","))]
+
+            for book, genre, strength in res:
+                genre_id = list(self.genre_lookup_table.values()).index(genre)
+                book_id = list(self.book_lookup_table.values()).index(book)
+
+                self.book_factors[book_id][genre_id] = strength
+
         mat = np.zeros((self._num_users, self._num_books))
         for user in self.user_lookup_table:
             user_id = self.user_lookup_table[user]
+            print(f"user_id: {user_id}")
             reviews = self._connection.query("""
                 SELECT book_id,
                     (overall_rating + IFNULL(character_rating, overall_rating) + IFNULL(plot_rating, overall_rating)) / 3
@@ -113,9 +135,51 @@ class Recommendations:
                 used_book_id = list(self.book_lookup_table.values()).index(book_id)  # This finds the key for the value stored in the lookup table.
                 # geeksforgeeks.org/python-get-key-from-value-in-dictionary
                 mat[user][used_book_id] = float(rating)
+            #
+            # if existing_factors:
+            #     books = self._connection.query("""
+            #         SELECT books.book_id,
+            #             GROUP_CONCAT(book_genres.match_strength),
+            #             GROUP_CONCAT(book_genres.genre_id)
+            #         FROM initial_preferences
+            #         INNER JOIN books
+            #             ON books.author_id=initial_preferences.author_id
+            #         INNER JOIN book_genres
+            #             ON book_genres.book_id=books.book_id
+            #         WHERE initial_preferences.user_id={}
+            #         GROUP BY books.book_id
+            #     """.format(user_id))
+            #
+            #     books = [(j[0], float(i), int(k)) for j in books for i, k in zip(j[1].split(","), j[2].split(","))]
+            # else:
+            books = self._connection.query("""
+                SELECT books.book_id
+                FROM initial_preferences
+                INNER JOIN books
+                    ON books.author_id=initial_preferences.author_id
+                WHERE initial_preferences.user_id={}
+                GROUP BY books.book_id
+            """.format(user_id))  # Get a user's existing preferences
+
+            print(f"Number reviews: {len(reviews)}")
+            print(f"Number books: {len(books)}")
+            if len(reviews) <= self._min_required_reviews:
+                if len(books):
+                    for i in books:
+                        used_book_id = list(self._book_id_lookup.values()).index(i[0])
+                        mat[user][used_book_id] = self._default_value  # This is a non-zero value so recommendation is made. This is not affected by the average preference expressed
+                        # by all the user's selected authors.
+                else:
+                    self._list_users_no_preferences.add(user_id)
+                    continue # The user has not set up any initial preferences yet.
+            elif len(books):
+                self._connection.query("""
+                    DELETE FROM initial_preferences
+                    WHERE user_id={}
+                """.format(user_id))
+            print("\n")
         return mat
 
-        # TODO include users initial preferences
         # TODO include presence of books in reading lists
         # TODO include users following authors
         # TODO include bad recommendations
@@ -174,38 +238,39 @@ class Recommendations:
             user_books = []
             user_id = self.user_lookup_table[user]
 
-            avoid_recs = {
-                i[0] for i in self._connection.query("""
-                        SELECT book_id
-                        FROM recommendations
-                        WHERE user_id={}
-                            AND date_added<=DATE_SUB(NOW(), INTERVAL 2 DAY)
-                    """.format(user_id))
-            }  # sets are faster for "is val in list" operations
+            if user_id not in self._list_users_no_preferences:
+                avoid_recs = {
+                    i[0] for i in self._connection.query("""
+                            SELECT book_id
+                            FROM recommendations
+                            WHERE user_id={}
+                                AND date_added<=DATE_SUB(NOW(), INTERVAL 2 DAY)
+                        """.format(user_id))
+                }  # sets are faster for "is val in list" operations
 
-            for i in self.get_bad_recommendations(user_id):
-                avoid_recs.add(i)
+                for i in self.get_bad_recommendations(user_id):
+                    avoid_recs.add(i)
 
-            for book, rating in enumerate(books):
-                book_id = self.book_lookup_table[book]
-                if book_id not in avoid_recs:
-                    user_books.append({
-                        "id": book_id,
-                        "dot_product": rating
-                    })
+                for book, rating in enumerate(books):
+                    book_id = self.book_lookup_table[book]
+                    if book_id not in avoid_recs:
+                        user_books.append({
+                            "id": book_id,
+                            "dot_product": rating
+                        })
 
-            user_books.sort(key=lambda x: x["dot_product"], reverse=True)
-            user_books = user_books[:self._number_recommendations]
+                user_books.sort(key=lambda x: x["dot_product"], reverse=True)
+                user_books = user_books[:self._number_recommendations]
 
-            for count, i in enumerate(user_books):  # Done after as this is faily expensive, to avoid unecessary calculations
-                user_books[count]["certainty"] = self.calculate_certainty(
-                    i["id"],
-                    user_id,
-                    i["dot_product"]
-                )
+                for count, i in enumerate(user_books):  # Done after as this is faily expensive, to avoid unecessary calculations
+                    user_books[count]["certainty"] = self.calculate_certainty(
+                        i["id"],
+                        user_id,
+                        i["dot_product"]
+                    )
 
-            query += ",".join(
-                f"({user_id}, {i['id']}, {i['certainty']})" for i in user_books[:self._number_recommendations]) + ","
+                query += ",".join(
+                    f"({user_id}, {i['id']}, {i['certainty']})" for i in user_books[:self._number_recommendations]) + ","
 
         self._connection.query("""
             DELETE FROM test_recommendations
@@ -448,7 +513,7 @@ connection = mysql_handler.Connection(
 
 if __name__ == "__main__":
     connection.query("DELETE FROM recommendations")
-    rec = Recommendations(connection, 100, 0.1, 5)
+    rec = Recommendations(connection, 10, 0.1, 5)
     # rec.fit()
     # rec.gen_recommendations()
-    print(rec.gen_review_matrix().tolist())
+    print(rec.gen_review_matrix().tolist()[601])
