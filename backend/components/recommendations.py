@@ -213,6 +213,22 @@ class Recommendations:
                         """.format(user_id))
                 }  # sets are faster for "is val in list" operations
 
+                res = self._connection.query("""
+                    SELECT book_id
+                    FROM reading_lists
+                    INNER JOIN reading_list_names
+                        ON reading_lists.list_id=reading_list_names.list_id
+                    WHERE reading_lists.user_id={}
+                        AND reading_list_names.list_name IN (
+                            "Currently Reading",
+                            "Have Read",
+                            "Want To Read"
+                        )
+                """.format(user_id))
+
+                for i in res:
+                    avoid_recs.add(i[0])
+
                 for i in self.get_bad_recommendations(user_id):
                     avoid_recs.add(i)
 
@@ -242,8 +258,6 @@ class Recommendations:
             WHERE date_added<=DATE_SUB(NOW(), INTERVAL 2 DAY)
         """)
         self._connection.query(query[:-1])
-
-        # TODO books in reading lists
 
     def delete_recommendation(self, user_id, book_id):
         # This includes marking a recommendation as bad - it is implicitly the same thing
