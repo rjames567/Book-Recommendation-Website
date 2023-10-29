@@ -45,6 +45,7 @@ class Recommendations:
         self._min_required_reviews = 10  # TODO make this configurable
         self._initial_recommendation_mat_val = 0.5
         self._reading_list_percentage_increase = 0.5
+        self._following_percentage_increase = 0.5
         self._num_display_genres = number_display_genres
         self.test_mse_record = []
         self.train_mse_record = []
@@ -161,10 +162,24 @@ class Recommendations:
                     mat[user][used_book_id] = self._initial_recommendation_mat_val
                 else:
                     mat[user][used_book_id] *= (1 + self._reading_list_percentage_increase)
-        return mat
 
-        # TODO include presence of books in reading lists
-        # TODO include users following authors
+            #    Authors following    #
+            following = self._connection.query("""
+                SELECT books.book_id
+                FROM author_followers
+                INNER JOIN books
+                    ON books.author_id=author_followers.author_id
+                WHERE user_id={}
+            """.format(user_id))
+
+            for i in following:
+                used_book_id = list(self.book_lookup_table.values()).index(int(i[0]))
+                if mat[user][used_book_id] == 0:
+                    mat[user][used_book_id] = self._initial_recommendation_mat_val
+                else:
+                    mat[user][used_book_id] *= (1 + self._following_percentage_increase)
+        return mat
+        
         # TODO include bad recommendations
 
     def create_train_test(self, ratings=None):
