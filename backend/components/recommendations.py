@@ -37,10 +37,10 @@ class Recommendations:
         self._connection = connection
         self._num_converge_iters = num_converge_iters
         self._hyperparam = hyperparam
-        self._num_factors = len(self._connection.query("SELECT * FROM test_genres"))
+        self._num_factors = len(self._connection.query("SELECT * FROM genres"))
         self.debug = debug
-        self._num_users = len(self._connection.query("SELECT user_id FROM test_users"))
-        self._num_books = len(self._connection.query("SELECT book_id FROM test_books"))
+        self._num_users = len(self._connection.query("SELECT user_id FROM users"))
+        self._num_books = len(self._connection.query("SELECT book_id FROM books"))
         self._number_recommendations = 10
         self._num_display_genres = number_display_genres
 
@@ -79,14 +79,14 @@ class Recommendations:
             # and would likely be rerun a lot to find optimum parameters, so is unnecessary.
 
     def save_book_genres(self):
-        query = "INSERT INTO test_book_genres (book_id, genre_id, match_strength) VALUES "
+        query = "INSERT INTO book_genres (book_id, genre_id, match_strength) VALUES "
         for count, facts in enumerate(self.book_factors):
             # i will be the rating for each the genres.
             book_id = self.book_lookup_table[count]
             query += ",".join(
                 f"({book_id}, {self.genre_lookup_table[i]}, {strength})" for i, strength in enumerate(facts)) + ","
 
-        self._connection.query("DELETE FROM test_book_genres")  # Done here to minimise time without data in DB
+        self._connection.query("DELETE FROM book_genres")  # Done here to minimise time without data in DB
         self._connection.query(query[:-1])
 
     def predict(self):
@@ -142,24 +142,24 @@ class Recommendations:
 
     def gen_lookup_tables(self):
         self.user_lookup_table = dict()
-        users = self._connection.query("SELECT user_id FROM test_users")
+        users = self._connection.query("SELECT user_id FROM users")
         for count, i in enumerate(users):
             self.user_lookup_table[count] = i[0]
 
         self.book_lookup_table = dict()
-        books = self._connection.query("SELECT book_id FROM test_books")
+        books = self._connection.query("SELECT book_id FROM books")
         for count, i in enumerate(books):
             self.book_lookup_table[count] = i[0]
 
         self.genre_lookup_table = dict()
-        genres = self._connection.query("SELECT genre_id FROM test_genres")
+        genres = self._connection.query("SELECT genre_id FROM genres")
         for count, i in enumerate(genres):
             self.genre_lookup_table[count] = i[0]
 
     def gen_recommendations(self):
         predictions = self.predict()
 
-        query = "INSERT INTO test_recommendations (user_id, book_id, certainty) VALUES "
+        query = "INSERT INTO recommendations (user_id, book_id, certainty) VALUES "
 
         for user, books in enumerate(predictions):
             user_books = []
@@ -168,7 +168,7 @@ class Recommendations:
             avoid_recs = {
                 i[0] for i in self._connection.query("""
                         SELECT book_id
-                        FROM test_recommendations
+                        FROM recommendations
                         WHERE user_id={}
                             AND date_added<=DATE_SUB(NOW(), INTERVAL 2 DAY)
                     """.format(user_id))
@@ -209,7 +209,7 @@ class Recommendations:
     def delete_recommendation(self, user_id, book_id):
         # This includes marking a recommendation as bad - it is implicitly the same thing
         self._connection.query("""
-            DELETE FROM test_recommendations
+            DELETE FROM recommendations
             WHERE user_id={user_id}
                 AND book_id={book_id}
         """.format(
@@ -218,7 +218,7 @@ class Recommendations:
         ))
 
         self._connection.query(
-            "INSERT INTO test_bad_recommendations (user_id, book_id) VALUES ({user_id}, {book_id})".format(
+            "INSERT INTO bad_recommendations (user_id, book_id) VALUES ({user_id}, {book_id})".format(
                 user_id=user_id,
                 book_id=book_id
             )
@@ -229,7 +229,7 @@ class Recommendations:
             SELECT recommendation_id,
                 book_id,
                 date_added
-            FROM test_bad_recommendations
+            FROM bad_recommendations
             WHERE user_id={}
         """.format(user_id))
 
@@ -244,38 +244,38 @@ class Recommendations:
                 remove.append(rec_id)
 
         self._connection.query(
-            "DELETE FROM test_bad_recommendations WHERE recommendation_id IN ({})".format(",".join(str(i) for i in remove)))
+            "DELETE FROM bad_recommendations WHERE recommendation_id IN ({})".format(",".join(str(i) for i in remove)))
         # Delete expired recommendations.
 
         return return_vals
 
     def get_user_recommendations(self, user_id):
         items = self._connection.query("""
-            SELECT test_recommendations.book_id,
-                ROUND(test_recommendations.certainty * 100, 1) as certainty,
-                test_recommendations.date_added,
-                test_books.cover_image,
-                test_books.synopsis,
-                test_books.title,
+            SELECT recommendations.book_id,
+                ROUND(recommendations.certainty * 100, 1) as certainty,
+                recommendations.date_added,
+                books.cover_image,
+                books.synopsis,
+                books.title,
                 authors.first_name,
                 authors.surname,
                 authors.alias,
                 authors.author_id,
-                (SELECT GROUP_CONCAT(test_genres.name) FROM test_book_genres
-                    INNER JOIN test_genres ON test_book_genres.genre_id=test_genres.genre_id
-                    WHERE test_book_genres.book_id=test_recommendations.book_id
-                    GROUP BY test_books.book_id) AS genres,
+                (SELECT GROUP_CONCAT(genres.name) FROM book_genres
+                    INNER JOIN genres ON book_genres.genre_id=genres.genre_id
+                    WHERE book_genres.book_id=recommendations.book_id
+                    GROUP BY books.book_id) AS genres,
                 (SELECT ROUND(CAST(IFNULL(AVG(reviews.overall_rating), 0) as FLOAT), 2)
                     FROM reviews
-                    WHERE reviews.book_id=test_books.book_id) AS average_rating,
+                    WHERE reviews.book_id=books.book_id) AS average_rating,
                 (SELECT COUNT(reviews.overall_rating)
                     FROM reviews
-                    WHERE reviews.book_id=test_books.book_id) AS num_ratings
-            FROM test_recommendations
-            INNER JOIN test_books ON test_recommendations.book_id=test_books.book_id
-            INNER JOIN authors ON test_books.author_id=authors.author_id
-            WHERE test_recommendations.user_id={}
-            ORDER BY test_recommendations.certainty DESC;
+                    WHERE reviews.book_id=books.book_id) AS num_ratings
+            FROM recommendations
+            INNER JOIN books ON recommendations.book_id=books.book_id
+            INNER JOIN authors ON books.author_id=authors.author_id
+            WHERE recommendations.user_id={}
+            ORDER BY recommendations.certainty DESC;
         """.format(
             user_id))  # ORDER BY does not use calculated certainty for higher accuracy, and avoiding collisions
         # IFNULL prevents any null values - replace with 0s.
@@ -305,17 +305,17 @@ class Recommendations:
 
     def get_user_recommendation_summaries(self, user_id):
         res = self._connection.query("""
-            SELECT test_books.book_id,
-                test_books.title,
-                test_books.cover_image,
+            SELECT books.book_id,
+                books.title,
+                books.cover_image,
                 authors.first_name,
                 authors.surname,
                 authors.alias
-            FROM test_recommendations
-            INNER JOIN test_books ON test_recommendations.book_id=test_books.book_id
-            INNER JOIN authors ON test_books.author_id=authors.author_id
-            WHERE test_recommendations.user_id={}
-            ORDER BY test_recommendations.certainty DESC;
+            FROM recommendations
+            INNER JOIN books ON recommendations.book_id=books.book_id
+            INNER JOIN authors ON books.author_id=authors.author_id
+            WHERE recommendations.user_id={}
+            ORDER BY recommendations.certainty DESC;
         """.format(user_id))
         return [{
                 "author": authors.names_to_display(i[3], i[4], i[5]),
@@ -347,15 +347,15 @@ class Recommendations:
         )
 
         res = self._connection.query("""
-                SELECT AVG(test_book_genres.match_strength),
-                    test_book_genres.genre_id
-                FROM test_book_genres
-                INNER JOIN test_books
-                    ON test_book_genres.book_id=test_books.book_id
+                SELECT AVG(book_genres.match_strength),
+                    book_genres.genre_id
+                FROM book_genres
+                INNER JOIN books
+                    ON book_genres.book_id=books.book_id
                 INNER JOIN authors
-                    ON test_books.author_id=authors.author_id
+                    ON books.author_id=authors.author_id
                 WHERE authors.author_id IN ({})
-                GROUP BY test_book_genres.genre_id;
+                GROUP BY book_genres.genre_id;
             """.format(
                 ",".join(str(i) for i in author_ids)
             )
@@ -387,7 +387,7 @@ class Recommendations:
                 i["strength"]
             )
 
-        self._connection.query("INSERT INTO test_recommendations (user_id, book_id, certainty) VALUES {}".format(",".join(f"({user_id}, {i['book_id']}, {i['certainty']})" for i in output)))
+        self._connection.query("INSERT INTO recommendations (user_id, book_id, certainty) VALUES {}".format(",".join(f"({user_id}, {i['book_id']}, {i['certainty']})" for i in output)))
 
         return output
 
