@@ -43,6 +43,7 @@ class Recommendations:
         self._num_books = len(self._connection.query("SELECT book_id FROM books"))
         self._number_recommendations = 10  # TODO make this configurable
         self._min_required_reviews = 10  # TODO make this configurable
+        self._initial_recommendation_mat_val = 4
         self._num_display_genres = number_display_genres
         self.test_mse_record = []
         self.train_mse_record = []
@@ -100,28 +101,11 @@ class Recommendations:
     def gen_review_matrix(self):
         # x = np.array([[0.0 for i in range(num_books)] for k in range(num_users)])
         self._list_users_no_preferences = set()
-        existing_factors = bool(len(self._connection.query("SELECT book_id FROM book_genres")))  # Check if the script has run before, so approximations of old values can be used.
-        if existing_factors:  # If the existing genres are there, they should be accurate enough to be used. Therefore they need to be loaded into memory to be used.
-            self.book_factors = np.zeros((self._num_books, self._num_factors))
-            res = self._connection.query("""
-                SELECT book_id,
-                    GROUP_CONCAT(genre_id),
-                    GROUP_CONCAT(match_strength)
-                FROM book_genres
-                GROUP BY book_id
-            """)
-
-            res = [(j[0], int(i), float(k)) for j in res for i, k in zip(j[1].split(","), j[2].split(","))]
-
-            for book, genre, strength in res:
-                genre_id = list(self.genre_lookup_table.values()).index(genre)
-                book_id = list(self.book_lookup_table.values()).index(book)
-
-                self.book_factors[book_id][genre_id] = strength
 
         mat = np.zeros((self._num_users, self._num_books))
         for user in self.user_lookup_table:
             user_id = self.user_lookup_table[user]
+            #    Reviews    #
             reviews = self._connection.query("""
                 SELECT book_id,
                     (overall_rating + IFNULL(character_rating, overall_rating) + IFNULL(plot_rating, overall_rating)) / 3
@@ -135,6 +119,7 @@ class Recommendations:
                 # geeksforgeeks.org/python-get-key-from-value-in-dictionary
                 mat[user][used_book_id] = float(rating)
 
+            #    Initial Preferences    #
             books = self._connection.query("""
                 SELECT books.book_id
                 FROM initial_preferences
@@ -147,8 +132,8 @@ class Recommendations:
             if len(reviews) <= self._min_required_reviews:
                 if len(books):
                     for i in books:
-                        used_book_id = list(self._book_id_lookup.values()).index(i[0])
-                        mat[user][used_book_id] = self._default_value  # This is a non-zero value so recommendation is made. This is not affected by the average preference expressed
+                        used_book_id = list(self.book_lookup_table.values()).index(i[0])
+                        mat[user][used_book_id] = self._initial_recommendation_mat_val  # This is a non-zero value so recommendation is made. This is not affected by the average preference expressed
                         # by all the user's selected authors.
                 else:
                     self._list_users_no_preferences.add(user_id)
@@ -496,4 +481,4 @@ if __name__ == "__main__":
     rec = Recommendations(connection, 10, 0.1, 5)
     # rec.fit()
     # rec.gen_recommendations()
-    print(rec.gen_review_matrix().tolist()[601])
+    print(rec.gen_review_matrix().tolist())
