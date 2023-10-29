@@ -67,10 +67,10 @@ class Recommendations:
 
                 predict = self.predict()
 
-                train_mse_record.append(self.mean_squared_error(train, predict))
-                test_mse_record.append(self.mean_squared_error(test, predict))
+                self.train_mse_record.append(self.mean_squared_error(train, predict))
+                self.test_mse_record.append(self.mean_squared_error(test, predict))
 
-            return test_mse_record, train_mse_record
+            return self.test_mse_record, self.train_mse_record
 
         else:
             for i in range(self._num_converge_iters):
