@@ -43,6 +43,8 @@ class Recommendations:
         self._num_books = len(self._connection.query("SELECT book_id FROM books"))
         self._number_recommendations = 10
         self._num_display_genres = number_display_genres
+        self.test_mse_record = []
+        self.train_mse_record = []
 
         self.gen_lookup_tables()
 
@@ -55,8 +57,8 @@ class Recommendations:
         self.user_factors = np.random.random((self._num_users, self._num_factors))
 
         if self.debug:  # Debug is about 10 times slower
-            test_mse_record = []
-            train_mse_record = []
+            self.test_mse_record = []
+            self.train_mse_record = []
 
             for i in range(self._num_converge_iters):
                 print(f"Iteration {i + 1} of {self._num_converge_iters}")
