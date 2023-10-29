@@ -72,20 +72,9 @@ CREATE TABLE book_genres (
 -- -----------------------------------
 -- Recommendations
 -- -----------------------------------
-DROP TABLE IF EXISTS user_genres;
 DROP TABLE IF EXISTS recommendations;
 DROP TABLE IF EXISTS initial_preferences;
 DROP TABLE IF EXISTS bad_recommendations;
-
-CREATE TABLE user_genres (
-    link_id INT NOT NULL AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    genre_id INT NOT NULL,
-    match_strength FLOAT NOT NULL,
-    PRIMARY KEY (link_id),
-    FOREIGN KEY (user_id) REFERENCES users(user_id),
-    FOREIGN KEY (genre_id) REFERENCES genres(genre_id)
-);
 
 CREATE TABLE recommendations (
     recommendation_id INT NOT NULL AUTO_INCREMENT,
