@@ -43,7 +43,8 @@ class Recommendations:
         self._num_books = len(self._connection.query("SELECT book_id FROM books"))
         self._number_recommendations = 10  # TODO make this configurable
         self._min_required_reviews = 10  # TODO make this configurable
-        self._initial_recommendation_mat_val = 4
+        self._initial_recommendation_mat_val = 0.5
+        self._reading_list_percentage_increase = 0.5
         self._num_display_genres = number_display_genres
         self.test_mse_record = []
         self.train_mse_record = []
@@ -143,6 +144,23 @@ class Recommendations:
                     DELETE FROM initial_preferences
                     WHERE user_id={}
                 """.format(user_id))
+
+            #    Reading Lists    #
+            lists = self._connection.query("""
+                SELECT reading_lists.book_id
+                FROM reading_lists
+                INNER JOIN reading_list_names
+                    ON reading_lists.list_id=reading_list_names.list_id
+                WHERE reading_lists.user_id={}
+                GROUP BY reading_lists.book_id;
+            """.format(user_id))
+
+            for i in lists:
+                used_book_id = list(self.book_lookup_table.values()).index(i[0])
+                if mat[user][used_book_id] == 0:
+                    mat[user][used_book_id] = self._initial_recommendation_mat_val
+                else:
+                    mat[user][used_book_id] *= (1 + self._reading_list_percentage_increase)
         return mat
 
         # TODO include presence of books in reading lists
@@ -495,4 +513,4 @@ if __name__ == "__main__":
     rec = Recommendations(connection, 10, 0.1, 5)
     # rec.fit()
     # rec.gen_recommendations()
-    print(rec.gen_review_matrix().tolist())
+    rec.gen_review_matrix().tolist()
