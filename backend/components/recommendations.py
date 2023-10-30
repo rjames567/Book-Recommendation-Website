@@ -135,7 +135,7 @@ class Recommendations:
                 if len(books):
                     for i in books:
                         used_book_id = list(self.book_lookup_table.values()).index(i[0])
-                        mat[user][used_book_id] = self._initial_recommendation_mat_val  # This is a non-zero value so recommendation is made. This is not affected by the average preference expressed
+                        mat[user][used_book_id] += self._initial_recommendation_mat_val  # This is a non-zero value so recommendation is made. This is not affected by the average preference expressed
                         # by all the user's selected authors.
                 else:
                     self._list_users_no_preferences.add(user_id)
@@ -182,7 +182,7 @@ class Recommendations:
             #    Bad Recommendations    #
             for book in self.get_bad_recommendations(user_id):
                 used_book_id = list(self.book_lookup_table.values()).index(book)
-                mat[user][used_book_id] = self._bad_recommendation_val
+                mat[user][used_book_id] = self._bad_recommendation_val  # = is used in case there is a good value here. It should be marked as bad.
 
             #    Diary entries    #
             entries = self._connection.query("""
@@ -195,7 +195,7 @@ class Recommendations:
 
             for book_id, rating in entries:
                 used_book_id = list(self.book_lookup_table.values()).index(book_id)
-                mat[user][used_book_id] = float(rating)
+                mat[user][used_book_id] += float(rating)  # += is used incase there is already a value at that index
 
         return mat
 
