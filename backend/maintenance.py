@@ -1,24 +1,10 @@
 # -----------------------------------------------------------------------------
-# Standard Python library imports
-# -----------------------------------------------------------------------------
-import json
-import urllib.parse
-
-# -----------------------------------------------------------------------------
 # Project imports
 # -----------------------------------------------------------------------------
 import components.accounts
-import components.authors
-import components.books
-import components.diaries
-import components.genres
-import components.information_retrieval
-import components.reading_lists
 import components.recommendations
 
 import configuration
-import environ_manipulation
-import logger
 import mysql_handler
 
 # -----------------------------------------------------------------------------
@@ -46,31 +32,21 @@ connection = mysql_handler.Connection(
     host=config.get("mysql host")
 )
 
-
 # -----------------------------------------------------------------------------
 # Class instantiation
 # -----------------------------------------------------------------------------
 sessions = components.accounts.Sessions(connection, token_size)
-authors = components.authors.Authors(connection, genre_required_match, number_summaries_home)
 recommendations = components.recommendations.Recommendations(
     connection,
-    genre_required_match,
-    num_display_genres,
-    authors
-)
-reading_lists = components.reading_lists.ReadingLists(
-    connection,
-    number_summaries_home,
-    genre_required_match,
-    num_display_genres,
-    recommendations
-)
-accounts = components.accounts.Accounts(
-    connection,
-    hashing_algorithm,
-    hashing_salt,
-    number_hash_passes,
-    reading_lists
+    config.get("recommendations number_converge_iterations"),
+    config.get("recommendations hyperparameter"),
+    config.get("home number_display_genres"),
+    config.get("recommendations inital_recommendation_matrix_value"),
+    config.get("recommendations reading_list_percentage_increase"),
+    config.get("recommendations author_following_percentage_increase"),
+    config.get("recommendations bad_recommendations_matrix_value"),
+    config.get("recommendations minimum_required_reviews"),
+    config.get("recommendations number_recommendations"),
 )
 
 # -----------------------------------------------------------------------------
@@ -85,6 +61,5 @@ for i in sessions.get_session_id_list():
 # -----------------------------------------------------------------------------
 # Recommendations
 # -----------------------------------------------------------------------------
-for i in accounts.get_user_id_list():
-    recommendations.recommend_user_books(i)  # Takes on average 0.4102218615329156
-    # per user from 600 users
+recommendations.fit()
+recommendations.gen_recommendations()
