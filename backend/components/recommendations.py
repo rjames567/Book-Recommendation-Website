@@ -274,7 +274,7 @@ class Recommendations:
                             "Have Read",
                             "Want To Read"
                         )
-                """.format(user_id))
+                """.format(user_id))  # Note that this covers the diary entries as well, as entries cannot be made unless it is in the have read/currently reading list
 
                 for i in res:
                     avoid_recs.add(i[0])
