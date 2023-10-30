@@ -33,7 +33,20 @@ class NoUserPreferencesError(Exception):
 # Recommendations
 # -----------------------------------------------------------------------------
 class Recommendations:
-    def __init__(self, connection, num_converge_iters, hyperparam, number_display_genres, debug=False):
+    def __init__(
+            self,
+            connection,
+            num_converge_iters,
+            hyperparam,
+            number_display_genres,
+            initial_recommendation_mat_val,
+            reading_list_percentage_increase,
+            following_percentage_increase,
+            bad_recommendation_value,
+            minimum_required_reviews,
+            number_recommendations,
+            debug=False
+        ):
         self._connection = connection
         self._num_converge_iters = num_converge_iters
         self._hyperparam = hyperparam
@@ -41,15 +54,20 @@ class Recommendations:
         self.debug = debug
         self._num_users = len(self._connection.query("SELECT user_id FROM users"))
         self._num_books = len(self._connection.query("SELECT book_id FROM books"))
-        self._number_recommendations = 10  # TODO make this configurable
-        self._min_required_reviews = 10  # TODO make this configurable
-        self._initial_recommendation_mat_val = 0.5
-        self._reading_list_percentage_increase = 0.5
-        self._following_percentage_increase = 0.5
-        self._bad_recommendation_val = 0.5  # This is not 0 as the genres may still be applicable, but should still be small
+        self._number_recommendations = number_recommendations
+        self._min_required_reviews = minimum_required_reviews
+        self._initial_recommendation_mat_val = initial_recommendation_mat_val
+        self._reading_list_percentage_increase = reading_list_percentage_increase
+        self._following_percentage_increase = following_percentage_increase
+        self._bad_recommendation_val = bad_recommendation_value  # This is not 0 as the genres may still be applicable, but should still be small
         self._num_display_genres = number_display_genres
         self.test_mse_record = []
         self.train_mse_record = []
+
+        # levels of configuration is required as the recommendations need to vary
+        # depending on the hardware, and user base, such as average number of reviews,
+        # sparsity of data, and preferences for recommendations, which would affect
+        # how easily recommendations can change.
 
         self.gen_lookup_tables()
 
@@ -542,7 +560,17 @@ connection = mysql_handler.Connection(
 
 if __name__ == "__main__":
     connection.query("DELETE FROM recommendations")
-    rec = Recommendations(connection, 10, 0.1, 5)
-    # rec.fit()
-    # rec.gen_recommendations()
-    rec.gen_review_matrix().tolist()
+    rec = Recommendations(
+        connection,
+        10,
+        0.1,
+        5,
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        10,
+        10
+    )
+    rec.fit()
+    rec.gen_recommendations()
