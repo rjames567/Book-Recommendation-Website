@@ -63,6 +63,9 @@ class Recommendations:
         self._num_display_genres = number_display_genres
         self.test_mse_record = []
         self.train_mse_record = []
+        self._list_users_no_preferences = {i[0] for i in self._connection.query(
+            "SELECT user_id FROM users WHERE preferences_set=FALSE")}
+        # Uses a set as it is faster for 'item in var' operations
 
         # levels of configuration is required as the recommendations need to vary
         # depending on the hardware, and user base, such as average number of reviews,
@@ -120,9 +123,6 @@ class Recommendations:
 
     def gen_review_matrix(self):
         # x = np.array([[0.0 for i in range(num_books)] for k in range(num_users)])
-        self._list_users_no_preferences = {i[0] for i in self._connection.query("SELECT user_id FROM users WHERE preferences_set=FALSE")}
-        # Uses a set as it is faster for 'item in var' operations
-
         mat = np.zeros((self._num_users, self._num_books))
         for user in self.user_lookup_table:
             user_id = self.user_lookup_table[user]
@@ -401,7 +401,7 @@ class Recommendations:
             user_id))  # ORDER BY does not use calculated certainty for higher accuracy, and avoiding collisions
         # IFNULL prevents any null values - replace with 0s.
 
-        if len(items) == 0:
+        if len(items) == 0 or user_id in self._list_users_no_preferences:
             raise NoUserPreferencesError(user_id)
 
         output_dict = dict()
