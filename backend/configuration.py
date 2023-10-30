@@ -63,7 +63,7 @@ class Configuration:
     the configuration file which is passed in.
     """
 
-    def __init__(self, filename):
+    def __init__(self, filename, default_dict={}):
         """
         Constructor for the Configuration class.
 
@@ -75,6 +75,7 @@ class Configuration:
         """
         self._filepath = os.path.join(os.path.split(os.path.dirname(__file__))[0], filename)
         self.load()
+        self._default_config = default_dict
 
     def _cast_to_type(self, datatype, value, line_num):
         """
@@ -163,7 +164,7 @@ class Configuration:
                         )
                     elif not (re.match("\s*", line)):
                         raise ConfigIndentationError(line_num + 1)
-        self._config = hierarchy
+        self._file_config = hierarchy
 
     def get(self, query_string):
         """
@@ -180,11 +181,19 @@ class Configuration:
         Returns the value stored in the specified variable, with the specified
         datatype.
         """
+        print(self._file_config)
         query_string = query_string.lower()
 
         query_arr = query_string.split()
-        if query_arr[0] in self._config.keys():
-            res = self._config[query_arr[0]]
+        if query_arr[0] in self._file_config.keys():
+            res = self._file_config[query_arr[0]]
+            if len(query_arr) == 2:
+                if query_arr[1] in res.keys():
+                    res = res[query_arr[1]]
+                else:
+                    raise ConfigVariableNotFound(query_string, self._filepath)
+        elif query_arr[0] in self._default_config.keys():
+            res = self._default_config[query_arr[0]]
             if len(query_arr) == 2:
                 if query_arr[1] in res.keys():
                     res = res[query_arr[1]]
