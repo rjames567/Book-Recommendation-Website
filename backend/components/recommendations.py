@@ -83,7 +83,6 @@ class Recommendations:
                 self.user_factors = self.wals_step(train, self.book_factors)
                 self.book_factors = self.wals_step(train.T, self.user_factors)
 
-
             self.save_book_genres()  # Not included in the debug option, as it increases time cost,
             # and would likely be rerun a lot to find optimum parameters, so is unnecessary.
 
@@ -184,6 +183,19 @@ class Recommendations:
             for book in self.get_bad_recommendations(user_id):
                 used_book_id = list(self.book_lookup_table.values()).index(book)
                 mat[user][used_book_id] = self._bad_recommendation_val
+
+            #    Diary entries    #
+            entries = self._connection.query("""
+                SELECT book_id,
+                    (SUM(overall_rating) + SUM(IFNULL(character_rating, overall_rating)) + SUM(IFNULL(plot_rating, overall_rating))) / (COUNT(entry_id) * 3)
+                FROM diary_entries
+                WHERE user_id={}
+                GROUP BY book_id;
+            """.format(user_id))
+
+            for book_id, rating in entries:
+                used_book_id = list(self.book_lookup_table.values()).index(book_id)
+                mat[user][used_book_id] = float(rating)
 
         return mat
 
