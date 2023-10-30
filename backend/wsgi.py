@@ -24,18 +24,43 @@ import mysql_handler
 # -----------------------------------------------------------------------------
 # Project constants
 # -----------------------------------------------------------------------------
-config = configuration.Configuration("./project_config.conf")
-debugging = config.get("debugging")  # Toggle whether logs are shown
-number_hash_passes = config.get("passwords number_hash_passes")
-hashing_salt = config.get("passwords salt")  # Stored in the config as binary
-hashing_algorithm = config.get("passwords hashing_algorithm")
-token_size = config.get("session_id_length")
-genre_required_match = config.get("books genre_match_threshold")
-number_summaries_home = config.get("home number_home_summaries")
-number_similarities_about = config.get("home number_about_similarities")
-num_display_genres = config.get("home number_display_genres")
-num_search_results = config.get("search number_results")
-
+config = configuration.Configuration(
+    "./project_config.conf",
+    default_dict={
+        'mysql': {
+            'username': 'wsgi',
+            'password': '1qwerty7',
+            'schema': 'OpenBook',
+            'host': 'localhost'
+        },
+        'passwords': {
+            'salt': b'+%E!mKZ(5%Z}k#pi(cPW!US8TU-J87',
+            'hashing_algorithm': 'sha256',
+            'number_hash_passes': 100000
+        },
+        'books': {
+            'genre_match_threshold': 0.7
+        },
+        'home': {
+            'number_home_summaries': 8,
+            'number_about_similarities': 10,
+            'number_display_genres': 8
+        },
+        'recommendations': {
+            'number_converge_iterations': 100,
+            'hyperparameter': 0.1,
+            'inital_recommendation_matrix_value': 0.5,
+            'reading_list_percentage_increase': 0.5,
+            'author_following_percentage_increase': 0.5,
+            'bad_recommendations_matrix_value': 0.5,
+            'minimum_required_reviews': 10,
+            'number_recommendations': 10
+        },
+        'search': {'number_results': 50},
+        'session_id_length': 4,
+        'debugging': False
+    }
+)
 # -----------------------------------------------------------------------------
 # Database connection
 # -----------------------------------------------------------------------------
@@ -46,40 +71,54 @@ connection = mysql_handler.Connection(
     host=config.get("mysql host")
 )
 
+# -----------------------------------------------------------------------------
+# Project Constants
+# -----------------------------------------------------------------------------
+number_home_summaries = config.get("home number_home_summaries")  # This is a
+# constant, as is is used multiple times, and will always be faster to access as
+# a variable, and otherwise, the get function would be have to run during the
+# calling of methods as part of a response.
 
 # -----------------------------------------------------------------------------
 # Class instantiation
 # -----------------------------------------------------------------------------
 diaries = components.diaries.Diaries(connection)
 genres = components.genres.Genres(connection)
-sessions = components.accounts.Sessions(connection, token_size)
-authors = components.authors.Authors(connection, genre_required_match, number_summaries_home)
+sessions = components.accounts.Sessions(
+    connection,
+    config.get("session_id_length")
+)
+authors = components.authors.Authors(
+    connection,
+    config.get("books genre_match_threshold"),
+    number_home_summaries
+)
 recommendations = components.recommendations.Recommendations(
     connection,
-    genre_required_match,
-    num_display_genres,
+    config.get("books genre_match_threshold"),
+    config.get("home number_display_genres"),
     authors
 )
 reading_lists = components.reading_lists.ReadingLists(
     connection,
-    number_summaries_home,
-    genre_required_match,
-    num_display_genres,
+    number_home_summaries,
+    config.get("books genre_match_threshold"),
+    config.get("home number_display_genres"),
     recommendations
 )
 books = components.books.Books(
     connection,
     reading_lists,
-    genre_required_match,
-    number_similarities_about,
-    number_summaries_home,
-    num_display_genres
+    config.get("books genre_match_threshold"),
+    config.get("home number_about_similarities"),
+    number_home_summaries,
+    config.get("home number_display_genres")
 )
 accounts = components.accounts.Accounts(
     connection,
-    hashing_algorithm,
-    hashing_salt,
-    number_hash_passes,
+    config.get("passwords hashing_algorithm"),
+    config.get("passwords salt"),  # Stored in the config as binary
+    config.get("passwords number_hash_passes"),
     reading_lists
 )
 information_retrieval = components.information_retrieval.DocumentCollection(
@@ -87,7 +126,7 @@ information_retrieval = components.information_retrieval.DocumentCollection(
     books,
     authors,
     genres,
-    num_search_results
+    config.get("search number_results")
 )
 
 
@@ -992,9 +1031,9 @@ class HomeHandler(Handler):
             sessions.update_time(session_id)
             self._log.output_message("          User ID: " + str(user_id))
 
-            result["recommended"] = recommendations.get_user_recommendation_summaries(user_id)[:number_summaries_home]
-            result["currently_reading"] = reading_lists.get_currently_reading(user_id)[:number_summaries_home]
-            result["want_read"] = reading_lists.get_want_read(user_id)[:number_summaries_home]
+            result["recommended"] = recommendations.get_user_recommendation_summaries(user_id)[:number_home_summaries]
+            result["currently_reading"] = reading_lists.get_currently_reading(user_id)[:number_home_summaries]
+            result["want_read"] = reading_lists.get_want_read(user_id)[:number_home_summaries]
         except components.accounts.SessionExpiredError:
             self._log.output_message("          Session expired / No session")
             result["recommended"] = None
@@ -1300,7 +1339,7 @@ class ErrorHandler(Handler):
 # -----------------------------------------------------------------------------
 # File execution
 # -----------------------------------------------------------------------------
-log = logger.Logging(debugging=debugging)
+log = logger.Logging(debugging=config.get("debugging"))
 
 # https://www.sitepoint.com/python-web-applications-the-basics-of-wsgi/
 routes = {
