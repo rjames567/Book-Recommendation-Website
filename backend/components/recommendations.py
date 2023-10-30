@@ -66,7 +66,7 @@ class Recommendations:
             self.train_mse_record = []
 
             for i in range(self._num_converge_iters):
-                print(f"Iteration {i + 1} of {self._num_converge_iters}")
+                print(f"Iteration {i + 1} of {self._num_converge_iters} Start")
                 self.user_factors = self.wals_step(train, self.book_factors)
                 self.book_factors = self.wals_step(train.T, self.user_factors)
 
@@ -74,15 +74,15 @@ class Recommendations:
 
                 self.train_mse_record.append(self.mean_squared_error(train, predict))
                 self.test_mse_record.append(self.mean_squared_error(test, predict))
+                print(f"Iteration {i + 1} of {self._num_converge_iters} End")
 
             return self.test_mse_record, self.train_mse_record
 
         else:
             for i in range(self._num_converge_iters):
-                print(f"Iteration {i + 1} of {self._num_converge_iters} Start")   # This is here for development. TODO remove this
                 self.user_factors = self.wals_step(train, self.book_factors)
                 self.book_factors = self.wals_step(train.T, self.user_factors)
-                print(f"Iteration {i + 1} of {self._num_converge_iters} End")
+
 
             self.save_book_genres()  # Not included in the debug option, as it increases time cost,
             # and would likely be rerun a lot to find optimum parameters, so is unnecessary.
