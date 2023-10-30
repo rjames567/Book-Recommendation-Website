@@ -168,7 +168,7 @@ print("Finished books 5/11")
 # Users
 # -----------------------------------------------------------------------------
 print("Started users 6/11")
-query1 = "INSERT INTO users (user_id, username, password_hash, first_name, surname) VALUES\n"
+query1 = "INSERT INTO users (user_id, username, password_hash, first_name, surname, preferences_set) VALUES\n"
 query2 = "INSERT INTO reading_list_names (list_id, user_id, list_name) VALUES\n"
 query3 = "INSERT INTO reading_lists (entry_id, list_id, book_id, user_id) VALUES\n"
 prev = None
@@ -177,8 +177,9 @@ for i in range(1, 601):
     if i != 1:
         query1 += ",\n"
         query2 += ",\n"
-    query1 += '({num}, "user{num}", "5d557544916fde5c6b162cfcbce84181fb2cbe8798439b643edf96ee4c5826b4", "f{num}", "s{num}")'.format(
+    query1 += '({num}, "user{num}", "5d557544916fde5c6b162cfcbce84181fb2cbe8798439b643edf96ee4c5826b4", "f{num}", "s{num}", TRUE)'.format(
         num=i)  # Password is password
+    # preferences set is TRUE, so recommendations can be made to these users immediately.
     query2 += '({list}, {user}, "Want to Read"),'.format(list=((i - 1) * 3) + 1, user=i)
     query2 += '({list}, {user}, "Currently Reading"),'.format(list=((i - 1) * 3) + 2, user=i)
     query2 += '({list}, {user}, "Have Read")'.format(list=((i - 1) * 3) + 3, user=i)
