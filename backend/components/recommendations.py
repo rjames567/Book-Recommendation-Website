@@ -13,7 +13,7 @@ import sklearn.metrics
 # -----------------------------------------------------------------------------
 import os
 import sys
-import authors
+import components.authors
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -406,7 +406,7 @@ class Recommendations:
 
         output_dict = dict()
         for i, k in enumerate(items):
-            author = authors.names_to_display(k[6], k[7], k[8])
+            author = components.authors.names_to_display(k[6], k[7], k[8])
 
             output_dict[i] = {
                 "book_id": k[0],
@@ -439,7 +439,7 @@ class Recommendations:
             ORDER BY recommendations.certainty DESC;
         """.format(user_id))
         return [{
-                "author": authors.names_to_display(i[3], i[4], i[5]),
+                "author": components.authors.names_to_display(i[3], i[4], i[5]),
                 "title": i[1],
                 "book_id": i[0],
                 "cover": i[2],
@@ -532,45 +532,9 @@ def plot_learning_curve(model):
     plt.legend(loc='best')
     plt.show()
 
-
-# -----------------------------------------------------------------------------
-# Project constants
-# -----------------------------------------------------------------------------
-config = configuration.Configuration("./project_config.conf")
-debugging = config.get("debugging")  # Toggle whether logs are shown
-number_hash_passes = config.get("passwords number_hash_passes")
-hashing_salt = config.get("passwords salt")  # Stored in the config as binary
-hashing_algorithm = config.get("passwords hashing_algorithm")
-token_size = config.get("session_id_length")
-genre_required_match = config.get("books genre_match_threshold")
-number_summaries_home = config.get("home number_home_summaries")
-number_similarities_about = config.get("home number_about_similarities")
-num_display_genres = config.get("home number_display_genres")
-num_search_results = config.get("search number_results")
-
-# -----------------------------------------------------------------------------
-# Database connection
-# -----------------------------------------------------------------------------
-connection = mysql_handler.Connection(
-    user=config.get("mysql username"),
-    password=config.get("mysql password"),
-    schema=config.get("mysql schema"),
-    host=config.get("mysql host")
-)
-
-if __name__ == "__main__":
-    connection.query("DELETE FROM recommendations")
-    rec = Recommendations(
-        connection,
-        10,
-        0.1,
-        5,
-        0.5,
-        0.5,
-        0.5,
-        0.5,
-        10,
-        10
-    )
-    rec.fit()
-    rec.gen_recommendations()
+# FIXME recommendations still being generated for new users who should not get recommendations
+    # Try adding preferences set column in the user table, to mark whether they have set their
+    # preferences
+# FIXME change how genres are limited
+    # Use a specified number rather than a display threshold
+# TODO make new recommendations work with WSGI
