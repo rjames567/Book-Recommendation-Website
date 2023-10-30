@@ -38,6 +38,7 @@ CREATE TABLE users (
     surname TINYTEXT NOT NULL,
     username TINYTEXT NOT NULL,
     password_hash TINYTEXT NOT NULL,
+    preferences_set BOOLEAN NOT NULL DEFAULT FALSE,
     PRIMARY KEY (user_id)
 );
 -- Username should have a unique constraint, but it is not possible to add a
