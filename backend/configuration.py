@@ -181,7 +181,6 @@ class Configuration:
         Returns the value stored in the specified variable, with the specified
         datatype.
         """
-        print(self._file_config)
         query_string = query_string.lower()
 
         query_arr = query_string.split()
@@ -201,6 +200,6 @@ class Configuration:
                     raise ConfigVariableNotFound(query_string, self._filepath)
         else:
             raise ConfigVariableNotFound(query_string, self._filepath)
-        return res
+        return res  # TODO make this faster by making this part a direct dictionary lookup
 
 # Similar to YAML - but with more datatypes - binary strings
