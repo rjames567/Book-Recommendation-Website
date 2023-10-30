@@ -120,7 +120,7 @@ class Recommendations:
 
     def gen_review_matrix(self):
         # x = np.array([[0.0 for i in range(num_books)] for k in range(num_users)])
-        self._list_users_no_preferences = set()
+        self._list_users_no_preferences = {i[0] for i in self._connection.query("SELECT user_id FROM users WHERE preferences_set=FALSE")}
 
         mat = np.zeros((self._num_users, self._num_books))
         for user in self.user_lookup_table:
@@ -156,7 +156,6 @@ class Recommendations:
                         mat[user][used_book_id] += self._initial_recommendation_mat_val  # This is a non-zero value so recommendation is made. This is not affected by the average preference expressed
                         # by all the user's selected authors.
                 else:
-                    self._list_users_no_preferences.add(user_id)
                     continue # The user has not set up any initial preferences yet.
             elif len(books):
                 self._connection.query("""
@@ -467,6 +466,12 @@ class Recommendations:
             )
         )
 
+        self._connection.query("""
+            UPDATE users
+            SET preferences_set=TRUE
+            WHERE user_id={}
+        """.format(user_id))
+
         res = self._connection.query("""
                 SELECT AVG(book_genres.match_strength),
                     book_genres.genre_id
@@ -532,9 +537,6 @@ def plot_learning_curve(model):
     plt.legend(loc='best')
     plt.show()
 
-# FIXME recommendations still being generated for new users who should not get recommendations
-    # Try adding preferences set column in the user table, to mark whether they have set their
-    # preferences
 # FIXME change how genres are limited
     # Use a specified number rather than a display threshold
 # TODO make new recommendations work with WSGI
