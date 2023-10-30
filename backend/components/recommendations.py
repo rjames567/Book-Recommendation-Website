@@ -5,7 +5,6 @@ import math
 import random
 import datetime
 import numpy as np
-import matplotlib.pyplot as plt
 import sklearn.metrics
 
 # -----------------------------------------------------------------------------
@@ -274,11 +273,11 @@ class Recommendations:
             if user_id not in self._list_users_no_preferences:
                 avoid_recs = {
                     i[0] for i in self._connection.query("""
-                            SELECT book_id
-                            FROM recommendations
-                            WHERE user_id={}
-                                AND date_added<=DATE_SUB(NOW(), INTERVAL 2 DAY)
-                        """.format(user_id))
+                        SELECT book_id
+                        FROM recommendations
+                        WHERE user_id={}
+                            AND date_added>=DATE_SUB(NOW(), INTERVAL 2 DAY)
+                    """.format(user_id))
                 }  # sets are faster for "is val in list" operations
 
                 res = self._connection.query("""
@@ -322,7 +321,7 @@ class Recommendations:
                     f"({user_id}, {i['id']}, {i['certainty']})" for i in user_books[:self._number_recommendations]) + ","
 
         self._connection.query("""
-            DELETE FROM test_recommendations
+            DELETE FROM recommendations
             WHERE date_added<=DATE_SUB(NOW(), INTERVAL 2 DAY)
         """)
         self._connection.query(query[:-1])
@@ -529,7 +528,7 @@ class Recommendations:
 # Plotting functions
 # -----------------------------------------------------------------------------
 def plot_learning_curve(model):
-    """visualize the training/testing loss"""
+    import matplotlib.pyplot as plt  # This is bad practice, but cannot be imported with lighttpd
     linewidth = 3
     plt.plot(model.test_mse_record, label='Test', linewidth=linewidth)
     plt.plot(model.train_mse_record, label='Train', linewidth=linewidth)
