@@ -46,6 +46,7 @@ class Recommendations:
         self._initial_recommendation_mat_val = 0.5
         self._reading_list_percentage_increase = 0.5
         self._following_percentage_increase = 0.5
+        self._bad_recommendation_val = 0.5  # This is not 0 as the genres may still be applicable, but should still be small
         self._num_display_genres = number_display_genres
         self.test_mse_record = []
         self.train_mse_record = []
@@ -178,9 +179,13 @@ class Recommendations:
                     mat[user][used_book_id] = self._initial_recommendation_mat_val
                 else:
                     mat[user][used_book_id] *= (1 + self._following_percentage_increase)
+
+            #    Bad Recommendations    #
+            for book in self.get_bad_recommendations(user_id):
+                used_book_id = list(self.book_lookup_table.values()).index(book)
+                mat[user][used_book_id] = self._bad_recommendation_val
+
         return mat
-        
-        # TODO include bad recommendations
 
     def create_train_test(self, ratings=None):
         if ratings is None:
