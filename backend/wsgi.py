@@ -1169,7 +1169,7 @@ class RecommendationsHandler(Handler):
             self._log.output_message("          List id: " + str(list_id))
 
             reading_lists.add_entry(user_id, list_id, book_id)
-            recommendations.remove_stored_recommendation(user_id, book_id)
+            recommendations.delete_recommendation(user_id, book_id, bad_recommendation=False)
 
             response = "true" # The response does not matter - here for completeness only
 
