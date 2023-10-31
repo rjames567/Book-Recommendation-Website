@@ -326,7 +326,7 @@ class Recommendations:
         """)
         self._connection.query(query[:-1])
 
-    def delete_recommendation(self, user_id, book_id):
+    def delete_recommendation(self, user_id, book_id, bad_recommendation=True):
         # This includes marking a recommendation as bad - it is implicitly the same thing
         self._connection.query("""
             DELETE FROM recommendations
@@ -337,12 +337,13 @@ class Recommendations:
             book_id=book_id
         ))
 
-        self._connection.query(
-            "INSERT INTO bad_recommendations (user_id, book_id) VALUES ({user_id}, {book_id})".format(
-                user_id=user_id,
-                book_id=book_id
+        if bad_recommendation:
+            self._connection.query(
+                "INSERT INTO bad_recommendations (user_id, book_id) VALUES ({user_id}, {book_id})".format(
+                    user_id=user_id,
+                    book_id=book_id
+                )
             )
-        )
 
     def get_bad_recommendations(self, user_id):
         bad_recommendations = self._connection.query("""
