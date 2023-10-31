@@ -1494,6 +1494,8 @@ function loadRecommendationsPage () {
                         $(genreTemplate).appendTo($(template).find(".book-genres ol"));
                     }
 
+                    $(template).find(".actions button.read").data("id", result["list_id"]);
+
                     $(template).appendTo(".recommendation-entries");
                 }
 
