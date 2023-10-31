@@ -376,3 +376,21 @@ document = information_retrieval.DocumentCollection(
 
 document.gen_idf_values()
 print("Finished IDF generation 11/11")
+
+
+# -----------------------------------------------------------------------------
+# Prevent multiple reviews for each user
+# -----------------------------------------------------------------------------
+users = [i[0] for i in connection.query("SELECT user_id FROM users")]
+
+for i in users:
+    res = [i[0] for i in connection.query("""
+        SELECT book_id
+        FROM reviews
+        WHERE user_id={}
+    """.format(i))]
+
+    for book in res:
+        ids = [str(i[0]) for i in connection.query("SELECT review_id FROM reviews WHERE user_id={user} and book_id={books}".format(user=i, books=book))][1:]
+        print(ids)
+        connection.query(f"DELETE FROM reviews WHERE review_id IN ({','.join(ids)})")
