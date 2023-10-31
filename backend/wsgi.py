@@ -95,9 +95,15 @@ authors = components.authors.Authors(
 )
 recommendations = components.recommendations.Recommendations(
     connection,
-    config.get("books genre_match_threshold"),
+    config.get("recommendations number_converge_iterations"),
+    config.get("recommendations hyperparameter"),
     config.get("home number_display_genres"),
-    authors
+    config.get("recommendations inital_recommendation_matrix_value"),
+    config.get("recommendations reading_list_percentage_increase"),
+    config.get("recommendations author_following_percentage_increase"),
+    config.get("recommendations bad_recommendations_matrix_value"),
+    config.get("recommendations minimum_required_reviews"),
+    config.get("recommendations number_recommendations"),
 )
 reading_lists = components.reading_lists.ReadingLists(
     connection,
@@ -686,8 +692,7 @@ class BookHandler(Handler):
             sessions.update_time(session_id)
             self._log.output_message("          User ID: " + str(user_id))
 
-            rating, book_id = books.delete_review(review_id, user_id)
-            recommendations.update_user_data_decrement(user_id, book_id, rating)
+            books.delete_review(review_id, user_id)  # This is accounted for in the fit method.
 
             response = "true"  # A response is needed to use this result, but does not impact the client at all.
 
@@ -734,7 +739,7 @@ class BookHandler(Handler):
             list_id = reading_lists.get_list_id("Have Read", user_id)
             reading_lists.add_entry(user_id, list_id, book_id)
 
-            recommendations.update_user_data_increment(user_id, book_id, params["overall_rating"])
+            # This will be included in the recommendations fit
 
             response = "true"  # A response is needed to use this result, but does not impact the client at all.
 
@@ -1124,8 +1129,7 @@ class RecommendationsHandler(Handler):
             self._log.output_message("          User ID: " + str(user_id))
             self._log.output_message("          Book ID: " + str(book_id))
 
-            recommendations.update_user_data_decrement(user_id, book_id, 1, delete_recommendation=True)
-            recommendations.remove_stored_recommendation(user_id, book_id)
+            recommendations.delete_recommendation(user_id, book_id)  # This includes the impact to the recommendation model
 
             response = "true" # The response does not matter - here for completeness only
 
@@ -1200,9 +1204,8 @@ class RecommendationsHandler(Handler):
             user_id = sessions.get_user_id(session_id)
             sessions.update_time(session_id)
             self._log.output_message("          User ID: " + str(user_id))
-            recommendations.set_user_initial_preferences(user_id, [int(i) for i in author_ids])  # author_ids is returned as a list
-            # of strings.
-            recommendations.recommend_user_books(user_id)
+            recommendations.add_user(user_id, [int(i) for i in author_ids])  # author_ids is returned as a list
+            # of strings. This also generates and stores the recommendations.
 
             response = "true"  # The response does not matter - here for completeness only
 
