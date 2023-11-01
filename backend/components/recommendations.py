@@ -352,6 +352,19 @@ class Recommendations:
                 date_added
             FROM bad_recommendations
             WHERE user_id={}
+<<<<<<< HEAD
+=======
+                AND date_added<=DATE_SUB(NOW(), INTERVAL 2 DAY)
+        """.format(user_id))
+
+        existing_recommendations = self._connection.query("SELECT book_id FROM recommendations WHERE user_id={}".format(user_id))
+        existing_recommendations = {i[0] for i in existing_recommendations}  # Sets are faster for 'in' operations
+
+        reading_list_items = self._connection.query("""
+            SELECT reading_lists.book_id
+            FROM reading_lists
+            WHERE reading_lists.user_id={}
+>>>>>>> main
         """.format(user_id))
 
         return_vals = []
@@ -540,4 +553,3 @@ def plot_learning_curve(model):
 
 # FIXME change how genres are limited
     # Use a specified number rather than a display threshold
-# TODO make new recommendations work with WSGI
