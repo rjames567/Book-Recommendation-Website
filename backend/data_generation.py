@@ -394,3 +394,31 @@ for i in users:
         ids = [str(i[0]) for i in connection.query("SELECT review_id FROM reviews WHERE user_id={user} and book_id={books}".format(user=i, books=book))][1:]
         print(ids)
         connection.query(f"DELETE FROM reviews WHERE review_id IN ({','.join(ids)})")
+    
+# -----------------------------------------------------------------------------
+# Add reviews to the have read list
+# -----------------------------------------------------------------------------
+for i in users:
+    books = [i[0] for i in connection.query("""
+                SELECT book_id
+                FROM reviews
+                WHERE user_id={}
+        """.format(i))]
+
+    used = {i[0] for i in connection.query("""
+        SELECT reading_lists.book_id
+        FROM reading_lists
+        INNER JOIN reading_list_names
+            ON reading_lists.list_id=reading_list_names.list_id
+        WHERE reading_list_names.list_name="Have Read"
+            AND reading_list_names.user_id={}
+        """.format(i))}
+    
+    list_id = connection.query("SELECT list_id FROM reading_list_names WHERE list_name='Have Read' AND user_id={}".format(i))
+
+    query = "INSERT INTO reading_lists (list_id, book_id, user_id) VALUES "
+    for k in books:
+        print(list_id[0])
+        if k not in used:
+            query += f"({list_id[0][0]}, {k}, {i}),"
+    connection.query(query[:-1])
