@@ -18,8 +18,12 @@ To stop the webserver:
 Install Pip to make installing python packages simpler
 > sudo apt install pip
 
-Install mysql.connector so the backend can be used with the front end.
-> pip install mysql.connector
+Install python dependancies (where sudo as it needs to be accessed as root, as wsgi will run as root)
+> sudo pip install mysql.connector\
+> pip install mysql.connector\
+> sudo pip install numpy\
+> sudo pip install scikit-learn\
+> sudo pip install sklearn
 
 ### Database
 #### Create the database server
@@ -96,7 +100,7 @@ Change the configuration file to configure the project. An example configuration
 > &nbsp;&nbsp;&nbsp;&nbsp;number_results int: 50\
 > \
 > session_id_length int: 4\
-> debugging bool: false\
+> debugging bool: false
 
 
 ### Web server
@@ -132,5 +136,9 @@ To delete the project files - Note that this is non-reversible
 
 To delete the install packages
 > sudo apt remove lighttpd\
+> sudo pip uninstall mysql.connector\
 > pip uninstall mysql.connector\
+> sudo pip uninstall sklearn\
+> sudo pip uninstall scikit-learn\
+> sudo pip uninstall numpy\
 > sudo apt remove mariadb-server
