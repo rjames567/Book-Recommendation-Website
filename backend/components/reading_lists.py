@@ -277,7 +277,7 @@ class ReadingLists:
         ))
 
     def add_entry(self, user_id, list_id, book_id):
-        self._recommendations.remove_stored_recommendation(user_id, book_id)
+        self._recommendations.delete_recommendation(user_id, book_id, bad_recommendation=False)
         # Delete recommendation when added to a list
         
         lists = {i[0] for i in self._connection.query("""
