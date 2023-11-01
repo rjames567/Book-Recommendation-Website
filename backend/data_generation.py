@@ -16,15 +16,16 @@ import random
 from gensim.summarization.summarizer import summarize
 from gensim.summarization import keywords
 
-import accounts
-import authors as authors_mod
-import books as book_mod
-import genres as genre_mod
-import information_retrieval
+import compoents.accounts
+import components.authors
+import components.books
+import components.genres
+import components.information_retrieval
+import components.recommendations
 
 import configuration
 import mysql_handler
-import recommendations
+
 print("Finished Imports 1/11")
 
 # -----------------------------------------------------------------------------
@@ -39,7 +40,7 @@ connection = mysql_handler.Connection(
     host=config.get("mysql host")
 )
 
-accounts = accounts.Accounts(
+accounts = components.accounts.Accounts(
         connection,
         config.get("passwords hashing_algorithm"),
         config.get("passwords salt"),
@@ -87,7 +88,7 @@ with open("data/Original/metadata.json", "r") as f:
         if i != 0:
             query += ",\n"
         author_lookup[k] = i + 1
-        clean_name = information_retrieval.clean_data(k)
+        clean_name = components.information_retrieval.clean_data(k)
         query += f'({i + 1}, "{clean_name}", "{k}", "", "This author does not have an about")'
 
     for i, line in enumerate(file):
@@ -146,7 +147,7 @@ with open("data/metadata-altered.json", "r") as f:
             book_id=i + 1,
             author_id=data['authors'],
             book_title=title,
-            clean_title=information_retrieval.clean_data(title),
+            clean_title=components.information_retrieval.clean_data(title),
             synopsis=synopsis.replace('"', "'"),  # .replace("\n", "\\n"),
             cover_image=data['img'],
             link=data['url'],
@@ -291,7 +292,7 @@ with open("data/Original/tags.json", "r") as f:
                 newTag += i.upper()
             else:
                 newTag += i  # Ensure that II, will be uppercase, for genres like World War I and World War II
-        clean = information_retrieval.clean_data(newTag)
+        clean = components.information_retrieval.clean_data(newTag)
         query += '({id}, "{tag}", "{clean}", "This genre does not have an about")'.format(id=data["id"] + 1, tag=newTag, clean=clean)
     query += ";"
 
@@ -339,26 +340,11 @@ connection.query("""DELETE FROM books WHERE book_id NOT IN (SELECT book_id FROM 
 print("Finished genres 8/11")
 
 # -----------------------------------------------------------------------------
-# Recommendations
-# -----------------------------------------------------------------------------
-recommendations = recommendations.Recommendations(connection, config.get("books genre_match_threshold"), config.get("home number_display_genres"))
-# This needs to be later, as the number of genres would be incorrect if it were done at the start
-
-print("Started user preference generation 9/11")
-recommendations.gen_all_user_data()
-print("Finished user preference generation 9/11")
-
-print("Started user recommendation generation 10/11")
-for i in accounts.get_user_id_list(): 
-        recommendations.recommend_user_books(i)
-print("Finished user recommendation generation 10/11")
-
-# -----------------------------------------------------------------------------
 # TF-IDF search
 # -----------------------------------------------------------------------------
 print("Started IDF generation 11/11")
-temp_authors = authors_mod.Authors(connection)
-temp_books = book_mod.Books(
+temp_authors = components.authors.Authors(connection)
+temp_books = components.books.Books(
     connection,
     config.get("books genre_match_threshold"),
     config.get("home number_about_similarities"),
@@ -366,11 +352,11 @@ temp_books = book_mod.Books(
     config.get("home number_display_genres")
 )
 
-document = information_retrieval.DocumentCollection(
+document = components.information_retrieval.DocumentCollection(
     connection,
     temp_books,
     temp_authors,
-    genre_mod.Genres(connection),
+    components.genres.Genres(connection),
     config.get("search number_results")
 )
 
@@ -422,3 +408,18 @@ for i in users:
         if k not in used:
             query += f"({list_id[0][0]}, {k}, {i}),"
     connection.query(query[:-1])
+
+# -----------------------------------------------------------------------------
+# Recommendations
+# -----------------------------------------------------------------------------
+recommendations = recommendations.Recommendations(connection, config.get("books genre_match_threshold"), config.get("home number_display_genres"))
+# This needs to be later, as the number of genres would be incorrect if it were done at the start
+
+print("Started user preference generation 9/11")
+recommendations.gen_all_user_data()
+print("Finished user preference generation 9/11")
+
+print("Started user recommendation generation 10/11")
+for i in accounts.get_user_id_list(): 
+        recommendations.recommend_user_books(i)
+print("Finished user recommendation generation 10/11")
