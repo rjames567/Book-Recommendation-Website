@@ -144,7 +144,8 @@ class Configuration:
                 entry_re = re.match("\t|\s{4}(\w+)\s+([\w-]+)\s*:\s*(.+)", line)
                 if heading != "":
                     if entry_re:
-                        hierarchy[heading + entry_re.group(1).lower()] = self._cast_to_type(
+                        string = heading + entry_re.group(1)
+                        hierarchy[string.lower()] = self._cast_to_type(
                             entry_re.group(2).lower(),
                             entry_re.group(3),
                             line_num + 1
