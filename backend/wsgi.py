@@ -27,36 +27,26 @@ import mysql_handler
 config = configuration.Configuration(
     "./project_config.conf",
     default_dict={
-        'mysql': {
-            'username': 'wsgi',
-            'password': '1qwerty7',
-            'schema': 'OpenBook',
-            'host': 'localhost'
-        },
-        'passwords': {
-            'salt': b'+%E!mKZ(5%Z}k#pi(cPW!US8TU-J87',
-            'hashing_algorithm': 'sha256',
-            'number_hash_passes': 100000
-        },
-        'books': {
-            'genre_match_threshold': 0.7
-        },
-        'home': {
-            'number_home_summaries': 8,
-            'number_about_similarities': 10,
-            'number_display_genres': 8
-        },
-        'recommendations': {
-            'number_converge_iterations': 100,
-            'hyperparameter': 0.1,
-            'inital_recommendation_matrix_value': 0.5,
-            'reading_list_percentage_increase': 0.5,
-            'author_following_percentage_increase': 0.5,
-            'bad_recommendations_matrix_value': 0.5,
-            'minimum_required_reviews': 10,
-            'number_recommendations': 10
-        },
-        'search': {'number_results': 50},
+        "mysql username": "wsgi",
+        "mysql password": "1qwerty7",
+        "mysql schema": "OpenBook",
+        "mysql host": "localhost",
+        "passwords salt": b"+%E!mKZ(5%Z}k#pi(cPW!US8TU-J87",
+        "passwords hashing_algorithm": "sha256",
+        "passwords number_hash_passes": 100000,
+        "books genre_match_threshold": 0.7,
+        "home number_home_summaries": 8,
+        "home number_about_similarities": 10,
+        "home number_display_genres": 8,
+        "recommendations number_converge_iterations": 100,
+        "recommendations hyperparameter": 0.1,
+        "recommendations inital_recommendation_matrix_value": 0.5,
+        "recommendations reading_list_percentage_increase": 0.5,
+        "recommendations author_following_percentage_increase": 0.5,
+        "recommendations bad_recommendations_matrix_value": 0.5,
+        "recommendations minimum_required_reviews": 10,
+        "recommendations number_recommendations": 10,
+        "search number_results": 50,
         'session_id_length': 4,
         'debugging': False
     }
