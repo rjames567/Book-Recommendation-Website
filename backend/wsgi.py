@@ -27,30 +27,30 @@ import mysql_handler
 config = configuration.Configuration(
     "./project_config.conf",
     default_dict={
-        "mysql username": "wsgi",
-        "mysql password": "1qwerty7",
-        "mysql schema": "OpenBook",
-        "mysql host": "localhost",
-        "passwords salt": b"+%E!mKZ(5%Z}k#pi(cPW!US8TU-J87",
-        "passwords hashing_algorithm": "sha256",
-        "passwords number_hash_passes": 100000,
-        "books genre_match_threshold": 0.7,
-        "home number_home_summaries": 8,
-        "home number_about_similarities": 10,
-        "home number_display_genres": 8,
-        "recommendations number_converge_iterations": 100,
-        "recommendations hyperparameter": 0.1,
-        "recommendations inital_recommendation_matrix_value": 0.5,
-        "recommendations reading_list_percentage_increase": 0.5,
-        "recommendations author_following_percentage_increase": 0.5,
-        "recommendations bad_recommendations_matrix_value": 0.5,
-        "recommendations minimum_required_reviews": 10,
-        "recommendations number_recommendations": 10,
-        "search number_results": 50,
-        'session_id_length': 4,
-        'debugging': False
+        "mysql username": "wsgi",  # This is specified in README for config
+        "mysql schema": "OpenBook",  # This is specified in README
+        "mysql host": "localhost",  # This can be assumed
+        # "passwords salt": b"+%E!mKZ(5%Z}k#pi(cPW!US8TU-J87",
+        "passwords hashing_algorithm": "sha256",  # This can be assumed, good algorithm
+        "passwords number_hash_passes": 100000,  # This is the recommended number from secrets module
+        "books genre_match_threshold": 0.7,  # This varies on the data
+        "home number_home_summaries": 8,  # This impacts performance, and this is a sensible value
+        "home number_about_similarities": 10,  # Affects performance so can be recommended
+        "home number_display_genres": 8,  # Looks best so can be assummed
+        "recommendations number_converge_iterations": 100,  # This affects performance so can be set as a default
+        "recommendations hyperparameter": 0.1,  # This is data specific, but this is good for the test data
+        "recommendations inital_recommendation_matrix_value": 0.5,  # Affects recommendations but is suitable
+        "recommendations reading_list_percentage_increase": 0.5,  # Affects recommendations but is suitable
+        "recommendations author_following_percentage_increase": 0.5,  # Affects recommendations but is suitable
+        "recommendations bad_recommendations_matrix_value": 0.5,  # Affects recommendations but is suitable
+        "recommendations minimum_required_reviews": 10,  # Affects how quickly recommendations can be made and how fast they cahnge. This is reasonable
+        "recommendations number_recommendations": 10,  # Affects performance, and is reasonable
+        "search number_results": 50,  # Affects performance ofr both client and server. This is reasonable
+        'session_id_length': 4,  # This depends on number of users, but also affects performance. 4 supports lots of users
+        'debugging': False  # If deployed it would not need the debug logs, which would impact performance
     }
 )
+
 # -----------------------------------------------------------------------------
 # Database connection
 # -----------------------------------------------------------------------------
