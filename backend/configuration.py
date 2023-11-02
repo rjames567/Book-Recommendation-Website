@@ -74,8 +74,7 @@ class Configuration:
         Does not have a return value
         """
         self._filepath = os.path.join(os.path.split(os.path.dirname(__file__))[0], filename)
-        self.load()
-        self._default_config = default_dict
+        self.load(default_dict)
 
     def _cast_to_type(self, datatype, value, line_num):
         """
@@ -126,7 +125,7 @@ class Configuration:
         else:
             raise ConfigInvalidDataTypeError(datatype, line_num)
 
-    def load(self):
+    def load(self, default_dict):
         """
         Method to load the configuration file, and convert it into a dictionary.
 
@@ -135,7 +134,7 @@ class Configuration:
         with open(self._filepath, "r") as f:
             contents = f.readlines()
 
-        hierarchy = {}
+        hierarchy = default_dict
         heading = None
 
         for line_num, line in enumerate(contents):
@@ -164,7 +163,6 @@ class Configuration:
                         )
                     elif not (re.match("\s*", line)):
                         raise ConfigIndentationError(line_num + 1)
-        self._file_config = hierarchy
 
     def get(self, query_string):
         """
@@ -191,15 +189,10 @@ class Configuration:
                     res = res[query_arr[1]]
                 else:
                     raise ConfigVariableNotFound(query_string, self._filepath)
-        elif query_arr[0] in self._default_config.keys():
-            res = self._default_config[query_arr[0]]
-            if len(query_arr) == 2:
-                if query_arr[1] in res.keys():
-                    res = res[query_arr[1]]
-                else:
-                    raise ConfigVariableNotFound(query_string, self._filepath)
         else:
             raise ConfigVariableNotFound(query_string, self._filepath)
         return res  # TODO make this faster by making this part a direct dictionary lookup
 
 # Similar to YAML - but with more datatypes - binary strings
+
+config = Configuration("project_config.conf")
