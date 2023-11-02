@@ -135,24 +135,22 @@ class Configuration:
             contents = f.readlines()
 
         hierarchy = default_dict
-        heading = None
-
+        heading = ""
         for line_num, line in enumerate(contents):
             heading_re = re.match("(\w+):\s*", line)
             if heading_re:
-                heading = heading_re.group(1).lower()
-                hierarchy[heading] = {}
+                heading = heading_re.group(1).lower() + " "
             else:
                 entry_re = re.match("\t|\s{4}(\w+)\s+([\w-]+)\s*:\s*(.+)", line)
-                if heading is not None:
+                if heading != "":
                     if entry_re:
-                        hierarchy[heading][entry_re.group(1).lower()] = self._cast_to_type(
+                        hierarchy[heading + entry_re.group(1).lower()] = self._cast_to_type(
                             entry_re.group(2).lower(),
                             entry_re.group(3),
                             line_num + 1
                         )
                     else:
-                        heading = None
+                        heading = ""
                 else:
                     external_re = re.match("(\w+)\s+([\w-]+)\s*:\s*(.+)", line)
                     if external_re:
@@ -163,6 +161,7 @@ class Configuration:
                         )
                     elif not (re.match("\s*", line)):
                         raise ConfigIndentationError(line_num + 1)
+        self._file_config = hierarchy
 
     def get(self, query_string):
         """
@@ -181,18 +180,9 @@ class Configuration:
         """
         query_string = query_string.lower()
 
-        query_arr = query_string.split()
-        if query_arr[0] in self._file_config.keys():
-            res = self._file_config[query_arr[0]]
-            if len(query_arr) == 2:
-                if query_arr[1] in res.keys():
-                    res = res[query_arr[1]]
-                else:
-                    raise ConfigVariableNotFound(query_string, self._filepath)
+        if query_string in self._file_config.keys():
+            return self._file_config[query_string]
         else:
             raise ConfigVariableNotFound(query_string, self._filepath)
-        return res  # TODO make this faster by making this part a direct dictionary lookup
 
 # Similar to YAML - but with more datatypes - binary strings
-
-config = Configuration("project_config.conf")
