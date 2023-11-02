@@ -3,7 +3,7 @@
 # ------------------------------------------------------------------------------
 import re
 import os
-
+import json
 
 # ------------------------------------------------------------------------------
 # Custom exceptions
@@ -63,7 +63,7 @@ class Configuration:
     the configuration file which is passed in.
     """
 
-    def __init__(self, filename, default_dict={}):
+    def __init__(self, filename, default_conf_file=None):
         """
         Constructor for the Configuration class.
 
@@ -74,7 +74,7 @@ class Configuration:
         Does not have a return value
         """
         self._filepath = os.path.join(os.path.split(os.path.dirname(__file__))[0], filename)
-        self.load(default_dict)
+        self.load(default_conf_file)
 
     def _cast_to_type(self, datatype, value, line_num):
         """
@@ -125,7 +125,7 @@ class Configuration:
         else:
             raise ConfigInvalidDataTypeError(datatype, line_num)
 
-    def load(self, default_dict):
+    def load(self, json_conf):
         """
         Method to load the configuration file, and convert it into a dictionary.
 
@@ -134,7 +134,12 @@ class Configuration:
         with open(self._filepath, "r") as f:
             contents = f.readlines()
 
-        hierarchy = default_dict
+        if json_conf is not None:
+            with open(json_conf, "r") as f:
+                hierarchy = json.loads(f.readline())
+        else:
+            hierarchy = {}
+
         heading = ""
         for line_num, line in enumerate(contents):
             heading_re = re.match("(\w+):\s*", line)
