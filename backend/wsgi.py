@@ -26,7 +26,7 @@ import mysql_handler
 # -----------------------------------------------------------------------------
 config = configuration.Configuration("./project_config.conf", default_conf_file="./default_config.json") 
 # The json does not need to be user editable, so is not very readable.
-
+quit()
 # -----------------------------------------------------------------------------
 # Database connection
 # -----------------------------------------------------------------------------
@@ -56,14 +56,14 @@ sessions = components.accounts.Sessions(
 )
 authors = components.authors.Authors(
     connection,
-    config.get("books genre_match_threshold"),
+    config.get("number_display_genres"),
     number_home_summaries
 )
 recommendations = components.recommendations.Recommendations(
     connection,
     config.get("recommendations number_converge_iterations"),
     config.get("recommendations hyperparameter"),
-    config.get("home number_display_genres"),
+    config.get("number_display_genres"),
     config.get("recommendations inital_recommendation_matrix_value"),
     config.get("recommendations reading_list_percentage_increase"),
     config.get("recommendations author_following_percentage_increase"),
@@ -74,17 +74,15 @@ recommendations = components.recommendations.Recommendations(
 reading_lists = components.reading_lists.ReadingLists(
     connection,
     number_home_summaries,
-    config.get("books genre_match_threshold"),
-    config.get("home number_display_genres"),
+    config.get("number_display_genres"),
     recommendations
 )
 books = components.books.Books(
     connection,
     reading_lists,
-    config.get("books genre_match_threshold"),
     config.get("home number_about_similarities"),
     number_home_summaries,
-    config.get("home number_display_genres")
+    config.get("number_display_genres")
 )
 accounts = components.accounts.Accounts(
     connection,
