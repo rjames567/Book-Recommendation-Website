@@ -63,7 +63,7 @@ class Configuration:
     the configuration file which is passed in.
     """
 
-    def __init__(self, filename, default_conf_file=None):
+    def __init__(self, filename, default_conf_filename=None):
         """
         Constructor for the Configuration class.
 
@@ -74,7 +74,11 @@ class Configuration:
         Does not have a return value
         """
         self._filepath = os.path.join(os.path.split(os.path.dirname(__file__))[0], filename)
-        self.load(default_conf_file)
+        if default_conf_filename is not None:
+            self._default_filepath = os.path.join(os.path.split(os.path.dirname(__file__))[0], default_conf_filename)
+        else:
+            self._default_filepath = None
+        self.load()
 
     def _cast_to_type(self, datatype, value, line_num):
         """
@@ -125,7 +129,7 @@ class Configuration:
         else:
             raise ConfigInvalidDataTypeError(datatype, line_num)
 
-    def load(self, json_conf):
+    def load(self):
         """
         Method to load the configuration file, and convert it into a dictionary.
 
@@ -134,8 +138,8 @@ class Configuration:
         with open(self._filepath, "r") as f:
             contents = f.readlines()
 
-        if json_conf is not None:
-            with open(json_conf, "r") as f:
+        if self._default_filepath is not None:
+            with open(self._default_filepath, "r") as f:
                 hierarchy = json.loads(f.readline())
         else:
             hierarchy = {}
