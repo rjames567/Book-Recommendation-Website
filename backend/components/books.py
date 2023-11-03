@@ -30,13 +30,12 @@ class BookNotFoundError(Exception):
 # Objects
 # -----------------------------------------------------------------------------
 class Books:
-    def __init__(self, connection, reading_lists, genre_required_match, number_similarities_about, number_summaries_home, num_display_genres):
+    def __init__(self, connection, reading_lists, number_similarities_about, number_summaries_home, num_display_genres):
         self._reading_lists = reading_lists
         self._num_display_genres = num_display_genres
         self._number_summaries_home = number_summaries_home
         self._number_similarities_about = number_similarities_about
         self._connection = connection
-        self._genre_required_match = genre_required_match
 
     def get_similar_items(self, book_id):
         res = self._connection.query("""
@@ -180,9 +179,9 @@ class Books:
             SELECT genres.name FROM genres
             INNER JOIN book_genres ON book_genres.genre_id=genres.genre_id
             WHERE book_genres.book_id={book_id}
-            ORDER BY book_genres.match_strength DESC;
-        """.format(book_id=book_id))][
-                 :self._num_display_genres]  # The query returns a tuple, so this converts the list of tuples to a flat list
+            ORDER BY book_genres.match_strength DESC
+            LIMIT {number}
+        """.format(book_id=book_id, number=self._num_display_genres))]
 
         output_dict = {
             "title": res[0],

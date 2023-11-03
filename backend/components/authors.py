@@ -15,9 +15,9 @@ class AuthorNotFoundError(Exception):
 # Objects
 # -----------------------------------------------------------------------------
 class Authors:
-    def __init__(self, connection, required_genre_match, number_summaries_home):
+    def __init__(self, connection, number_genres, number_summaries_home):
         self._number_summaries_home = number_summaries_home
-        self._required_genre_match = required_genre_match
+        self._number_genres = number_genres
         self._connection = connection
 
     def follow(self, user_id, author_id):
@@ -100,8 +100,8 @@ class Authors:
             INNER JOIN books ON books.book_id=book_genres.book_id
             INNER JOIN authors ON authors.author_id=books.author_id
             WHERE authors.author_id={author_id}
-                AND book_genres.match_strength>{match_strength}
-        """.format(author_id=author_id, match_strength=self._required_genre_match))
+            LIMIT {number}
+        """.format(author_id=author_id, number=self._number_genres))
 
         output_dict["genres"] = [i[0] for i in genres]
 

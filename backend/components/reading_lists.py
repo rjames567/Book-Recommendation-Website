@@ -27,14 +27,12 @@ class ReadingLists:
             self,
             connection,
             number_summaries_home,
-            genre_required_match,
             num_display_genres,
             recommendations
         ):
         self._recommendations = recommendations
         self._connection = connection
         self._number_summaries_home = number_summaries_home
-        self._genre_required_match = genre_required_match
         self._num_display_genres = num_display_genres
 
     def get_popular(self):
