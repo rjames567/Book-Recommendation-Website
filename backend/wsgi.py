@@ -26,7 +26,7 @@ import mysql_handler
 # -----------------------------------------------------------------------------
 config = configuration.Configuration("./project_config.conf", default_conf_file="./default_config.json") 
 # The json does not need to be user editable, so is not very readable.
-quit()
+
 # -----------------------------------------------------------------------------
 # Database connection
 # -----------------------------------------------------------------------------
