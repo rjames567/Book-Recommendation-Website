@@ -161,7 +161,7 @@ class Configuration:
                         )
                     else:
                         heading = ""
-                else:
+                if heading == "":
                     external_re = re.match("(\w+)\s+([\w-]+)\s*:\s*(.+)", line)
                     if external_re:
                         hierarchy[external_re.group(1).lower()] = self._cast_to_type(
