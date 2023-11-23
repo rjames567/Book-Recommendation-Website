@@ -193,7 +193,7 @@ class Sessions:
         Return a string, which is the session token, to be sent to the client
         after login.
         """
-        token = secrets.token_bytes(self._token_size).hex() + str(time.time()).replace(".", "")  # Remove the fullstops from
+        token = secrets.token_bytes(self._token_size).hex() + str(time.time()).split(".")[0]
         # the time to make it shorter
         # Generates a random string, and adds time to reduce required size of
         # the randomly generated string for speed.
