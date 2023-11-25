@@ -352,8 +352,6 @@ class Recommendations:
                 date_added
             FROM bad_recommendations
             WHERE user_id={}
-<<<<<<< HEAD
-=======
                 AND date_added<=DATE_SUB(NOW(), INTERVAL 2 DAY)
         """.format(user_id))
 
@@ -364,7 +362,6 @@ class Recommendations:
             SELECT reading_lists.book_id
             FROM reading_lists
             WHERE reading_lists.user_id={}
->>>>>>> main
         """.format(user_id))
 
         return_vals = []
