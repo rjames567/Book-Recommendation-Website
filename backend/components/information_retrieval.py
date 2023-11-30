@@ -92,7 +92,7 @@ class DocumentCollection:
                 arr = document["words"].split(" ")
                 one_over_n = 1 / len(arr)
                 for i in arr:
-                    if i != " ":
+                    if i != "":
                         if i in tf:
                             tf[i] += one_over_n
                         else:
@@ -103,7 +103,7 @@ class DocumentCollection:
             tf = dict()
             one_over_n = 1 / len(arr)
             for word in arr:
-                if word != " ":
+                if word != "":
                     if word in tf:
                         tf[word] += one_over_n
                     else:
