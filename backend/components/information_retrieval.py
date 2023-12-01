@@ -207,7 +207,7 @@ class DocumentCollection:
                 pass
     
         search_result = self.tfidf_search(search)
-        for count, res in enumerate(search_result[:self._result_limit]):
+        for count, res in enumerate(search_result[:self._result_limit - addition]):
             if res["type"] == "b":
                 temp = self._books.get_summary(res["id"])
                 temp["type"] = "b"
