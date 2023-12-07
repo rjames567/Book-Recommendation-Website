@@ -88,6 +88,7 @@ class Connection:
             self._connect() # Some databases specifies connections close after
                 # certain amount of time inactive. This repoens the connection
                 # if a timeout occurs
+            self._cursor.execute(query)
 
         try:
             result = self._cursor.fetchall() # Needs to come before the if
