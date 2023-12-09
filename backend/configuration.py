@@ -79,7 +79,7 @@ class Configuration:
             self._default_filepath = os.path.join(os.path.split(os.path.dirname(__file__))[0], default_conf_filename)
         else:
             self._default_filepath = None
-        self.load()
+        self. _load()
 
     def _cast_to_type(self, datatype, value, line_num):
         """
@@ -132,7 +132,7 @@ class Configuration:
         # Case statement to switch the datatype. Uses if-else as the switch
         # statement cannot be used in the required python version.
 
-    def load(self):
+    def  _load(self):
         """
         Method to load the configuration file, and convert it into a dictionary.
 
