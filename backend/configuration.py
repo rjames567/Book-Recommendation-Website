@@ -74,6 +74,7 @@ class Configuration:
         Does not have a return value
         """
         self._filepath = os.path.join(os.path.split(os.path.dirname(__file__))[0], filename)
+        # Needs to go back a directory, as this is in a folder that is further into the filesystem that the configuration files
         if default_conf_filename is not None:
             self._default_filepath = os.path.join(os.path.split(os.path.dirname(__file__))[0], default_conf_filename)
         else:
@@ -128,6 +129,8 @@ class Configuration:
                 raise ConfigInvalidDataForType(datatype, value, line_num)
         else:
             raise ConfigInvalidDataTypeError(datatype, line_num)
+        # Case statement to switch the datatype. Uses if-else as the switch
+        # statement cannot be used in the required python version.
 
     def load(self):
         """
@@ -140,7 +143,8 @@ class Configuration:
 
         if self._default_filepath is not None:
             with open(self._default_filepath, "r") as f:
-                hierarchy = json.loads(f.readline())
+                hierarchy = json.loads(f.readline())  # Load the json from the file and creeate dictionary with it.
+                # This is the default values. They will be overwritten as needed.
         else:
             hierarchy = {}
 
