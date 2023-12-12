@@ -104,7 +104,7 @@ class Configuration:
             if datatype == "int":
                 return int(value)
             elif datatype == "str":
-                return str(value)
+                return value
             elif datatype == "float":
                 return float(value)
             elif datatype == "bin-str":
