@@ -100,35 +100,26 @@ class Configuration:
         Returns a value, which is the same as that specified by the datatype
         parameter.
         """
-        if datatype == "int":
-            try:
+        try:
+            if datatype == "int":
                 return int(value)
-            except ValueError:
-                raise ConfigInvalidDataForType(datatype, value, line_num)
-        elif datatype == "str":
-            try:
+            elif datatype == "str":
                 return str(value)
-            except ValueError:
-                raise ConfigInvalidDataForType(datatype, value, line_num)
-        elif datatype == "float":
-            try:
+            elif datatype == "float":
                 return float(value)
-            except ValueError:
-                raise ConfigInvalidDataForType(datatype, value, line_num)
-        elif datatype == "bin-str":
-            try:
+            elif datatype == "bin-str":
                 return value.encode("utf-8")
-            except ValueError:
-                raise ConfigInvalidDataForType(datatype, value, line_num)
-        elif datatype == "bool":
-            if value == "true":
-                return True
-            elif value == "false":
-                return False
+            elif datatype == "bool":
+                if value == "true":
+                    return True
+                elif value == "false":
+                    return False
+                else:
+                    raise ValueError
             else:
-                raise ConfigInvalidDataForType(datatype, value, line_num)
-        else:
-            raise ConfigInvalidDataTypeError(datatype, line_num)
+                raise ConfigInvalidDataTypeError(datatype, line_num)
+        except ValueError:
+            raise ConfigInvalidDataForType(datatype, value, line_num)
         # Case statement to switch the datatype. Uses if-else as the switch
         # statement cannot be used in the required python version.
 
