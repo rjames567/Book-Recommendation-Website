@@ -86,14 +86,10 @@ class PriorityQueue(Queue):
         self._items.insert(index, [item, priority])
 
     def pop(self):
-        if not self.size:
-            raise QueueUnderflowError
         return super().pop()[0]  # The result from the super would be a list, where the first item is the inserted value
         # and the second is the priority
 
     def peek(self):
-        if not self.size:
-            raise QueueUnderflowError
         return super().peek()[0]
 
 # ------------------------------------------------------------------------------
