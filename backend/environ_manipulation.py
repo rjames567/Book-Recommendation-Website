@@ -7,7 +7,7 @@ import re
 # ------------------------------------------------------------------------------
 # Application manipulation
 # ------------------------------------------------------------------------------
-class application():
+class application:
     def get_target(environ):
         """
         Modifies the environ dictionary given when using WSGI, to contain the
