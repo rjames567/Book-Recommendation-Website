@@ -49,7 +49,6 @@ class Logging:
             now = datetime.datetime.now()
             string = "[" + now.strftime("%d-%m-%Y %H:%M:%S") + "] "
             length = len(string)
-            new_message = [message[i:i + (self._line_length - length)] for i in range(0, len(message),
-                                                                                    self._line_length - length)]
+            new_message = [message[i:i + (self._line_length - length)] for i in range(0, len(message), self._line_length - length)]
             string += ("\n" + " " * length).join(new_message) + "\n"
             self._write(string)
