@@ -83,7 +83,7 @@ class PriorityQueue(Queue):
         if index is None:
             index = 0
 
-        self._items.insert(index, [item, priority])
+        self._items.insert(index, (item, priority))
 
     def pop(self):
         return super().pop()[0]  # The result from the super would be a list, where the first item is the inserted value
