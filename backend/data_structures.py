@@ -76,14 +76,10 @@ class PriorityQueue(Queue):
 
         if priority is None:
             priority = self._priority_func(item)
+            
+        self._items.append((item, priority))
 
-        index = searching_algorithms.binary_search(self._items, priority, comparison_func=lambda x: x[1])  # This gets
-        # the first item in the array with the value, and it is in reverse order
-
-        if index is None:
-            index = 0
-
-        self._items.insert(index, (item, priority))
+        self._items.sort(key=lambda x: x[1], reverse=True)
 
     def pop(self):
         return super().pop()[0]  # The result from the super would be a list, where the first item is the inserted value
