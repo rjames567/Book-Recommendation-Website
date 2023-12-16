@@ -18,3 +18,34 @@ def binary_search(arr, target, comparison_func=None):
             return mid
 
     return None
+
+def linear_search(arr, target, comparison_func=None, first=True):
+    if not len(arr):
+        return None
+
+    if comparison_func is None:
+        num = arr.count(target)
+        if num:
+            if first:
+                for i, k in enumerate(arr):
+                    if k == target:
+                        return i
+            else:
+                found = 0
+                for i, k in enumerate(arr):
+                    if k == target:
+                        found += 1
+                        if found == num:
+                            return i
+    else:
+        if first:
+            for i, k in enumerate(arr):
+                if comparison_func(k) == target:
+                    return i
+        else:
+            last = None
+            for i, k in enumerate(arr):
+                if comparison_func(k) == target:
+                    last = i
+            return last
+    return None
