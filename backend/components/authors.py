@@ -60,8 +60,7 @@ class Authors:
         """.format(author_id))
 
         if len(res) == 0:
-            raise AuthorNotFoundError(
-                author_id)  # Cannot safely assume that it is from a reputable source - it may not be
+            raise AuthorNotFoundError(author_id)  # Cannot safely assume that it is from a reputable source - it may not be
             # from a link, so it should be verified.
         else:
             res = res[0]
