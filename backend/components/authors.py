@@ -100,6 +100,7 @@ class Authors:
             INNER JOIN books ON books.book_id=book_genres.book_id
             INNER JOIN authors ON authors.author_id=books.author_id
             WHERE authors.author_id={author_id}
+            ORDER BY book_genres.match_strength DESC
             LIMIT {number}
         """.format(author_id=author_id, number=self._number_genres))
 
