@@ -3,6 +3,7 @@
 # -----------------------------------------------------------------------------
 import re
 import sys
+import math
 
 # -----------------------------------------------------------------------------
 # Project imports
@@ -38,14 +39,20 @@ class Books:
         self._connection = connection
 
     def get_similar_items(self, book_id):
+        genre_num = math.ceil(self._connection.query("SELECT COUNT(genre_id) FROM genres")[0][0] * 0.2)
+
         res = self._connection.query("""
-            SELECT book_genres.book_id,
-                GROUP_CONCAT(book_genres.genre_id) as genres,
+            SELECT books.book_id,
+                GROUP_CONCAT(book_genres.genre_id
+                    ORDER BY book_genres.match_strength DESC
+                    LIMIT {}
+                ),
                 books.author_id
-            FROM book_genres
-            INNER JOIN books ON books.book_id=book_genres.book_id
-            GROUP BY book_id;
-        """)  # Match strength is included, as then more are more likely to appear, and
+            FROM books
+            INNER JOIN book_genres
+                ON books.book_id=book_genres.book_id
+            GROUP BY books.book_id;
+        """.format(genre_num))  # Match strength is included, as then more are more likely to appear, and
         # therefore will impact on the similarity.
 
         genre_dict = dict()
