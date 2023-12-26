@@ -155,22 +155,23 @@ class Books:
                 authors.alias,
                 authors.about,
                 (SELECT COUNT(author_followers.author_id) FROM author_followers
-                        WHERE author_followers.author_id=books.author_id) AS author_num_followers,
+                    WHERE author_followers.author_id=books.author_id) AS author_num_followers,
                 (SELECT COUNT(reading_lists.book_id) FROM reading_lists
-                        INNER JOIN reading_list_names ON reading_lists.list_id=reading_list_names.list_id
-                        WHERE reading_list_names.list_name="Want to Read"
-                                AND reading_lists.book_id=books.book_id) AS num_want_read,
+                    INNER JOIN reading_list_names ON reading_lists.list_id=reading_list_names.list_id
+                    WHERE reading_list_names.list_name="Want to Read"
+                        AND reading_lists.book_id=books.book_id) AS num_want_read,
                 (SELECT COUNT(reading_lists.book_id) FROM reading_lists
-                        INNER JOIN reading_list_names ON reading_lists.list_id=reading_list_names.list_id
-                        WHERE reading_list_names.list_name="Currently Reading"
-                                AND reading_lists.book_id=books.book_id) AS num_reading,
+                    INNER JOIN reading_list_names ON reading_lists.list_id=reading_list_names.list_id
+                    WHERE reading_list_names.list_name="Currently Reading"
+                        AND reading_lists.book_id=books.book_id) AS num_reading,
                 (SELECT COUNT(reading_lists.book_id) FROM reading_lists
-                        INNER JOIN reading_list_names ON reading_lists.list_id=reading_list_names.list_id
-                        WHERE reading_list_names.list_name="Have Read"
-                                AND reading_lists.book_id=books.book_id) AS num_read,
+                    INNER JOIN reading_list_names ON reading_lists.list_id=reading_list_names.list_id
+                    WHERE reading_list_names.list_name="Have Read"
+                        AND reading_lists.book_id=books.book_id) AS num_read,
                 authors.author_id
             FROM books
-            INNER JOIN authors ON authors.author_id=books.author_id
+            INNER JOIN authors
+                ON authors.author_id=books.author_id
             WHERE books.book_id={book_id};
         """.format(book_id=book_id))
 
