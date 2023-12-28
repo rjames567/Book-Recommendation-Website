@@ -57,7 +57,7 @@ class Books:
 
         genre_dict = dict()
         for i in res:
-            items = set(float(k) for k in i[1].split(","))
+            items = set(int(k) for k in i[1].split(","))
             items.add(-i[2])  # Must be negative, as otherwise it would be treated as a genre, which may not work
             genre_dict[i[0]] = items
 
