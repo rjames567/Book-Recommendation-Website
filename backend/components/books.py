@@ -39,7 +39,7 @@ class Books:
         self._connection = connection
 
     def get_similar_items(self, book_id):
-        genre_num = math.ceil(self._connection.query("SELECT COUNT(genre_id) FROM genres")[0][0] * 0.2)
+        genre_num = math.ceil(self._connection.query("SELECT COUNT(genre_id) FROM genres")[0][0] * 0.025)
 
         res = self._connection.query("""
             SELECT books.book_id,
