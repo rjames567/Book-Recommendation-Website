@@ -335,8 +335,8 @@ class Books:
         #  Convert all None parameters to null for insertion into query.
         if thoughts is not None:
             params["thoughts"] = '"' + re.sub("\n+", "\n", params["thoughts"]) + '"'
-        params["summary"] = '"' + params["summary"] + '"'  # There is a check to ensure that 'thoughts' cannot be given
-        # without 'summary'.
+            params["summary"] = '"' + params["summary"] + '"'  # There is a check to ensure that 'thoughts' cannot be given
+            # without 'summary'.
 
         self._connection.query("""
             DELETE FROM reviews
