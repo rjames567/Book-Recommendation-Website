@@ -37,13 +37,21 @@ class Genres:
         else:
             res = res[0]
 
+        count = self._connection.query("""
+            SELECT CEIL(COUNT(book_id) * 0.15)
+            FROM book_genres 
+            WHERE genre_id={};
+        """.format(res[0]))[0][0]
+
         db_books = self._connection.query("""
             SELECT books.book_id, books.title, books.cover_image, authors.first_name, authors.surname, authors.alias FROM books
             INNER JOIN authors ON books.author_id=authors.author_id
             INNER JOIN book_genres ON books.book_id=book_genres.book_id
             INNER JOIN genres ON genres.genre_id=book_genres.genre_id
-            WHERE genres.genre_id={genre_id};
-        """.format(genre_id=res[0]))
+            WHERE genres.genre_id={genre_id}
+            ORDER BY book_genres.match_strength DESC
+            LIMIT {count};
+        """.format(genre_id=res[0], count=count))
 
         book_dict = dict()
         for i, k in enumerate(db_books):
