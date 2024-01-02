@@ -24,7 +24,10 @@ import mysql_handler
 # -----------------------------------------------------------------------------
 # Project constants
 # -----------------------------------------------------------------------------
-config = configuration.Configuration("./project_config.conf", default_conf_filename="./default_config.json")
+config = configuration.Configuration(
+    "./project_config.conf",
+    default_conf_filename="./default_config.json"
+)
 # The json does not need to be user editable, so is not very readable.
 
 # -----------------------------------------------------------------------------
