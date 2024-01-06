@@ -1349,27 +1349,6 @@ $(window).click(function (event) {
 // -----------------------------------------------------------------------------
 // Home page
 // -----------------------------------------------------------------------------
-function addHomePageDetails2 (json) {
-    let trending = json["trending"];
-    for (let i = 0; i < Object.keys(trending).length; i++) {
-        let summary = $(".book-summary.template").clone().removeClass("template");
-        $(summary).find("img").attr("src", trending[i]["cover"]);
-        $(summary).find(".author").html(trending[i]["author"]);
-        $(summary).find(".title").html(trending[i]["title"]);
-        $(summary).data("id", trending[i]["book_id"]);
-        $(summary).appendTo(".row#trending .books");
-    }
-    let newestAdditions = json["newest_additions"];
-    for (let i = 0; i < Object.keys(newestAdditions).length; i++) {
-        let summary = $(".book-summary.template").clone().removeClass("template");
-        $(summary).find("img").attr("src", newestAdditions[i]["cover"]);
-        $(summary).find(".author").html(newestAdditions[i]["author"]);
-        $(summary).find(".title").html(newestAdditions[i]["title"]);
-        $(summary).data("id", newestAdditions[i]["book_id"]);
-        $(summary).appendTo(".row#newest .books");
-    }
-}
-
 function addHomePageDetails (json, divID) {
     for (let i = 0; i < Object.keys(json).length; i++) {
         let summary = $(".book-summary.template").clone().removeClass("template");
