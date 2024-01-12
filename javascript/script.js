@@ -254,7 +254,7 @@ $(".account-popups .window#sign-up form").on("submit", function (event) {
                     reloadCurrentPage();
 
                     if (remember) {
-                        $.cookie.set("sessionID", sessionID, { expires: 365, secure: true});
+                        $.cookie.set("sessionID", sessionID, { expires: 50, secure: true});
                     }
                 } else {
                     signUpAlert(result["message"]);
@@ -314,7 +314,7 @@ $(".account-popups .window#sign-in form").on("submit", function (event) {
             }
 
             if (remember) {
-                $.cookie.set("sessionID", sessionID, { expires: 365, secure: true });
+                $.cookie.set("sessionID", sessionID, { expires: 50, secure: true });
             }
         },
         error: function () {
