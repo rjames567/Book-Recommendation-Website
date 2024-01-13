@@ -309,12 +309,11 @@ $(".account-popups .window#sign-in form").on("submit", function (event) {
                 // appear smoother
                 hideAllSignPopups();
                 reloadCurrentPage();
+                if (remember) {
+                    $.cookie.set("sessionID", sessionID, { expires: 50, secure: true });
+                }
             } else {
                 signUpAlert(result["message"]);
-            }
-
-            if (remember) {
-                $.cookie.set("sessionID", sessionID, { expires: 50, secure: true });
             }
         },
         error: function () {
