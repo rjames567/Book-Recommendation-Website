@@ -157,7 +157,8 @@ class Handler(object):
             target_function = self._routes.get(target_name) or ErrorHandler("404 Not Found", log).error_response
             response, status, response_headers = target_function()
         except Exception as e:
-            self._log.output_message(f"     An error occured within {self.__class__.__name__}.{target_name} whilst processing the request")
+            self._log.output_message(f"     An error occurred within {self.__class__.__name__}.{target_name} whilst processing the request")
+            self._log.output_message("     " + repr(e))
             response, status, response_headers = ErrorHandler("500 Server Error", log).error_response()
         start_response(status, response_headers)
         self._log.output_message(f"     Response given.    status: {status}    headers: {response_headers}    response: {response}")
