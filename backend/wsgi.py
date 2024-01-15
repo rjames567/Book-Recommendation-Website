@@ -1287,7 +1287,7 @@ class ErrorHandler(Handler):
         if self._status[0] == "4":  # Other messages are successful, so do not need to be created.
             response += "<p>The page you were looking for does not exist.</p>"
         elif self._status[0] == "5":
-            response += "<p>An server error has occurred. Please try again later.</p>"
+            response += "<p>A server error has occurred. Please try again later.</p>"
 
         response_headers = [
             ("Content-Type", "text/html")
