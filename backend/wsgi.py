@@ -148,13 +148,17 @@ class Handler(object):
         return res
 
     def __call__(self, environ, start_response):
-        self._environ = environ  # Set so methods do not need to have it as a parameter.
-        self._log.output_message(self.__class__.__name__ + " object called")
-        self._log.output_message(f"     Handling request. URI: {self._environ['REQUEST_URI']}")
-        target_name = environ_manipulation.application.get_sub_target(self._environ)
-        self._log.output_message(f"     Redirecting to {self.__class__.__name__}.{target_name}")
-        target_function = self._routes.get(target_name) or ErrorHandler("404 Not Found", log).error_response
-        response, status, response_headers = target_function()
+        try:
+            self._environ = environ  # Set so methods do not need to have it as a parameter.
+            self._log.output_message(self.__class__.__name__ + " object called")
+            self._log.output_message(f"     Handling request. URI: {self._environ['REQUEST_URI']}")
+            target_name = environ_manipulation.application.get_sub_target(self._environ)
+            self._log.output_message(f"     Redirecting to {self.__class__.__name__}.{target_name}")
+            target_function = self._routes.get(target_name) or ErrorHandler("404 Not Found", log).error_response
+            response, status, response_headers = target_function()
+        except Exception as e:
+            self._log.output_message(f"     An error occured within {self.__class__.__name__}.{target_name} whilst processing the request")
+            response, status, response_headers = ErrorHandler("500 Server Error", log).error_response()
         start_response(status, response_headers)
         self._log.output_message(f"     Response given.    status: {status}    headers: {response_headers}    response: {response}")
         yield response.encode("utf-8")
