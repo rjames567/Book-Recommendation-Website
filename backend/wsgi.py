@@ -241,12 +241,12 @@ class AccountHandler(Handler):
             session_id = sessions.create_session(user_id)
             message = "Account created successfully"
             self._log.output_message("          Created account     Username: " + username)
+            self._log.output_message("          Session id: " + session_id)
         except components.accounts.UserExistsError:
             self._log.output_message("          Failed to create account - username is taken     Username: " + username)
             message = "Username is already taken."
             session_id = None  # json.dumps converts this to null automatically
-
-        self._log.output_message("          Session id: " + session_id)
+            self._log.output_message("          Session id: N/A")
 
         response = json.dumps({
             "message": message,
