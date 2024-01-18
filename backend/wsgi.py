@@ -843,7 +843,7 @@ class AuthorHandler(Handler):
 
 
 # -----------------------------------------------------------------------------
-# Author Handler
+# Diary Handler
 # -----------------------------------------------------------------------------
 class DiaryHandler(Handler):
     def __init__(self, log):
