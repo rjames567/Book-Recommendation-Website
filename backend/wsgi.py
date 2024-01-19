@@ -862,10 +862,11 @@ class DiaryHandler(Handler):
             sessions.update_time(session_id)
             self._log.output_message("          User ID: " + str(user_id))
 
-            result = dict()
-            result["entries"] = diaries.get_entries(user_id)
-            result["books"] = reading_lists.get_currently_reading(user_id)
-
+            result = {
+                "entries": diaries.get_entries(user_id)
+                "books": reading_lists.get_currently_reading(user_id)
+            }
+            
             response = json.dumps(result)
 
             status = "200 OK"
