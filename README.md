@@ -23,7 +23,8 @@ Install python dependancies (where sudo as it needs to be accessed as root, as w
 > pip install mysql.connector\
 > sudo pip install numpy\
 > sudo pip install scikit-learn\
-> sudo pip install sklearn
+> sudo pip install sklearn\
+> sudo pip install matplotlib
 
 ### Database
 #### Create the database server
