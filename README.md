@@ -14,6 +14,8 @@ To start the webserver:
 To stop the webserver:
 > sudo systemctl stop lighttpd
 
+Change the conf-enabled folder to match the one in the repo, updating the filepaths as appropriate. It is under /etc/lighttpd/conf-enabled
+
 ### Packages
 Install Pip to make installing python packages simpler
 > sudo apt install pip
