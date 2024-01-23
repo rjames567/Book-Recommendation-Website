@@ -863,7 +863,7 @@ class DiaryHandler(Handler):
             self._log.output_message("          User ID: " + str(user_id))
 
             result = {
-                "entries": diaries.get_entries(user_id)
+                "entries": diaries.get_entries(user_id),
                 "books": reading_lists.get_currently_reading(user_id)
             }
             
