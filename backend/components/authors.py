@@ -5,7 +5,6 @@ class AuthorNotFoundError(Exception):
     """
     Exception for when an author is not found.
     """
-
     def __init__(self, author_id):
         message = f"Author with ID '{author_id}' was not found."
         super().__init__(message)
