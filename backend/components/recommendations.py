@@ -374,9 +374,11 @@ class Recommendations:
             else:
                 remove.append(rec_id)
 
-        self._connection.query(
-            "DELETE FROM bad_recommendations WHERE recommendation_id IN ({})".format(",".join(str(i) for i in remove)))
-        # Delete expired recommendations.
+        if len(remove):
+            self._connection.query(
+                "DELETE FROM bad_recommendations WHERE recommendation_id IN ({})".format(",".join(str(i) for i in remove))
+            )
+            # Delete expired recommendations.
 
         return return_vals
 
@@ -547,6 +549,3 @@ def plot_learning_curve(model):
     plt.ylabel('MSE')
     plt.legend(loc='best')
     plt.show()
-
-# FIXME change how genres are limited
-    # Use a specified number rather than a display threshold
