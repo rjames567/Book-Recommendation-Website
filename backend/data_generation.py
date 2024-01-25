@@ -13,10 +13,10 @@ print("Started Imports 1/11")
 import json
 import random
 
-from gensim.summarization.summarizer import summarize
-from gensim.summarization import keywords
+# from gensim.summarization.summarizer import summarize
+# from gensim.summarization import keywords
 
-import compoents.accounts
+import components.accounts
 import components.authors
 import components.books
 import components.genres
@@ -32,7 +32,7 @@ print("Finished Imports 1/11")
 # Object instantiation
 # -----------------------------------------------------------------------------
 print("Started object instantiation 2/11")
-config = configuration.Configuration("./project_config.conf")
+config = configuration.Configuration("./project_config.conf", "./default_config.json")
 connection = mysql_handler.Connection(
     user=config.get("mysql username"),
     password=config.get("mysql password"),
@@ -137,23 +137,24 @@ with open("data/metadata-altered.json", "r") as f:
         if i != 0:
             query += ",\n"
         data = json.loads(line)
-        if type(data['description']) == float:
-            synopsis = ""
-        else:
-            # https://pythonguides.com/remove-unicode-characters-in-python/
-            synopsis = data["description"].encode("ascii", "ignore").decode().replace('"', "'").replace(";", "")
-        title = data["title"].encode("ascii", "ignore").decode().replace('"', "'")
-        query += '({book_id}, {author_id}, "{book_title}", "{clean_title}", "{synopsis}", "{cover_image}", "{link}", true, "{release_date}", "{isbn}")'.format(
-            book_id=i + 1,
-            author_id=data['authors'],
-            book_title=title,
-            clean_title=components.information_retrieval.clean_data(title),
-            synopsis=synopsis.replace('"', "'"),  # .replace("\n", "\\n"),
-            cover_image=data['img'],
-            link=data['url'],
-            release_date=str(data['year']) + "-01-01 " + " 00:00:00",
-            isbn=data['item_id']
-        )
+        if data['year'] != "0000":
+            if type(data['description']) == float:
+                synopsis = ""
+            else:
+                # https://pythonguides.com/remove-unicode-characters-in-python/
+                synopsis = data["description"].encode("ascii", "ignore").decode().replace('"', "'").replace(";", "")
+            title = data["title"].encode("ascii", "ignore").decode().replace('"', "'")
+            query += '({book_id}, {author_id}, "{book_title}", "{clean_title}", "{synopsis}", "{cover_image}", "{link}", true, "{release_date}", "{isbn}")'.format(
+                book_id=i + 1,
+                author_id=data['authors'],
+                book_title=title,
+                clean_title=components.information_retrieval.clean_data(title),
+                synopsis=synopsis.replace('"', "'"),  # .replace("\n", "\\n"),
+                cover_image=data['img'],
+                link=data['url'],
+                release_date=str(data['year']) + "-01-01 " + " 00:00:00",
+                isbn=data['item_id']
+            )
     query += ";"
     connection.query(query)
 
@@ -238,7 +239,8 @@ with open("data/reviews.json", "r") as f:
             body = summary = "null"
         else:
             try:
-                summary = summarize(body, word_count=50)
+                # summary = summarize(body, word_count=50)
+                summary = "This is the summary"
                 # summary = body
                 body = '"' + body + '"'
             except ValueError:
@@ -343,20 +345,55 @@ print("Finished genres 8/11")
 # TF-IDF search
 # -----------------------------------------------------------------------------
 print("Started IDF generation 11/11")
-temp_authors = components.authors.Authors(connection)
+number_home_summaries = config.get("home number_home_summaries")
+diaries = components.diaries.Diaries(connection)
+genres = components.genres.Genres(connection)
+sessions = components.accounts.Sessions(
+    connection,
+    config.get("session_id_length")
+)
+temp_authors = components.authors.Authors(
+    connection,
+    config.get("number_display_genres"),
+    number_home_summaries
+)
+recommendations = components.recommendations.Recommendations(
+    connection,
+    config.get("recommendations number_converge_iterations"),
+    config.get("recommendations hyperparameter"),
+    config.get("number_display_genres"),
+    config.get("recommendations inital_recommendation_matrix_value"),
+    config.get("recommendations reading_list_percentage_increase"),
+    config.get("recommendations author_following_percentage_increase"),
+    config.get("recommendations bad_recommendations_matrix_value"),
+    config.get("recommendations minimum_required_reviews"),
+    config.get("recommendations number_recommendations"),
+)
+reading_lists = components.reading_lists.ReadingLists(
+    connection,
+    number_home_summaries,
+    config.get("number_display_genres"),
+    recommendations
+)
 temp_books = components.books.Books(
     connection,
-    config.get("books genre_match_threshold"),
+    reading_lists,
     config.get("home number_about_similarities"),
-    config.get("home number_home_summaries"),
-    config.get("home number_display_genres")
+    number_home_summaries,
+    config.get("number_display_genres")
 )
-
+accounts = components.accounts.Accounts(
+    connection,
+    config.get("passwords hashing_algorithm"),
+    config.get("passwords salt"),  # Stored in the config as binary
+    config.get("passwords number_hash_passes"),
+    reading_lists
+)
 document = components.information_retrieval.DocumentCollection(
     connection,
-    temp_books,
-    temp_authors,
-    components.genres.Genres(connection),
+    books,
+    authors,
+    genres,
     config.get("search number_results")
 )
 
@@ -378,8 +415,8 @@ for i in users:
 
     for book in res:
         ids = [str(i[0]) for i in connection.query("SELECT review_id FROM reviews WHERE user_id={user} and book_id={books}".format(user=i, books=book))][1:]
-        print(ids)
-        connection.query(f"DELETE FROM reviews WHERE review_id IN ({','.join(ids)})")
+        if len(ids):
+            connection.query(f"DELETE FROM reviews WHERE review_id IN ({','.join(ids)})")
     
 # -----------------------------------------------------------------------------
 # Add reviews to the have read list
@@ -412,14 +449,24 @@ for i in users:
 # -----------------------------------------------------------------------------
 # Recommendations
 # -----------------------------------------------------------------------------
-recommendations = compoents.recommendations.Recommendations(connection, config.get("books genre_match_threshold"), config.get("home number_display_genres"))
+recommendations = components.recommendations.Recommendations(
+    connection,
+    config.get("recommendations number_converge_iterations"),
+    config.get("recommendations hyperparameter"),
+    config.get("number_display_genres"),
+    config.get("recommendations inital_recommendation_matrix_value"),
+    config.get("recommendations reading_list_percentage_increase"),
+    config.get("recommendations author_following_percentage_increase"),
+    config.get("recommendations bad_recommendations_matrix_value"),
+    config.get("recommendations minimum_required_reviews"),
+    config.get("recommendations number_recommendations"),
+)
 # This needs to be later, as the number of genres would be incorrect if it were done at the start
 
 print("Started user preference generation 9/11")
-recommendations.gen_all_user_data()
+recommendations.fit()
 print("Finished user preference generation 9/11")
 
 print("Started user recommendation generation 10/11")
-for i in accounts.get_user_id_list(): 
-        recommendations.recommend_user_books(i)
+recommendations.gen_recommendations()
 print("Finished user recommendation generation 10/11")
