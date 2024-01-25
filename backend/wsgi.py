@@ -102,6 +102,9 @@ information_retrieval = components.information_retrieval.DocumentCollection(
     config.get("search number_results")
 )
 
+recommendations.add_user(601, [5,1308,3860])
+
+quit()
 
 # -----------------------------------------------------------------------------
 # Middleware
@@ -1173,6 +1176,7 @@ class RecommendationsHandler(Handler):
             session_id = params["session_id"]
             author_ids = params["authors"]
             self._log.output_message("          Session ID: " + session_id)
+            self._log.output_message("          author IDs: [" + ",".join(author_ids) + "]")
             user_id = sessions.get_user_id(session_id)
             sessions.update_time(session_id)
             self._log.output_message("          User ID: " + str(user_id))
