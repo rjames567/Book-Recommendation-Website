@@ -478,18 +478,24 @@ class Recommendations:
                 "cover": i[2],
             } for i in res]
 
-    def calculate_certainty(self, book_id, user_id, dot_product):
+    def calculate_certainty(self, book_id, user_id, dot_product, user_vec=None):
+        if user_vec is None:
+            user_id = list(self.user_lookup_table.values()).index(user_id)
+            user_vec = [i for i in self.user_factors[user_id]]
+
         book_id = list(self.book_lookup_table.values()).index(book_id)
         book_vec = [i for i in self.book_factors[book_id]]
-        user_id = list(self.user_lookup_table.values()).index(user_id)
-        user_vec = [i for i in self.user_factors[user_id]]
 
         abs_book_vec = math.sqrt(sum(i ** 2 for i in book_vec))
         abs_user_vec = math.sqrt(sum(i ** 2 for i in user_vec))
 
-        similarity = dot_product / (abs_book_vec * abs_user_vec)
-        if similarity > 1:  # Slim chance it ends up larger than 100%, so limits it artificially.
-            similarity = 1
+        try:
+            similarity = dot_product / (abs_book_vec * abs_user_vec)
+            if similarity > 1:  # Slim chance it ends up larger than 100%, so limits it artificially.
+                similarity = 1
+        except ZeroDivisionError:
+            similarity = 0
+
         return similarity
 
     def add_user(self, user_id, author_ids):
@@ -544,7 +550,8 @@ class Recommendations:
             output[count]["certainty"] = self.calculate_certainty(
                 i["book_id"],
                 user_id,
-                i["strength"]
+                float(i["strength"]), # Convert the numpy float to a normal float so it can be used
+                target_vec
             )
 
         self._connection.query("INSERT INTO recommendations (user_id, book_id, certainty) VALUES {}".format(",".join(f"({user_id}, {i['book_id']}, {i['certainty']})" for i in output)))
