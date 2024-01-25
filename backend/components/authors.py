@@ -36,8 +36,7 @@ class Authors:
         return self._connection.query("""
         SELECT COUNT(author_id) FROM author_followers
             WHERE author_id={};
-        """.format(author_id))[0][
-            0]  # If the author ID is known, can safely assume that an author is in the DB with that
+        """.format(author_id))[0][0]  # If the author ID is known, can safely assume that an author is in the DB with that
         # name.
 
     def get_about_data(self, author_id):
