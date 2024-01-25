@@ -72,6 +72,26 @@ class Recommendations:
         # how easily recommendations can change.
 
         self.gen_lookup_tables()
+        self._load_book_factors()
+
+    def _load_book_factors(self):
+        self.book_factors = np.zeros((self._num_books, self._num_factors))
+
+        res = self._connection.query("""
+            SELECT book_id,
+                GROUP_CONCAT(match_strength ORDER BY genre_id),
+                GROUP_CONCAT(genre_id ORDER BY genre_id)
+            FROM book_genres
+            GROUP BY book_id
+        """)
+
+        for i, j, k in res:
+            book_id = list(self.book_lookup_table.keys())[list(self.book_lookup_table.values()).index(i)]
+            match_strengths = [float(z) for z in j.split(",")]
+            genre_ids = [list(self.genre_lookup_table.keys())[list(self.genre_lookup_table.values()).index(int(z))] for z in k.split(",")]
+
+            for genre, match in zip(genre_ids, match_strengths):
+                self.book_factors[book_id][genre] = match
 
     def fit(self):
         train, test, = self.create_train_test()
@@ -111,8 +131,9 @@ class Recommendations:
         for count, facts in enumerate(self.book_factors):
             # i will be the rating for each the genres.
             book_id = self.book_lookup_table[count]
-            query += ",".join(
-                f"({book_id}, {self.genre_lookup_table[i]}, {strength})" for i, strength in enumerate(facts)) + ","
+            temp = ",".join(f"({book_id}, {self.genre_lookup_table[i]}, {strength})" for i, strength in enumerate(facts) if strength > 0)
+            if len(temp):
+                query += temp + ","
 
         self._connection.query("DELETE FROM book_genres")  # Done here to minimise time without data in DB
         self._connection.query(query[:-1])
