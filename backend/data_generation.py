@@ -218,7 +218,7 @@ print("Finished users 6/11")
 # -----------------------------------------------------------------------------
 print("Started reviews 7/11")
 query = "INSERT INTO reviews (user_id, book_id, summary, overall_rating, character_rating, plot_rating, rating_body) VALUES\n"
-with open("data/reviews.json", "r") as f:
+with open("data/Original/reviews.json", "r") as f:
     # https://www.turing.com/kb/5-powerful-text-summarization-techniques-in-python
     prev = None
     available = list(range(1, 601))
