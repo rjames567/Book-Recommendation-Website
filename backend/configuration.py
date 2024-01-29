@@ -102,11 +102,11 @@ class Configuration:
         """
         try:
             if datatype == "int":
-                return int(value)
+                return int(eval(value))
             elif datatype == "str":
                 return value
             elif datatype == "float":
-                return float(value)
+                return float(eval(value))
             elif datatype == "bin-str":
                 return value.encode("utf-8")
             elif datatype == "bool":
