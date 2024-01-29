@@ -38,5 +38,33 @@ class IntegerTest(unittest.TestCase):
         assert (config.get("value4") == -567)
         assert (type(config.get("value4")) == int)
 
+    def test_positve_expression(self):
+        config = configuration.Configuration("tests/test_configurations/integer_positive_expression.conf")
+        assert (config.get("value1") == (1*10**2))
+        assert (type(config.get("value1")) == int)
+
+        assert (config.get("value2") == (1*10**5))
+        assert (type(config.get("value2")) == int)
+
+        assert (config.get("value3") == (3.23*10**4))
+        assert (type(config.get("value3")) == int)
+
+        assert (config.get("value4") == (1*10**456))
+        assert (type(config.get("value4")) == int)
+
+    def test_negative_expression(self):
+        config = configuration.Configuration("tests/test_configurations/integer_negative_expression.conf")
+        assert (config.get("value1") == (-1*10**2))
+        assert (type(config.get("value1")) == int)
+
+        assert (config.get("value2") == (-1*10**5))
+        assert (type(config.get("value2")) == int)
+
+        assert (config.get("value3") == (-3.23*10**4))
+        assert (type(config.get("value3")) == int)
+
+        assert (config.get("value4") == (-1*10**456))
+        assert (type(config.get("value4")) == int)
+
 if __name__ == '__main__':
     unittest.main()
