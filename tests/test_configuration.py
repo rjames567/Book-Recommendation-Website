@@ -66,5 +66,12 @@ class IntegerTest(unittest.TestCase):
         assert (config.get("value4") == (-1*10**456))
         assert (type(config.get("value4")) == int)
 
+    def test_invalid_integer(self):
+        self.assertRaises(
+            configuration.ConfigInvalidDataForType,
+            configuration.Configuration("tests/test_configurations/integer_invalid.conf")
+        )  # Error is thrown wehn config passed
+
+
 if __name__ == '__main__':
     unittest.main()
