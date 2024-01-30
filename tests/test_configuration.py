@@ -49,7 +49,7 @@ class IntegerTest(unittest.TestCase):
         assert (config.get("value3") == (3.23*10**4))
         assert (type(config.get("value3")) == int)
 
-        assert (config.get("value4") == (1*10**456))
+        assert (config.get("value4") == (1*10**46))
         assert (type(config.get("value4")) == int)
 
     def test_negative_expression(self):
@@ -63,7 +63,7 @@ class IntegerTest(unittest.TestCase):
         assert (config.get("value3") == (-3.23*10**4))
         assert (type(config.get("value3")) == int)
 
-        assert (config.get("value4") == (-1*10**456))
+        assert (config.get("value4") == (-1*10**46))
         assert (type(config.get("value4")) == int)
 
     def test_invalid_integer(self):
@@ -101,6 +101,34 @@ class FloatTest(unittest.TestCase):
         assert (config.get("value2") == 123 and type(config.get("value2")) == float)
         assert (config.get("value3") == -10032 and type(config.get("value3")) == float)
         assert (config.get("value4") == -123 and type(config.get("value4")) == float)
+
+    def test_positve_expression(self):
+        config = configuration.Configuration("tests/test_configurations/float_positive_expression.conf")
+        assert (config.get("value1") == (1.0001 * 10 ** 2))
+        assert (type(config.get("value1")) == float)
+
+        assert (config.get("value2") == (1 * 10 ** -5))
+        assert (type(config.get("value2")) == float)
+
+        assert (config.get("value3") == (3.23 * 10 ** -4))
+        assert (type(config.get("value3")) == float)
+
+        assert (config.get("value4") == (1 * 10 ** -46))
+        assert (type(config.get("value4")) == float)
+
+    def test_negative_expression(self):
+        config = configuration.Configuration("tests/test_configurations/float_negative_expression.conf")
+        assert (config.get("value1") == (-1.0001 * 10 ** 2))
+        assert (type(config.get("value1")) == float)
+
+        assert (config.get("value2") == (-1 * 10 ** -5))
+        assert (type(config.get("value2")) == float)
+
+        assert (config.get("value3") == (-3.23 * 10 ** -4))
+        assert (type(config.get("value3")) == float)
+
+        assert (config.get("value4") == (-1 * 10 ** -46))
+        assert (type(config.get("value4")) == float)
 
     def test_invalid(self):
         self.assertRaises(
