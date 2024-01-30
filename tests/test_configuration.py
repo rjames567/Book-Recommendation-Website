@@ -128,5 +128,33 @@ class BinaryTest(unittest.TestCase):
         assert (config.get("value2") == "-123.563".encode("utf-8") and type(config.get("value2")) == bytes)
 
 
+class BooleanTest(unittest.TestCase):
+    def test_boolean(self):
+        config = configuration.Configuration("tests/test_configurations/bool_valid.conf")
+        assert (config.get("value1") == True and type(config.get("value1")) == bool)
+        assert (config.get("value2") == False and type(config.get("value2")) == bool)
+
+    def test_integer(self):
+        self.assertRaises(
+            configuration.ConfigInvalidDataForType,
+            configuration.Configuration,
+            "tests/test_configurations/bool_int.conf"
+        )
+
+    def test_string(self):
+        self.assertRaises(
+            configuration.ConfigInvalidDataForType,
+            configuration.Configuration,
+            "tests/test_configurations/bool_string.conf"
+        )
+
+    def test_float(self):
+        self.assertRaises(
+            configuration.ConfigInvalidDataForType,
+            configuration.Configuration,
+            "tests/test_configurations/bool_float.conf"
+        )
+
+
 if __name__ == '__main__':
     unittest.main()
