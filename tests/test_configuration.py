@@ -86,6 +86,20 @@ class StringTest(unittest.TestCase):
         assert (config.get("value8") == "-6.901" and type(config.get("value8")) == str)
 
 
+class FloatTest(unittest.TestCase):
+    def test_floating_point(self):
+        config = configuration.Configuration("tests/test_configurations/floating_point_valid.conf")
+        assert (config.get("value1") == 1.02 and type(config.get("value1")) == float)
+        assert (config.get("value2") == 6002.30523 and type(config.get("value2")) == float)
+        assert (config.get("value3") == -1.02  and type(config.get("value3")) == float)
+        assert (config.get("value4") == -6002.30523 and type(config.get("value4")) == float)
+
+    def test_integer(self):
+        config = configuration.Configuration("tests/test_configurations/floating_point_valid.conf")
+        assert (config.get("value1") == 10032 and type(config.get("value1")) == float)
+        assert (config.get("value2") == 123 and type(config.get("value2")) == float)
+        assert (config.get("value3") == -10032 and type(config.get("value3")) == float)
+        assert (config.get("value4") == -123 and type(config.get("value4")) == float)
 
 
 if __name__ == '__main__':
