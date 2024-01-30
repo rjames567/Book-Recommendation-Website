@@ -181,5 +181,14 @@ class HeirachyTest(unittest.TestCase):
         )
 
 
+class MiscTest(unittest.TestCase):
+    def test_invalid_datatype(self):
+        self.assertRaises(
+            configuration.ConfigInvalidDataTypeError,
+            configuration.Configuration,
+            "tests/test_configurations/invalid_datatype.conf"
+        )
+
+
 if __name__ == '__main__':
     unittest.main()
