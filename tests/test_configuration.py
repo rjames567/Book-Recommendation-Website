@@ -73,5 +73,20 @@ class IntegerTest(unittest.TestCase):
         )  # Error is thrown wehn config passed
 
 
+class StringTest(unittest.TestCase):
+    def test_values(self):
+        config = configuration.Configuration("tests/test_configurations/string.conf")
+        assert (config.get("value1") == "string" and type(config.get("value1")) == str)
+        assert (config.get("value2") == "string 2 with spaces & special characters!" and type(config.get("value2")) == str)
+        assert (config.get("value3") == "450" and type(config.get("value3")) == str)
+        assert (config.get("value4") == "-450" and type(config.get("value4")) == str)
+        assert (config.get("value5") == "true" and type(config.get("value5")) == str)
+        assert (config.get("value6") == "false" and type(config.get("value6")) == str)
+        assert (config.get("value7") == "6.901" and type(config.get("value7")) == str)
+        assert (config.get("value8") == "-6.901" and type(config.get("value8")) == str)
+
+
+
+
 if __name__ == '__main__':
     unittest.main()
