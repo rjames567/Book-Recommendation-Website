@@ -107,7 +107,25 @@ class FloatTest(unittest.TestCase):
             configuration.ConfigInvalidDataForType,
             configuration.Configuration,
             "tests/test_configurations/floating_point_invalid.conf"
-        )  # Error is thrown wehn config passed
+        )  # Error is thrown when config passed
+
+class BinaryTest(unittest.TestCase):
+    def test_string(self):
+        config = configuration.Configuration("tests/test_configurations/binary_string.conf")
+        assert (config.get("value1") == "string".encode("utf-8") and type(config.get("value1")) == bytes)
+        assert (config.get("value2") == "string 2 & special characters!".encode("utf-8") and type(config.get("value2")) == bytes)
+        assert (config.get("value3") == "true".encode("utf-8") and type(config.get("value3")) == bytes)
+        assert (config.get("value4") == "false".encode("utf-8") and type(config.get("value4")) == bytes)
+
+    def test_integers(self):
+        config = configuration.Configuration("tests/test_configurations/binary_int.conf")
+        assert (config.get("value1") == "1232".encode("utf-8") and type(config.get("value1")) == bytes)
+        assert (config.get("value2") == "-1232".encode("utf-8") and type(config.get("value2")) == bytes)
+
+    def test_floating_point(self):
+        config = configuration.Configuration("tests/test_configurations/binary_float.conf")
+        assert (config.get("value1") == "123.563".encode("utf-8") and type(config.get("value1")) == bytes)
+        assert (config.get("value2") == "-123.563".encode("utf-8") and type(config.get("value2")) == bytes)
 
 
 if __name__ == '__main__':
