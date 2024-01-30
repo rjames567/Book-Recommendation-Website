@@ -159,7 +159,7 @@ class HeirachyTest(unittest.TestCase):
     def test_heirachy_misc(self):
         config = configuration.Configuration("tests/test_configurations/heirachy_misc.conf")
         assert (config.get("header1 value1") == False and type(config.get("header1 value1")) == bool)
-        assert (config.get("header1 value2") == True and type(config.get("header1value2")) == bool)
+        assert (config.get("header1 value2") == True and type(config.get("header1 value2")) == bool)
         assert (config.get("header2 value1") == "string" and type(config.get("header2 value1")) == str)
         assert (config.get("header2 value2") == 1.2 and type(config.get("header2 value2")) == float)
         assert (config.get("misc1") == "hello world" and type(config.get("misc1")) == str)
@@ -168,16 +168,19 @@ class HeirachyTest(unittest.TestCase):
     def test_heirachy_misc_heirachy(self):
         config = configuration.Configuration("tests/test_configurations/heirachy_misc_heirachy.conf")
         assert (config.get("header1 value1") == False and type(config.get("header1 value1")) == bool)
-        assert (config.get("header1 value2") == True and type(config.get("header1value2")) == bool)
+        assert (config.get("header1 value2") == True and type(config.get("header1 value2")) == bool)
         assert (config.get("header2 value1") == "string" and type(config.get("header2 value1")) == str)
         assert (config.get("header2 value2") == 1.2 and type(config.get("header2 value2")) == float)
         assert (config.get("misc1") == "hello world" and type(config.get("misc1")) == str)
 
-    def test_invalid_indentation(self):
+
+class DefaultConfigurationTest(unittest.TestCase):
+    def test_unknown_default(self):
         self.assertRaises(
-            configuration.ConfigInvalidDataForType,
+            FileNotFoundError,
             configuration.Configuration,
-            "tests/test_configurations/invalid_indent.conf"
+            "tests/test_configurations/invalid_datatype.conf",
+            "tests/test_configurations/non_existent_file.json"
         )
 
 
