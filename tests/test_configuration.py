@@ -230,6 +230,12 @@ class MiscTest(unittest.TestCase):
             "tests/test_configurations/invalid_datatype.conf"
         )
 
+    def unknown_file(self):
+        self.assertRaises(
+            FileNotFoundError,
+            configuration.Configuration,
+            "tests/test_configurations/non_existent_file.conf"
+        )
 
 if __name__ == '__main__':
     unittest.main()
