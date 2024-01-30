@@ -183,6 +183,44 @@ class DefaultConfigurationTest(unittest.TestCase):
             "tests/test_configurations/non_existent_file.json"
         )
 
+    def test_default_file(self):
+        config = configuration.Configuration(
+            "tests/test_configurations/empty.conf",
+            "tests/test_configurations/default_configuration.json"
+        )
+        assert (config.get("header1 value1") == 4 and type(config.get("header1 value1")) == int)
+        assert (config.get("header1 value2") == 3.5 and type(config.get("header1 value2")) == float)
+        assert (config.get("header2 value1") == "hello" and type(config.get("header2 value1")) == str)
+        assert (config.get("header2 value2") == True and type(config.get("header2 value2")) == bool)
+        assert (config.get("misc1") == False and type(config.get("misc1")) == bool)
+
+    def test_default_file_addition(self):
+        config = configuration.Configuration(
+            "tests/test_configurations/default_add.conf",
+            "tests/test_configurations/default_configuration.json"
+        )
+        assert (config.get("header1 value1") == 4 and type(config.get("header1 value1")) == int)
+        assert (config.get("header1 value2") == 3.5 and type(config.get("header1 value2")) == float)
+        assert (config.get("header2 value1") == "hello" and type(config.get("header2 value1")) == str)
+        assert (config.get("header2 value2") == True and type(config.get("header2 value2")) == bool)
+        assert (config.get("misc1") == False and type(config.get("misc1")) == bool)
+
+
+        assert (config.get("header1 value3") == "string" and type(config.get("header1 value3")) == str)
+        assert (config.get("header2 value3") == -102 and type(config.get("header2 value3")) == int)
+        assert (config.get("misc2") == "binary".encode("utf-8") and type(config.get("misc2")) == bytes)
+
+    def test_default_file_override(self):
+        config = configuration.Configuration(
+            "tests/test_configurations/default_override.conf",
+            "tests/test_configurations/default_configuration.json"
+        )
+        assert (config.get("header1 value1") == 4 and type(config.get("header1 value1")) == int)
+        assert (config.get("header1 value2") == -4203.01 and type(config.get("header1 value2")) == float)  # overriden value
+        assert (config.get("header2 value1") == "hello" and type(config.get("header2 value1")) == str)
+        assert (config.get("header2 value2") == True and type(config.get("header2 value2")) == bool)
+        assert (config.get("misc1") == True and type(config.get("misc1")) == bool)  # overriden value
+
 
 class MiscTest(unittest.TestCase):
     def test_invalid_datatype(self):
