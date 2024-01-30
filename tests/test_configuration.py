@@ -69,8 +69,9 @@ class IntegerTest(unittest.TestCase):
     def test_invalid_integer(self):
         self.assertRaises(
             configuration.ConfigInvalidDataForType,
-            configuration.Configuration("tests/test_configurations/integer_invalid.conf")
-        )  # Error is thrown wehn config passed
+            configuration.Configuration,
+            "tests/test_configurations/integer_invalid.conf"
+        )  # Error is thrown when config passed
 
 
 class StringTest(unittest.TestCase):
@@ -91,15 +92,22 @@ class FloatTest(unittest.TestCase):
         config = configuration.Configuration("tests/test_configurations/floating_point_valid.conf")
         assert (config.get("value1") == 1.02 and type(config.get("value1")) == float)
         assert (config.get("value2") == 6002.30523 and type(config.get("value2")) == float)
-        assert (config.get("value3") == -1.02  and type(config.get("value3")) == float)
+        assert (config.get("value3") == -1.02 and type(config.get("value3")) == float)
         assert (config.get("value4") == -6002.30523 and type(config.get("value4")) == float)
 
     def test_integer(self):
-        config = configuration.Configuration("tests/test_configurations/floating_point_valid.conf")
+        config = configuration.Configuration("tests/test_configurations/floating_point_integer.conf")
         assert (config.get("value1") == 10032 and type(config.get("value1")) == float)
         assert (config.get("value2") == 123 and type(config.get("value2")) == float)
         assert (config.get("value3") == -10032 and type(config.get("value3")) == float)
         assert (config.get("value4") == -123 and type(config.get("value4")) == float)
+
+    def test_invalid(self):
+        self.assertRaises(
+            configuration.ConfigInvalidDataForType,
+            configuration.Configuration,
+            "tests/test_configurations/floating_point_invalid.conf"
+        )  # Error is thrown wehn config passed
 
 
 if __name__ == '__main__':
