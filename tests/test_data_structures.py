@@ -4,6 +4,8 @@ import unittest
 import random
 import sys
 import os
+from queue import PriorityQueue as TruePriorityQueue
+
 
 sys.path.append("/".join(os.getcwd().split("/")[:-1]) + "/backend/")
 
@@ -21,7 +23,6 @@ class QueueTest(unittest.TestCase):
         assert(items == out)
 
     def test_overflow(self):
-
         queue = structures.Queue(max_length=100)
         for i in range(100):
             queue.push(random.randrange(0, 100))
@@ -39,6 +40,57 @@ class QueueTest(unittest.TestCase):
         self.assertRaises(
             structures.QueueUnderflowError,
             queue.pop
+        )
+
+class PriorityQueueTest(unittest.TestCase):
+    def test_order_val(self):
+        queue = structures.PriorityQueue()
+
+        items = [random.randrange(0, 15) for i in range(100)]
+        for i in items:
+            queue.push(i)
+
+        items.sort(reverse=True)  # priority is done as largest numbers are
+        # most important
+
+        out = [queue.pop() for i in range(100)]
+
+        assert(items == out)
+
+    def test_order_func(self):
+        # assume built-in is true
+        queue = structures.PriorityQueue(lambda x: x[1])
+        true_queue = TruePriorityQueue()
+
+        items = [[i, random.randrange(0, 15)] for i in range(100)]
+        for i in items:
+            true_queue.put((-i[0], i[1]))  # Sorts the opposite way to custom
+            # implementation
+            queue.push((i[1], i[0]))
+
+        items = [true_queue.get()[1] for i in range(100)]
+
+        out = [queue.pop()[0] for i in range(100)]
+
+        assert(items == out)
+
+    def test_underflow(self):
+        queue = structures.PriorityQueue()
+
+        self.assertRaises(
+            structures.QueueUnderflowError,
+            queue.pop
+        )
+
+    def test_overflow(self):
+        queue = structures.PriorityQueue(max_length=100)
+        for i in range(100):
+            queue.push(random.randrange(0, 100))
+
+        self.assertRaises(
+            structures.QueueOverflowError,
+            queue.push,
+            random.random()
         )
 
 
