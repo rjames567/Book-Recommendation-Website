@@ -118,7 +118,9 @@ class Configuration:
                     raise ValueError
             else:
                 raise ConfigInvalidDataTypeError(datatype, line_num)
-        except ValueError:
+        except (ValueError, TypeError, SyntaxError, NameError):
+            # Handles any errors that can be thrown from the eval statement
+            # or conversion of any values
             raise ConfigInvalidDataForType(datatype, value, line_num)
         # Case statement to switch the datatype. Uses if-else as the switch
         # statement cannot be used in the required python version.
