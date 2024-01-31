@@ -415,7 +415,7 @@ class Recommendations:
                 authors.surname,
                 authors.alias,
                 authors.author_id,
-                (SELECT GROUP_CONCAT(genres.name) FROM book_genres
+                (SELECT GROUP_CONCAT(genres.name ORDER BY book_genres.match_strength DESC LIMIT {genre_limit}) FROM book_genres
                     INNER JOIN genres ON book_genres.genre_id=genres.genre_id
                     WHERE book_genres.book_id=recommendations.book_id
                     GROUP BY books.book_id) AS genres,
@@ -428,10 +428,12 @@ class Recommendations:
             FROM recommendations
             INNER JOIN books ON recommendations.book_id=books.book_id
             INNER JOIN authors ON books.author_id=authors.author_id
-            WHERE recommendations.user_id={}
+            WHERE recommendations.user_id={user_id}
             ORDER BY recommendations.certainty DESC;
         """.format(
-            user_id))  # ORDER BY does not use calculated certainty for higher accuracy, and avoiding collisions
+            user_id=user_id,
+            genre_limit=self._num_display_genres
+        ))  # ORDER BY does not use calculated certainty for higher accuracy, and avoiding collisions
         # IFNULL prevents any null values - replace with 0s.
 
         if len(items) == 0 or user_id in self._list_users_no_preferences:
@@ -450,7 +452,7 @@ class Recommendations:
                 "title": k[5],
                 "author_name": author,
                 "author_id": k[9],
-                "genres": k[10].split(",")[:self._num_display_genres],
+                "genres": k[10].split(","),
                 "average_rating": round(k[11], 2),
                 "number_ratings": k[12]
             }
