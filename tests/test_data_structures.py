@@ -127,5 +127,39 @@ class TestBinaryTree(unittest.TestCase):
 
         assert (out == expected)
 
+
+class StackTest(unittest.TestCase):
+    def test_order(self):
+        stack = structures.Stack()
+        items = [random.randrange(0, 100) for i in range(10)]
+
+        for i in items:
+            stack.push(i)
+
+        out = [stack.pop() for i in range(10)]
+
+        items.reverse()  # Stack is FILO, so FIFO items needs to be reversed
+
+        assert (items == out)
+
+    def test_overflow(self):
+        stack = structures.Stack(max_length=100)
+        for i in range(100):
+            stack.push(random.randrange(0, 100))
+
+        self.assertRaises(
+            structures.StackOverflowError,
+            stack.push,
+            random.random()
+        )
+
+    def test_underflow(self):
+        stack = structures.Stack()
+
+        self.assertRaises(
+            structures.StackUnderflowError,
+            stack.pop
+        )
+
 if __name__ == '__main__':
     unittest.main()
