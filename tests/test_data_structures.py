@@ -131,12 +131,12 @@ class TestBinaryTree(unittest.TestCase):
 class StackTest(unittest.TestCase):
     def test_order(self):
         stack = structures.Stack()
-        items = [random.randrange(0, 100) for i in range(10)]
+        items = [random.randrange(0, 100) for i in range(100)]
 
         for i in items:
             stack.push(i)
 
-        out = [stack.pop() for i in range(10)]
+        out = [stack.pop() for i in range(100)]
 
         items.reverse()  # Stack is FILO, so FIFO items needs to be reversed
 
