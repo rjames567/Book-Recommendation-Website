@@ -1,5 +1,5 @@
 # python3 -m unittest -v test_data_structures.py
-
+import string
 import unittest
 import random
 import sys
@@ -93,6 +93,39 @@ class PriorityQueueTest(unittest.TestCase):
             random.random()
         )
 
+class TestBinaryTree(unittest.TestCase):
+    def test_inorder(self):
+        tree = structures.BinaryTree()
+
+        expected = []
+
+        for i in range(100):
+            val = random.randrange(0, 10)
+            tree.insert(val)
+            expected.append(val)
+
+        expected.sort()
+
+        out = tree.in_order_traversal()
+
+        assert(out == expected)
+
+    def test_inorder_access(self):
+        tree = structures.BinaryTree(access_function=lambda x: x[0])
+
+        expected = []
+
+        for i in range(100):
+            c = random.choice(list(string.ascii_lowercase))
+            val = random.randrange(0, 10)
+            tree.insert((val, c))
+            expected.append((val, c))
+
+        expected.sort(key=lambda x: x[0])
+
+        out = tree.in_order_traversal()
+
+        assert (out == expected)
 
 if __name__ == '__main__':
     unittest.main()
