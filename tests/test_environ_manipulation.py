@@ -61,3 +61,7 @@ class ApplicationTest(unittest.TestCase):
         out = environ_manipulation.application.get_sub_target(environ)
 
         assert (out == None)
+
+
+if __name__ == '__main__':
+    unittest.main()
