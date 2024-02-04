@@ -1314,20 +1314,21 @@ class ErrorHandler(Handler):
 # -----------------------------------------------------------------------------
 # File execution
 # -----------------------------------------------------------------------------
-log = logger.Logging(debugging=config.get("debugging"))
+if __name__ != "__main__":
+    log = logger.Logging(debugging=config.get("debugging"))
 
-# https://www.sitepoint.com/python-web-applications-the-basics-of-wsgi/
-routes = {
-    "account": AccountHandler(log),
-    "my_books": MyBooksHandler(log),
-    "genres": GenreHandler(log),
-    "books": BookHandler(log),
-    "authors": AuthorHandler(log),
-    "diary": DiaryHandler(log),
-    "home": HomeHandler(log),
-    "recommendations": RecommendationsHandler(log),
-    "search": SearchingHandler(log)
-    # Objects are persistent, so will the response should be faster and more memory efficient.
-}
+    # https://www.sitepoint.com/python-web-applications-the-basics-of-wsgi/
+    routes = {
+        "account": AccountHandler(log),
+        "my_books": MyBooksHandler(log),
+        "genres": GenreHandler(log),
+        "books": BookHandler(log),
+        "authors": AuthorHandler(log),
+        "diary": DiaryHandler(log),
+        "home": HomeHandler(log),
+        "recommendations": RecommendationsHandler(log),
+        "search": SearchingHandler(log)
+        # Objects are persistent, so will the response should be faster and more memory efficient.
+    }
 
-app = Middleware(routes, log)
+    app = Middleware(routes, log)
