@@ -40,6 +40,11 @@ class Authors:
         # name.
 
     def get_about_data(self, author_id):
+        res = self._connection.query("SELECT author_id FROM authors WHERE author_id={}".format(author_id))
+        if len(res) == 0:
+            raise AuthorNotFoundError(author_id)  # Cannot safely assume that it is from a reputable source -
+            # it may not be from a link, so it should be verified.
+
         res = self._connection.query("""
             SELECT authors.first_name,
                 authors.surname,
@@ -55,13 +60,7 @@ class Authors:
             LEFT OUTER JOIN reviews
                 ON reviews.book_id=books.book_id
             WHERE authors.author_id={};
-        """.format(author_id))
-
-        if len(res) == 0:
-            raise AuthorNotFoundError(author_id)  # Cannot safely assume that it is from a reputable source - it may not be
-            # from a link, so it should be verified.
-        else:
-            res = res[0]
+        """.format(author_id))[0]
 
         first_name, surname, alias, about, followers, average_rating, number_ratings = res  # res is a 4 element tuple, so this unpacks it
         author = names_to_display(first_name, surname, alias)
