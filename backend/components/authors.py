@@ -1,4 +1,9 @@
 # -----------------------------------------------------------------------------
+# Imports
+# -----------------------------------------------------------------------------
+import mysql.connector
+
+# -----------------------------------------------------------------------------
 # Exceptions
 # -----------------------------------------------------------------------------
 class AuthorNotFoundError(Exception):
@@ -20,10 +25,13 @@ class Authors:
         self._connection = connection
 
     def follow(self, user_id, author_id):
-        self._connection.query("""
-            INSERT INTO author_followers (user_id, author_id)
-            VALUES ({user_id}, {author_id});
-        """.format(user_id=user_id, author_id=author_id))
+        try:
+            self._connection.query("""
+                INSERT INTO author_followers (user_id, author_id)
+                VALUES ({user_id}, {author_id});
+            """.format(user_id=user_id, author_id=author_id))
+        except mysql.connector.errors.IntegrityError:
+            pass
 
     def unfollow(self, user_id, author_id):
         self._connection.query("""
