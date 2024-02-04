@@ -101,7 +101,7 @@ class Authors:
             LIMIT {number}
         """.format(author_id=author_id, number=self._number_genres))
 
-        output_dict["genres"] = [i[0] for i in genres]
+        output_dict["genres"] = list(set(i[0] for i in genres))
 
         return output_dict
 
