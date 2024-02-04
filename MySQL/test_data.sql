@@ -83,6 +83,20 @@ INSERT INTO sessions (client_id, user_id) VALUES
 ("swcdecwftrbr132788943", 3);
 
 INSERT INTO sessions (client_id, user_id, date_added) VALUES
-("swcdecwftrbr132788943", 2, "2021-2-2"),
+("swcdeawftrbr132788943", 2, "2021-2-2"),
 ("sdfasdvnjtit987652678", 1, "2020-3-4"),
 ("lmoijbnernub125392872", 4, "2022-12-8");
+
+INSERT INTO reading_list_names (list_name, user_id) VALUES
+("Want to Read", 1),
+("Currently Reading", 1),
+("Have Read", 1),
+("Want to Read", 2),
+("Currently Reading", 2),
+("Have Read", 2),
+("Want to Read", 3),
+("Currently Reading", 3),
+("Have Read", 3),
+("Want to Read", 4),
+("Currently Reading", 4),
+("Have Read", 4);
