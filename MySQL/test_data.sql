@@ -1,7 +1,7 @@
 INSERT INTO authors (first_name, surname, about, clean_name) VALUES
-("Author", "1", "This author does not have an about", "author 1"),
-("Author", "2", "This author does not have an about", "author 2"),
-("Author", "3", "This author does not have an about", "author 3");
+("Author", "1", "This is the first author's about.", "author 1"),
+("Author", "2", "This is the second author's about.", "author 2"),
+("Author", "3", "This is the third author's about.", "author 3");
 
 INSERT INTO genres (name, about, clean_name) VALUES
 ("Genre 1", "This genre does not have an about", "genre 1"),
@@ -100,3 +100,10 @@ INSERT INTO reading_list_names (list_name, user_id) VALUES
 ("Want to Read", 4),
 ("Currently Reading", 4),
 ("Have Read", 4);
+
+INSERT INTO author_followers (user_id, author_id) VALUES
+(1, 1),
+(1, 2),
+(2, 1),
+(2, 2),
+(3, 2);
