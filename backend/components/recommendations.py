@@ -535,7 +535,7 @@ class Recommendations:
             genre = list(self.genre_lookup_table.values()).index(genre_id)
             target_vec[genre] = avg
 
-        rec = target_vec * self.book_factors
+        rec = (target_vec * self.book_factors).T
 
         output = []
         for count, val in enumerate(rec[0]):
