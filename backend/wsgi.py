@@ -44,6 +44,7 @@ connection = mysql_handler.Connection(
 # Project Constants
 # -----------------------------------------------------------------------------
 number_home_summaries = config.get("home number_home_summaries")  # This is a
+number_home_summaries = config.get("home number_home_summaries")  # This is a
 # constant, as is is used multiple times, and will always be faster to access as
 # a variable, and otherwise, the get function would be have to run during the
 # calling of methods as part of a response.
@@ -1254,14 +1255,18 @@ class SearchingHandler(Handler):
         result["because_read"] = result["because_added"] = None
 
         if user_id is not None:
-            book_id, title = reading_lists.get_most_recent_read(user_id)
-            if book_id is not None:
-                result["because_read"] = books.get_similar_items(book_id)
-                result["because_read_title"] = title
-            book_id, title = reading_lists.get_newest_addition(user_id)
-            if book_id is not None:
-                result["because_added"] = books.get_similar_items(book_id)
-                result["because_added_title"] = title
+            res = reading_lists.get_most_recent_read(user_id)
+            if res is not None:
+                book_id, title = res
+                if book_id is not None:
+                    result["because_read"] = books.get_similar_items(book_id)
+                    result["because_read_title"] = title
+            res = reading_lists.get_newest_addition(user_id)
+            if res is not None:
+                book_id, title = res
+                if book_id is not None:
+                    result["because_added"] = books.get_similar_items(book_id)
+                    result["because_added_title"] = title
             result["favourite_authors"] = authors.get_author_favourite_data(user_id)
             
         response = json.dumps(result)
