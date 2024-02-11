@@ -10,6 +10,9 @@ def jaccard_similarity(set_1, set_2):
     intersection = set_1.intersection(set_2)
     return len(intersection) / len(union)
 
+def dot_product(arr1, arr2):
+    return sum(i * k for i, k in zip(arr1, arr2))
+
 # -----------------------------------------------------------------------------
 # Error measures
 # -----------------------------------------------------------------------------

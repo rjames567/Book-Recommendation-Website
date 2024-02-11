@@ -39,43 +39,42 @@ class Books:
         self._connection = connection
 
     def get_similar_items(self, book_id):
-        genre_num = math.ceil(self._connection.query("SELECT COUNT(genre_id) FROM genres")[0][0] * 0.025)
-
         res = self._connection.query("""
             SELECT books.book_id,
                 GROUP_CONCAT(book_genres.genre_id
-                    ORDER BY book_genres.match_strength DESC
-                    LIMIT {}
+                    ORDER BY book_genres.genre_id ASC
+                ),
+                GROUP_CONCAT(book_genres.match_strength
+                    ORDER BY book_genres.genre_id ASC
                 ),
                 books.author_id
             FROM books
             INNER JOIN book_genres
                 ON books.book_id=book_genres.book_id
             GROUP BY books.book_id;
-        """.format(genre_num))  # Match strength is included, as then more are more likely to appear, and
-        # therefore will impact on the similarity.
+        """)
 
         genre_dict = dict()
         for i in res:
-            items = set(int(k) for k in i[1].split(","))
-            items.add(-i[2])  # Must be negative, as otherwise it would be treated as a genre, which may not work
-            genre_dict[i[0]] = items
+            genres = [0 for k in range(self._connection.query("SELECT COUNT(genre_id) FROM genres")[0][0])]
+            for genre_id, strength in zip(i[1].split(","), i[2].split(",")):
+                genres[int(genre_id) - 1] = float(strength)
+
+            genre_dict[i[0]] = genres
 
         target_genres = genre_dict[book_id]
         genre_dict.pop(book_id)
 
-        tree = data_structures.BinaryTree(access_function=lambda x: x["jaccard_distance"])  # Insert into tree using
+        tree = data_structures.BinaryTree(access_function=lambda x: -x["strength"])  # Insert into tree using
         # similarity not id
         for i in genre_dict:
             tree.insert({
                 "book_id": i,
-                "jaccard_distance": 1 - ml_utilities.jaccard_similarity(target_genres, genre_dict[i])  # 1 - similarity
-                # gives the distance, so this in ascending order gives them in similairty in descending order.
+                "strength": ml_utilities.dot_product(target_genres, genre_dict[i])
             })
 
-        result = tree.in_order_traversal()[
-                 :self._number_similarities_about]  # Get the books ordered by similarity. Note that the distance is
-        # descending - This is correct, as 0 is identical genres, and 1 is different
+        result = tree.in_order_traversal()[:self._number_similarities_about]  # Get the books ordered by similarity.
+        #Note that the distance is descending - This is correct, as 0 is identical genres, and 1 is different
 
         return [self.get_summary(i["book_id"]) for i in result]
 
