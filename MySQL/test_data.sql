@@ -134,3 +134,10 @@ INSERT INTO author_followers (user_id, author_id) VALUES
 (2, 1),
 (2, 2),
 (3, 2);
+
+INSERT INTO diary_entries (user_id, book_id, overall_rating, character_rating, plot_rating, summary, thoughts, pages_read) VALUES
+(1, 1, 5, 3, 2, "Summary", "Thoughts", 10),
+(1, 1, 1, 2, 5, "Entry summary", "Entry thoughts", 21),
+(1, 2, 5, 3, 2, "A summary", "Thoughts", 11),
+(2, 5, 2, 4, 1, "Entry summary", "Entry thoughts", 2),
+(2, 4, 4, 5, 3, "Short entry summary", "Long entry thoughts.", 5);
