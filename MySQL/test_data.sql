@@ -43,6 +43,13 @@ INSERT into reviews (book_id, user_id, overall_rating, plot_rating, character_ra
 (4, 4, 4, 3, 5),
 (5, 1, 1, 2, 1);
 
+-- book 1 avg: 3.5
+-- book 2 avg: 4
+-- book 3 avg: 3
+-- book 4 avg: 2.75
+-- book 5 avg: 1
+
+
 INSERT INTO book_genres (book_id, genre_id, match_strength) VALUES
 (1, 1, 0.09616839),
 (1, 2, 0.13990453),
