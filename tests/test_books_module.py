@@ -162,76 +162,76 @@ class BooksTest(unittest.TestCase):
         exp = {'author': 'Author 1', 'title': 'Book 5', 'book_id': 5, 'cover': ''}
         assert (books.get_summary(isbn="0555555555") == exp)
 
-    # def test_summary_data_isbn_unknown(self):
-    #     self.assertRaises(
-    #         components.books.BookNotFoundError,
-    #         books.get_summary,
-    #         isbn="1111111111"
-    #     )
-    #
-    # def test_newest_books(self):
-    #     connection.query("""
-    #         INSERT INTO books (author_id, title, clean_title, synopsis, cover_image, purchase_link, fiction, release_date, isbn) VALUES
-    #         (1, "temp 1", "", "", "", "", 1, "2022-2-2", "1234567890");
-    #     """)
-    #     time.sleep(1.5)
-    #
-    #     connection.query("""
-    #         INSERT INTO books (author_id, title, clean_title, synopsis, cover_image, purchase_link, fiction, release_date, isbn) VALUES
-    #         (1, "temp 2", "", "", "", "", 1, "2022-2-2", "1234567890");
-    #     """)
-    #     time.sleep(1.5)
-    #
-    #
-    #     connection.query("""
-    #         INSERT INTO books (author_id, title, clean_title, synopsis, cover_image, purchase_link, fiction, release_date, isbn) VALUES
-    #         (1, "temp 3", "", "", "", "", 1, "2022-2-2", "1234567890");
-    #     """)
-    #     time.sleep(1.5)
-    #
-    #     connection.query("""
-    #         INSERT INTO books (author_id, title, clean_title, synopsis, cover_image, purchase_link, fiction, release_date, isbn) VALUES
-    #         (2, "temp 4", "", "", "", "", 1, "2022-2-2", "1234567890");
-    #     """)
-    #     time.sleep(1.5)
-    #
-    #     connection.query("""
-    #         INSERT INTO books (author_id, title, clean_title, synopsis, cover_image, purchase_link, fiction, release_date, isbn) VALUES
-    #         (3, "temp 5", "", "", "", "", 1, "2022-2-2", "1234567890");
-    #     """)
-    #     time.sleep(1.5)
-    #
-    #     connection.query("""
-    #         INSERT INTO books (author_id, title, clean_title, synopsis, cover_image, purchase_link, fiction, release_date, isbn) VALUES
-    #         (1, "temp 6", "", "", "", "", 1, "2022-2-2", "1234567890");
-    #     """)
-    #     time.sleep(1.5)
-    #
-    #     connection.query("""
-    #         INSERT INTO books (author_id, title, clean_title, synopsis, cover_image, purchase_link, fiction, release_date, isbn) VALUES
-    #         (2, "temp 7", "", "", "", "", 1, "2022-2-2", "1234567890");
-    #     """)
-    #     time.sleep(1.5)
-    #
-    #     connection.query("""
-    #         INSERT INTO books (author_id, title, clean_title, synopsis, cover_image, purchase_link, fiction, release_date, isbn) VALUES
-    #         (3, "temp 8", "", "", "", "", 1, "2022-2-2", "1234567890");
-    #     """)
-    #
-    #     exp = {
-    #         0: {'author': 'Author 3', 'title': 'temp 8', 'book_id': 13, 'cover': ''},
-    #         1: {'author': 'Author 2', 'title': 'temp 7', 'book_id': 12, 'cover': ''},
-    #         2: {'author': 'Author 1', 'title': 'temp 6', 'book_id': 11, 'cover': ''},
-    #         3: {'author': 'Author 3', 'title': 'temp 5', 'book_id': 10, 'cover': ''},
-    #         4: {'author': 'Author 2', 'title': 'temp 4', 'book_id': 9, 'cover': ''},
-    #         5: {'author': 'Author 1', 'title': 'temp 3', 'book_id': 8, 'cover': ''},
-    #         6: {'author': 'Author 1', 'title': 'temp 2', 'book_id': 7, 'cover': ''},
-    #         7: {'author': 'Author 1', 'title': 'temp 1', 'book_id': 6, 'cover': ''}
-    #     }
-    #
-    #     assert (books.get_newest() == exp)
-    #
-    #     connection.query("DELETE FROM books WHERE title LIKE 'temp%'")
+    def test_summary_data_isbn_unknown(self):
+        self.assertRaises(
+            components.books.BookNotFoundError,
+            books.get_summary,
+            isbn="1111111111"
+        )
+
+    def test_newest_books(self):
+        connection.query("""
+            INSERT INTO books (author_id, title, clean_title, synopsis, cover_image, purchase_link, fiction, release_date, isbn) VALUES
+            (1, "temp 1", "", "", "", "", 1, "2022-2-2", "1234567890");
+        """)
+        time.sleep(1.5)
+
+        connection.query("""
+            INSERT INTO books (author_id, title, clean_title, synopsis, cover_image, purchase_link, fiction, release_date, isbn) VALUES
+            (1, "temp 2", "", "", "", "", 1, "2022-2-2", "1234567890");
+        """)
+        time.sleep(1.5)
+
+
+        connection.query("""
+            INSERT INTO books (author_id, title, clean_title, synopsis, cover_image, purchase_link, fiction, release_date, isbn) VALUES
+            (1, "temp 3", "", "", "", "", 1, "2022-2-2", "1234567890");
+        """)
+        time.sleep(1.5)
+
+        connection.query("""
+            INSERT INTO books (author_id, title, clean_title, synopsis, cover_image, purchase_link, fiction, release_date, isbn) VALUES
+            (2, "temp 4", "", "", "", "", 1, "2022-2-2", "1234567890");
+        """)
+        time.sleep(1.5)
+
+        connection.query("""
+            INSERT INTO books (author_id, title, clean_title, synopsis, cover_image, purchase_link, fiction, release_date, isbn) VALUES
+            (3, "temp 5", "", "", "", "", 1, "2022-2-2", "1234567890");
+        """)
+        time.sleep(1.5)
+
+        connection.query("""
+            INSERT INTO books (author_id, title, clean_title, synopsis, cover_image, purchase_link, fiction, release_date, isbn) VALUES
+            (1, "temp 6", "", "", "", "", 1, "2022-2-2", "1234567890");
+        """)
+        time.sleep(1.5)
+
+        connection.query("""
+            INSERT INTO books (author_id, title, clean_title, synopsis, cover_image, purchase_link, fiction, release_date, isbn) VALUES
+            (2, "temp 7", "", "", "", "", 1, "2022-2-2", "1234567890");
+        """)
+        time.sleep(1.5)
+
+        connection.query("""
+            INSERT INTO books (author_id, title, clean_title, synopsis, cover_image, purchase_link, fiction, release_date, isbn) VALUES
+            (3, "temp 8", "", "", "", "", 1, "2022-2-2", "1234567890");
+        """)
+
+        exp = {
+            0: {'author': 'Author 3', 'title': 'temp 8', 'book_id': 13, 'cover': ''},
+            1: {'author': 'Author 2', 'title': 'temp 7', 'book_id': 12, 'cover': ''},
+            2: {'author': 'Author 1', 'title': 'temp 6', 'book_id': 11, 'cover': ''},
+            3: {'author': 'Author 3', 'title': 'temp 5', 'book_id': 10, 'cover': ''},
+            4: {'author': 'Author 2', 'title': 'temp 4', 'book_id': 9, 'cover': ''},
+            5: {'author': 'Author 1', 'title': 'temp 3', 'book_id': 8, 'cover': ''},
+            6: {'author': 'Author 1', 'title': 'temp 2', 'book_id': 7, 'cover': ''},
+            7: {'author': 'Author 1', 'title': 'temp 1', 'book_id': 6, 'cover': ''}
+        }
+
+        assert (books.get_newest() == exp)
+
+        connection.query("DELETE FROM books WHERE title LIKE 'temp%'")
 
     def test_get_about_data(self):
         exp = {'title': 'Book 1', 'cover_image': '', 'synopsis': '<p>This book does not have a synopsis</p>', 'purchase_link': '', 'release_date': '02/02/2022', 'isbn': '0111111111', 'author': 'Author 1', 'author_about': "<p>This is the first author's about.</p>", 'author_number_followers': 2, 'num_want_read': 0, 'num_reading': 0, 'num_read': 0, 'genres': ['Genre 8', 'Genre 9', 'Genre 4', 'Genre 7', 'Genre 5', 'Genre 2', 'Genre 1', 'Genre 10'], 'author_id': 1, 'average_rating': 3.5, 'num_ratings': 2, 'num_5_stars': 1, 'num_4_stars': 0, 'num_3_stars': 0, 'num_2_stars': 1, 'num_1_star': 0, 'current_user_review': {'review_id': 1, 'overall_rating': 5, 'plot_rating': 5, 'character_rating': 5, 'summary': None, 'rating_body': None}, 'author_following': True, 'reviews': [{'id': 2, 'overall_rating': 2, 'plot_rating': 3, 'character_rating': 1, 'summary': None, 'rating_body': None, 'date_added': '11/02/2024', 'username': 'user3'}]}
