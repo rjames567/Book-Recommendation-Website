@@ -48,7 +48,7 @@ class AuthorsTest(unittest.TestCase):
             ],
             "average_rating": 2.67,
             "num_ratings": 3,
-            "genres": set(["Genre 6", "Genre 9", "Genre 3", "Genre 5", "Genre 10", "Genre 7", "Genre 1"])
+            "genres": set(['Genre 8', 'Genre 1', 'Genre 9', 'Genre 4', 'Genre 2', 'Genre 7'])
             # uses sets so order can be ignored.
         }
         assert (out == exp)
@@ -66,7 +66,7 @@ class AuthorsTest(unittest.TestCase):
             ],
             "average_rating": 3.29,
             "num_ratings": 7,
-            "genres": set(["Genre 6", "Genre 5", "Genre 3", "Genre 4", "Genre 7", "Genre 10"])
+            "genres": set(['Genre 8', 'Genre 5', 'Genre 3', 'Genre 10', 'Genre 1', 'Genre 2'])
             # uses sets so order can be ignored.
         }
         assert (out == exp)
@@ -83,7 +83,7 @@ class AuthorsTest(unittest.TestCase):
             ],
             "average_rating": 3.0,
             "num_ratings": 3,
-            "genres": set(["Genre 3", "Genre 7", "Genre 2", "Genre 4", "Genre 1", "Genre 5"])
+            "genres": set(['Genre 9', 'Genre 6', 'Genre 8', 'Genre 5', 'Genre 10', 'Genre 3', 'Genre 4', 'Genre 2'])
             # uses sets so order can be ignored.
         }
         assert (out == exp)

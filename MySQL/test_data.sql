@@ -141,3 +141,18 @@ INSERT INTO diary_entries (user_id, book_id, overall_rating, character_rating, p
 (1, 2, 5, 3, 2, "A summary", "Thoughts", 11),
 (2, 5, 2, 4, 1, "Entry summary", "Entry thoughts", 2),
 (2, 4, 4, 5, 3, "Short entry summary", "Long entry thoughts.", 5);
+
+INSERT INTO reading_lists (user_id, list_id, book_id) VALUES
+(1, 3, 1),
+(1, 3, 2),
+(1, 3, 4),
+(1, 3, 5),
+(2, 6, 2),
+(2, 6, 3),
+(2, 6, 4),
+(3, 9, 1),
+(3, 9, 3),
+(3, 9, 4),
+(4, 12, 2),
+(4, 12, 3),
+(4, 12, 4);
