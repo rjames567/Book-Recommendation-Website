@@ -44,7 +44,6 @@ connection = mysql_handler.Connection(
 # Project Constants
 # -----------------------------------------------------------------------------
 number_home_summaries = config.get("home number_home_summaries")  # This is a
-number_home_summaries = config.get("home number_home_summaries")  # This is a
 # constant, as is is used multiple times, and will always be faster to access as
 # a variable, and otherwise, the get function would be have to run during the
 # calling of methods as part of a response.
