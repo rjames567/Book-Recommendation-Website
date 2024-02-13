@@ -160,7 +160,6 @@ INSERT INTO reading_lists (user_id, list_id, book_id) VALUES
 -- -------------------------------
 -- Information retrieval test data
 -- -------------------------------
-
 -- INSERT INTO authors (first_name, surname, about, clean_name) VALUES
 -- ('Kristin', 'Hannah', 'This author does not have an about', 'kristin hannah'),
 -- ('B.A.', 'Paris', 'This author does not have an about', 'ba paris'),
@@ -201,7 +200,7 @@ INSERT INTO reading_lists (user_id, list_id, book_id) VALUES
 -- (19, "Origin (Lux, #4)", "origin lux 4", "", "", "", 1, "2013-01-01", "19259997"),
 -- (20, "Graceling (Graceling Realm, #1)", "graceling graceling realm 1", "", "", "", 1, "2008-01-01", "3270810"),
 -- (21, "Modern Romance", "modern romance", "", "", "", 1, "2015-01-01", "43014915");
---
+
 -- INSERT INTO unique_words (word, idf_values) VALUES
 -- ('jr',1.74036),
 -- ('2',0.895265),
