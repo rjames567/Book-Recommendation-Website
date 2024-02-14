@@ -4,6 +4,7 @@
 import components.authors
 
 import sys
+import mysql.connector
 sys.path.append("../backend")
 
 import data_structures
@@ -291,14 +292,18 @@ class ReadingLists:
                     AND book_id={book_id}
             """.format(book_id=book_id, user_id=user_id))
             # Delete entry from other lists to prevent duplicates
-        self._connection.query("""
-            INSERT INTO reading_lists (user_id, book_id, list_id) VALUES 
-            ({user_id}, {book_id}, {list_id});
-        """.format(
-            user_id=user_id,
-            book_id=book_id,
-            list_id=list_id
-        ))
+
+        try:
+            self._connection.query("""
+                INSERT INTO reading_lists (user_id, book_id, list_id) VALUES 
+                ({user_id}, {book_id}, {list_id});
+            """.format(
+                user_id=user_id,
+                book_id=book_id,
+                list_id=list_id
+            ))
+        except mysql.connector.errors.IntegrityError:
+            pass
 
     def move_entry(self, user_id, start_list_id, end_list_id, book_id):
         self.add_entry(user_id, end_list_id, book_id)  # This changes the date
