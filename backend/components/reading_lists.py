@@ -278,22 +278,25 @@ class ReadingLists:
     def add_entry(self, user_id, list_id, book_id):
         self._recommendations.delete_recommendation(user_id, book_id, bad_recommendation=False)
         # Delete recommendation when added to a list
-        
-        lists = {i[0] for i in self._connection.query("""
-            SELECT list_id FROM reading_list_names
-            WHERE list_name IN ("Currently Reading", "Have Read", "Want to Read")
-                AND user_id={}
-        """.format(user_id))}
 
-        if list_id in lists:
-            self._connection.query("""
-                DELETE FROM reading_lists
-                WHERE user_id={user_id}
-                    AND book_id={book_id}
-            """.format(book_id=book_id, user_id=user_id))
-            # Delete entry from other lists to prevent duplicates
+        books = {i[0] for i in self._connection.query("SELECT book_id FROM books")}
+        users = {i[0] for i in self._connection.query("SELECT user_id FROM users")}
 
-        try:
+        if book_id in books and user_id in users:
+            lists = {i[0] for i in self._connection.query("""
+                SELECT list_id FROM reading_list_names
+                WHERE list_name IN ("Currently Reading", "Have Read", "Want to Read")
+                    AND user_id={}
+            """.format(user_id))}
+
+            if list_id in lists:
+                self._connection.query("""
+                    DELETE FROM reading_lists
+                    WHERE user_id={user_id}
+                        AND book_id={book_id}
+                """.format(book_id=book_id, user_id=user_id))
+                # Delete entry from other lists to prevent duplicates
+
             self._connection.query("""
                 INSERT INTO reading_lists (user_id, book_id, list_id) VALUES 
                 ({user_id}, {book_id}, {list_id});
@@ -302,8 +305,6 @@ class ReadingLists:
                 book_id=book_id,
                 list_id=list_id
             ))
-        except mysql.connector.errors.IntegrityError:
-            pass
 
     def move_entry(self, user_id, start_list_id, end_list_id, book_id):
         self.add_entry(user_id, end_list_id, book_id)  # This changes the date
