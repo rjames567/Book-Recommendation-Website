@@ -221,11 +221,16 @@ def remove_list():
     print("Check no change")
     reading_lists.remove_list(400, 400)
 
+def add_list():
+    input("Press enter to proceed")
+    print("Check add of new list name")
+    reading_lists.create_list(3, "Testing list name")
 
 if __name__ == "__main__":
     add_entry()
     remove_entry()
     remove_list()
+    add_list()
 
     input("Press enter to proceed")
     unittest.main()
