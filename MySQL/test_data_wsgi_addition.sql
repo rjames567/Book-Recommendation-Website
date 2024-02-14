@@ -253,7 +253,7 @@ INSERT INTO reading_list_names (list_name, user_id) VALUES
 ("Have Read", 5);
 
 INSERT INTO reading_lists (user_id, list_id, book_id) VALUES
-(1, 13, 21)
+(1, 13, 21);
 
 INSERT INTO unique_words (word, idf_values) VALUES
 ('jr',1.74036),
