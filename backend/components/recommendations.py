@@ -506,63 +506,67 @@ class Recommendations:
 
     def add_user(self, user_id, author_ids):
         vals = [f"({user_id}, {author_id})" for author_id in author_ids]
-        self._connection.query(
-            "INSERT INTO initial_preferences (user_id, author_id) VALUES {}".format(
-                ",".join(vals)
-            )
-        )
+        available_authors = {i[0] for i in self._connection.query("SELECT author_id FROM authors")}
+        users = {i[0] for i in self._connection.query("SELECT user_id FROM users")}
 
-        self._connection.query("""
-            UPDATE users
-            SET preferences_set=TRUE
-            WHERE user_id={}
-        """.format(user_id))
-
-        res = self._connection.query("""
-                SELECT AVG(book_genres.match_strength),
-                    book_genres.genre_id
-                FROM book_genres
-                INNER JOIN books
-                    ON book_genres.book_id=books.book_id
-                INNER JOIN authors
-                    ON books.author_id=authors.author_id
-                WHERE authors.author_id IN ({})
-                GROUP BY book_genres.genre_id;
-            """.format(
-                ",".join(str(i) for i in author_ids)
-            )
-        )
-
-        target_vec = np.zeros(self._num_factors)
-
-        for avg, genre_id in res:
-            genre = list(self.genre_lookup_table.values()).index(genre_id)
-            target_vec[genre] = avg
-
-        rec = (target_vec * self.book_factors).T
-
-        output = []
-        for count, val in enumerate(rec[0]):
-            output.append({
-                "book_id": self.book_lookup_table[count],
-                "strength": val
-            })
-
-        output.sort(key=lambda x: x["strength"], reverse=True)
-
-        output = output[:self._number_recommendations]
-
-        for count, i in enumerate(output):
-            output[count]["certainty"] = self.calculate_certainty(
-                i["book_id"],
-                user_id,
-                float(i["strength"]), # Convert the numpy float to a normal float so it can be used
-                target_vec
+        if set(author_ids).issubset(available_authors) and user_id in users:
+            self._connection.query(
+                "INSERT INTO initial_preferences (user_id, author_id) VALUES {}".format(
+                    ",".join(vals)
+                )
             )
 
-        self._connection.query("INSERT INTO recommendations (user_id, book_id, certainty) VALUES {}".format(",".join(f"({user_id}, {i['book_id']}, {i['certainty']})" for i in output)))
+            self._connection.query("""
+                UPDATE users
+                SET preferences_set=TRUE
+                WHERE user_id={}
+            """.format(user_id))
 
-        return output
+            res = self._connection.query("""
+                    SELECT AVG(book_genres.match_strength),
+                        book_genres.genre_id
+                    FROM book_genres
+                    INNER JOIN books
+                        ON book_genres.book_id=books.book_id
+                    INNER JOIN authors
+                        ON books.author_id=authors.author_id
+                    WHERE authors.author_id IN ({})
+                    GROUP BY book_genres.genre_id;
+                """.format(
+                    ",".join(str(i) for i in author_ids)
+                )
+            )
+
+            target_vec = np.zeros(self._num_factors)
+
+            for avg, genre_id in res:
+                genre = list(self.genre_lookup_table.values()).index(genre_id)
+                target_vec[genre] = avg
+
+            rec = (target_vec * self.book_factors).T
+
+            output = []
+            for count, val in enumerate(rec[0]):
+                output.append({
+                    "book_id": self.book_lookup_table[count],
+                    "strength": val
+                })
+
+            output.sort(key=lambda x: x["strength"], reverse=True)
+
+            output = output[:self._number_recommendations]
+
+            for count, i in enumerate(output):
+                output[count]["certainty"] = self.calculate_certainty(
+                    i["book_id"],
+                    user_id,
+                    float(i["strength"]), # Convert the numpy float to a normal float so it can be used
+                    target_vec
+                )
+
+            self._connection.query("INSERT INTO recommendations (user_id, book_id, certainty) VALUES {}".format(",".join(f"({user_id}, {i['book_id']}, {i['certainty']})" for i in output)))
+
+            return output
 
     @staticmethod
     def mean_squared_error(true, pred):
