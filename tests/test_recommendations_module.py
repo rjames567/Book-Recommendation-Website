@@ -63,6 +63,24 @@ class RecommendationTests(unittest.TestCase):
             5
         )
 
+    def test_get_summaries(self):
+        exp = [{'author': 'Author 1', 'title': 'Book 1', 'book_id': 1, 'cover': ''}, {'author': 'Author 2', 'title': 'Book 2', 'book_id': 2, 'cover': ''}]
+        assert (recommendations.get_user_recommendation_summaries(1) == exp)
+
+        exp = [{'author': 'Author 2', 'title': 'Book 4', 'book_id': 4, 'cover': ''}, {'author': 'Author 3', 'title': 'Book 3', 'book_id': 3, 'cover': ''}]
+        assert (recommendations.get_user_recommendation_summaries(2) == exp)
+
+        exp = [{'author': 'Author 1', 'title': 'Book 5', 'book_id': 5, 'cover': ''}, {'author': 'Author 1', 'title': 'Book 1', 'book_id': 1, 'cover': ''}]
+        assert (recommendations.get_user_recommendation_summaries(3) == exp)
+
+        exp = [{'author': 'Author 2', 'title': 'Book 2', 'book_id': 2, 'cover': ''}, {'author': 'Author 3', 'title': 'Book 3', 'book_id': 3, 'cover': ''}]
+        assert (recommendations.get_user_recommendation_summaries(4) == exp)
+
+        assert (recommendations.get_user_recommendation_summaries(5) == [])
+
+    def test_get_summaries_unknown(self):
+        assert (recommendations.get_user_recommendation_summaries(400) == [])
+
 def fit():
     input("Press enter to proceed")
     print("Check addition of new genres")
