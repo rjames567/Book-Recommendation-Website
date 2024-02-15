@@ -58,7 +58,7 @@ class RecommendationTests(unittest.TestCase):
 
     def test_get_recommendations_no_preference(self):
         self.assertRaises(
-            components.recommendations.NoUserPreferenceError,
+            components.recommendations.NoUserPreferencesError,
             recommendations.get_user_recommendations,
             5
         )
@@ -100,9 +100,9 @@ def add_user():
     recommendations.add_user(500, [1, 2])
 
 if __name__ == "__main__":
-    fit()
-    generate_recommendations()
-    delete_recommendation()
+    # fit()
+    # generate_recommendations()
+    # delete_recommendation()
     add_user()
 
     input("Press enter to proceed (add add-on data)")
