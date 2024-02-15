@@ -15,11 +15,11 @@ INSERT INTO genres (name, about, clean_name) VALUES
 ("Genre 9", "This genre does not have an about", "genre 9"),
 ("Genre 10", "This genre does not have an about", "genre 10");
 
-INSERT INTO users (first_name, surname, username, password_hash) VALUES
-("user", "1", "user1", "5d557544916fde5c6b162cfcbce84181fb2cbe8798439b643edf96ee4c5826b4"),
-("user", "2", "user2", "5d557544916fde5c6b162cfcbce84181fb2cbe8798439b643edf96ee4c5826b4"),
-("user", "3", "user3", "5d557544916fde5c6b162cfcbce84181fb2cbe8798439b643edf96ee4c5826b4"),
-("user", "4", "user4", "5d557544916fde5c6b162cfcbce84181fb2cbe8798439b643edf96ee4c5826b4");
+INSERT INTO users (first_name, surname, username, password_hash, preferences_set) VALUES
+("user", "1", "user1", "5d557544916fde5c6b162cfcbce84181fb2cbe8798439b643edf96ee4c5826b4", TRUE),
+("user", "2", "user2", "5d557544916fde5c6b162cfcbce84181fb2cbe8798439b643edf96ee4c5826b4", TRUE),
+("user", "3", "user3", "5d557544916fde5c6b162cfcbce84181fb2cbe8798439b643edf96ee4c5826b4", TRUE),
+("user", "4", "user4", "5d557544916fde5c6b162cfcbce84181fb2cbe8798439b643edf96ee4c5826b4", TRUE);
 
 INSERT INTO books (author_id, title, clean_title, synopsis, cover_image, purchase_link, fiction, release_date, isbn) VALUES
 (1, "Book 1", "book 1", "This book does not have a synopsis", "", "", 1, "2022-2-2", "0111111111"),
