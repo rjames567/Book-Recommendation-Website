@@ -156,3 +156,7 @@ INSERT INTO reading_lists (user_id, list_id, book_id) VALUES
 (4, 12, 2),
 (4, 12, 3),
 (4, 12, 4);
+
+INSERT INTO bad_recommendations (user_id, book_id) VALUES
+(1, 3),
+(2, 1);
