@@ -373,11 +373,7 @@ class Recommendations:
                 date_added
             FROM bad_recommendations
             WHERE user_id={}
-                AND date_added<=DATE_SUB(NOW(), INTERVAL 2 DAY)
         """.format(user_id))
-
-        existing_recommendations = self._connection.query("SELECT book_id FROM recommendations WHERE user_id={}".format(user_id))
-        existing_recommendations = {i[0] for i in existing_recommendations}  # Sets are faster for 'in' operations
 
         reading_list_items = self._connection.query("""
             SELECT reading_lists.book_id
