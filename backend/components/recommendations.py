@@ -436,6 +436,9 @@ class Recommendations:
         ))  # ORDER BY does not use calculated certainty for higher accuracy, and avoiding collisions
         # IFNULL prevents any null values - replace with 0s.
 
+        self._list_users_no_preferences = {i[0] for i in self._connection.query(
+            "SELECT user_id FROM users WHERE preferences_set=FALSE")}
+
         if len(items) == 0 or user_id in self._list_users_no_preferences:
             raise NoUserPreferencesError(user_id)
 
