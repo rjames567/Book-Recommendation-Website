@@ -287,6 +287,9 @@ class Recommendations:
 
         query = "INSERT INTO recommendations (user_id, book_id, certainty) VALUES "
 
+        self._list_users_no_preferences = {i[0] for i in self._connection.query(
+            "SELECT user_id FROM users WHERE preferences_set=FALSE")}
+
         for user, books in enumerate(predictions):
             user_books = []
             user_id = self.user_lookup_table[user]
@@ -338,13 +341,15 @@ class Recommendations:
                         i["dot_product"]
                     )
 
-                query += ",".join(
-                    f"({user_id}, {i['id']}, {i['certainty']})" for i in user_books[:self._number_recommendations]) + ","
+                if len(user_books):
+                    query += ",".join(
+                        f"({user_id}, {i['id']}, {i['certainty']})" for i in user_books[:self._number_recommendations]) + ","
 
         self._connection.query("""
             DELETE FROM recommendations
             WHERE date_added<=DATE_SUB(NOW(), INTERVAL 2 DAY)
         """)
+
         self._connection.query(query[:-1])
 
     def delete_recommendation(self, user_id, book_id, bad_recommendation=True):
