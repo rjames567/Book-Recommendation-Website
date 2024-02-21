@@ -42,6 +42,28 @@ class Diaries:
             pages_read=params["pages_read"]
         ))
 
+        start_list, end_list = self._connection.query("""
+                SELECT list_id FROM reading_list_names
+                WHERE user_id={}
+                    AND list_name IN ("Currently Reading", "Have Read")
+                ORDER BY list_name ASC
+            """.format(user_id))
+
+        self._connection.query("""
+            UPDATE reading_lists
+            SET list_id = {end_list}
+            WHERE user_id = {user_id}
+                AND list_id = {start_list}
+                AND book_id = {book_id}
+            """.format(
+                end_list=end_list[0],
+                user_id=user_id,
+                start_list=start_list[0],
+                book_id=book_id
+            )
+        )
+            
+
     def delete_entry(self, user_id, entry_id):
         # The user id is just a way of helping preventing a random deletion of a list. The corresponding user_id must be
         # known.
