@@ -92,14 +92,10 @@ def generate_recommendations():
     recommendations.gen_recommendations()
 
 def delete_recommendation():
-    input("Press enter to proceed (temp recommendation insert)")
-    connection.query("INSERT INTO recommendations (user_id, book_id, certainty) VALUES (1, 1, 1)")
     input("Press enter to proceed")
     print("Check removal of recommendations and no change to bad recommendations")
     recommendations.delete_recommendation(1,1, bad_recommendation=False)
 
-    input("Press enter to proceed (temp recommendation insert)")
-    connection.query("INSERT INTO recommendations (user_id, book_id, certainty) VALUES (1, 1, 1)")
     input("Press enter to proceed")
     print("Check removal of recommendations and addition to bad recommendations")
     recommendations.delete_recommendation(1, 1, bad_recommendation=True)
