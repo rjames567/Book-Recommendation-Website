@@ -70,7 +70,7 @@ class Books:
         for i in genre_dict:
             tree.insert({
                 "book_id": i,
-                "strength": ml_utilities.dot_product(target_genres, genre_dict[i])
+                "strength": ml_utilities.cosine_similarity(target_genres, genre_dict[i])
             })
 
         result = tree.in_order_traversal()[:self._number_similarities_about]  # Get the books ordered by similarity.
