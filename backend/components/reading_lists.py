@@ -24,13 +24,7 @@ class ListNotFoundError(Exception):
 # Objects
 # -----------------------------------------------------------------------------
 class ReadingLists:
-    def __init__(
-            self,
-            connection,
-            number_summaries_home,
-            num_display_genres,
-            recommendations
-        ):
+    def __init__(self, connection, number_summaries_home, num_display_genres, recommendations):
         self._recommendations = recommendations
         self._connection = connection
         self._number_summaries_home = number_summaries_home
