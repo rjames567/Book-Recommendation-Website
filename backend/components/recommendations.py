@@ -174,8 +174,8 @@ class Recommendations:
                 if len(books):
                     for i in books:
                         used_book_id = list(self.book_lookup_table.values()).index(i[0])
-                        mat[user][used_book_id] += self._initial_recommendation_mat_val  # This is a non-zero value so recommendation is made. This is not affected by the average preference expressed
-                        # by all the user's selected authors.
+                        mat[user][used_book_id] += self._initial_recommendation_mat_val  # This is a non-zero value so recommendation is made.
+                        # This is not affected by the average preference expressed by all the user's selected authors.
                 else:
                     continue # The user has not set up any initial preferences yet.
             elif len(books):
